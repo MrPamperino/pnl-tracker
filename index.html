@@ -21,7 +21,7 @@
     font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     padding: 40px 20px 80px;
   }
-  .wrap { max-width: 720px; margin: 0 auto; }
+  .wrap { max-width: 760px; margin: 0 auto; }
   h1 {
     font-size: 13px; font-weight: 500; color: var(--muted);
     letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px;
@@ -52,7 +52,7 @@
   }
   input:hover, input:focus { border-color: #333; outline: none; }
   .foot {
-    margin-top: 24px; display: flex; gap: 8px; align-items: center;
+    margin-top: 24px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
     color: var(--muted); font-size: 12px;
   }
   button {
@@ -91,7 +91,6 @@
 </div>
 
 <script>
-// All figures USD. ZCAT avg reconstructed from on-chain swaps (SOL/USDC/USDT/ZEC).
 const SEED = {
   eurusd: 1.1614,
   positions: [
@@ -100,9 +99,8 @@ const SEED = {
       symbol: "DRV",
       venue: "spot",
       holdings: 143517.106,
-      // screenshot avg 0.1336 EUR
       avg: 0.1336 * 1.1614,
-      mark: 0.15051,
+      mark: 0.14994,
     },
     {
       id: "zec",
@@ -110,7 +108,7 @@ const SEED = {
       venue: "exchange",
       holdings: 85.1323656,
       avg: 1171.44276512,
-      mark: 1133.58,
+      mark: 1120.91,
     },
     {
       id: "zcat",
@@ -118,12 +116,21 @@ const SEED = {
       venue: "Solana",
       holdings: 1240843.570063622,
       avg: 0.04420703207790289,
-      mark: 0.08889113812238468,
+      mark: 0.089212843799982,
+    },
+    {
+      id: "ai",
+      symbol: "AI",
+      venue: "Robinhood · 0x7E3d…c869",
+      holdings: 250663.2249268438,
+      // on-chain: ETH + USDG buys, 0 sells
+      avg: 0.2334919495813812,
+      mark: 0.2144,
     },
   ],
 };
 
-const KEY = "pnl-usd-v2";
+const KEY = "pnl-usd-v3";
 let state = load();
 
 function load() {
@@ -143,12 +150,6 @@ function money(n, d = 2) {
     maximumFractionDigits: d,
   });
   return (neg ? "−" : "") + "$" + s;
-}
-function px(n) {
-  if (n == null || Number.isNaN(n)) return "—";
-  if (n >= 100) return money(n, 2);
-  if (n >= 1) return money(n, 4);
-  return money(n, 6);
 }
 function qty(n) {
   return n.toLocaleString("en-US", {
@@ -215,18 +216,22 @@ function reset() {
 
 async function refresh() {
   try {
-    const [zecSpot, jup, kr] = await Promise.all([
+    const AI = "0x2E8c31162b855A2ffa90F6F8634643Ad6F111e18";
+    const [zecSpot, jup, kr, ds] = await Promise.all([
       fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
       fetch("https://lite-api.jup.ag/tokens/v2/search?query=HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR").then(r => r.json()),
       fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
+      fetch("https://api.dexscreener.com/latest/dex/tokens/" + AI).then(r => r.json()),
     ]);
     const zec = Number(zecSpot?.data?.amount);
     const zcat = (jup || []).find(t => t.id === "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR")?.usdPrice;
     const drv = Number(kr?.result?.DRVUSD?.c?.[0]);
+    const ai = Number((ds?.pairs || [])[0]?.priceUsd);
     for (const p of state.positions) {
       if (p.id === "zec" && zec) p.mark = zec;
       if (p.id === "zcat" && zcat) p.mark = zcat;
       if (p.id === "drv" && drv) p.mark = drv;
+      if (p.id === "ai" && ai) p.mark = ai;
     }
     save();
   } catch (e) {
@@ -235,7 +240,7 @@ async function refresh() {
   render();
 }
 
-refresh(); // live marks on open
+refresh();
 </script>
 </body>
 </html>
