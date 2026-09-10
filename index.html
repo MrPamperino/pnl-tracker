@@ -100,7 +100,7 @@ const SEED = {
       venue: "spot",
       holdings: 143517.106,
       avg: 0.1336 * 1.1614,
-      mark: 0.14994,
+      mark: 0.1511,
     },
     {
       id: "zec",
@@ -108,7 +108,7 @@ const SEED = {
       venue: "exchange",
       holdings: 85.1323656,
       avg: 1171.44276512,
-      mark: 1120.91,
+      mark: 1135.365,
     },
     {
       id: "zcat",
@@ -116,7 +116,7 @@ const SEED = {
       venue: "Solana",
       holdings: 1240843.570063622,
       avg: 0.04420703207790289,
-      mark: 0.089212843799982,
+      mark: 0.09595985026720176,
     },
     {
       id: "ai",
@@ -125,12 +125,21 @@ const SEED = {
       holdings: 250663.2249268438,
       // on-chain: ETH + USDG buys, 0 sells
       avg: 0.2334919495813812,
-      mark: 0.2144,
+      mark: 0.2142,
     },
+    {
+      id: "sfi",
+      symbol: "SFI",
+      venue: "manual · 180 @ 10k USDC",
+      holdings: 180,
+      avg: 55.55555555555556,
+      mark: 129.35,
+    },
+
   ],
 };
 
-const KEY = "pnl-usd-v3";
+const KEY = "pnl-usd-v4";
 let state = load();
 
 function load() {
@@ -217,21 +226,25 @@ function reset() {
 async function refresh() {
   try {
     const AI = "0x2E8c31162b855A2ffa90F6F8634643Ad6F111e18";
-    const [zecSpot, jup, kr, ds] = await Promise.all([
+    const SFI = "0xb753428af26E81097e7fD17f40c88aaA3E04902c";
+  const [zecSpot, jup, kr, ds, dsSfi] = await Promise.all([
       fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
       fetch("https://lite-api.jup.ag/tokens/v2/search?query=HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR").then(r => r.json()),
       fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
       fetch("https://api.dexscreener.com/latest/dex/tokens/" + AI).then(r => r.json()),
+      fetch("https://api.dexscreener.com/latest/dex/tokens/" + SFI).then(r => r.json()),
     ]);
     const zec = Number(zecSpot?.data?.amount);
     const zcat = (jup || []).find(t => t.id === "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR")?.usdPrice;
     const drv = Number(kr?.result?.DRVUSD?.c?.[0]);
     const ai = Number((ds?.pairs || [])[0]?.priceUsd);
+    const sfi = Number((dsSfi?.pairs || [])[0]?.priceUsd);
     for (const p of state.positions) {
       if (p.id === "zec" && zec) p.mark = zec;
       if (p.id === "zcat" && zcat) p.mark = zcat;
       if (p.id === "drv" && drv) p.mark = drv;
       if (p.id === "ai" && ai) p.mark = ai;
+      if (p.id === "sfi" && sfi) p.mark = sfi;
     }
     save();
   } catch (e) {
