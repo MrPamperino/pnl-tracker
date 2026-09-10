@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PnL</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f2f2f2;
+    --muted: #888;
+    --line: #222;
+    --up: #3dd68c;
+    --down: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 40px 20px 80px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 {
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px;
+  }
+  .pnl {
+    font-size: 40px; font-weight: 560; letter-spacing: -0.03em;
+    margin: 0 0 4px;
+  }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 36px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; font-size: 12px; font-weight: 500; color: var(--muted);
+    padding: 0 8px 10px; border-bottom: 1px solid var(--line);
+  }
+  th.r, td.r { text-align: right; }
+  td {
+    padding: 14px 8px; border-bottom: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  .name { font-weight: 560; }
+  .venue { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  input {
+    width: 96px; background: transparent; border: 1px solid transparent;
+    color: inherit; font: inherit; text-align: right; padding: 2px 4px;
+    border-radius: 4px;
+  }
+  input:hover, input:focus { border-color: #333; outline: none; }
+  .foot {
+    margin-top: 24px; display: flex; gap: 8px; align-items: center;
+    color: var(--muted); font-size: 12px;
+  }
+  button {
+    background: transparent; border: 1px solid #333; color: var(--fg);
+    border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 12px;
+    cursor: pointer;
+  }
+  button:hover { border-color: #555; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Portfolio</h1>
+  <div class="pnl" id="pnl">—</div>
+  <div class="sub" id="summary"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th class="r">Size</th>
+        <th class="r">Avg</th>
+        <th class="r">Mark</th>
+        <th class="r">Value</th>
+        <th class="r">PnL</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div class="foot">
+    <button onclick="refresh()">Refresh marks</button>
+    <button onclick="reset()">Reset</button>
+    <span id="asof"></span>
+  </div>
+</div>
+
+<script>
+// All figures USD. ZCAT avg reconstructed from on-chain swaps (SOL/USDC/USDT/ZEC).
+const SEED = {
+  eurusd: 1.1614,
+  positions: [
+    {
+      id: "drv",
+      symbol: "DRV",
+      venue: "spot",
+      holdings: 143517.106,
+      // screenshot avg 0.1336 EUR
+      avg: 0.1336 * 1.1614,
+      mark: 0.15051,
+    },
+    {
+      id: "zec",
+      symbol: "ZEC",
+      venue: "exchange",
+      holdings: 85.1323656,
+      avg: 1171.44276512,
+      mark: 1133.58,
+    },
+    {
+      id: "zcat",
+      symbol: "ZCAT",
+      venue: "Solana",
+      holdings: 1240843.570063622,
+      avg: 0.04420703207790289,
+      mark: 0.08889113812238468,
+    },
+  ],
+};
+
+const KEY = "pnl-usd-v2";
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return structuredClone(SEED);
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+function money(n, d = 2) {
+  if (n == null || Number.isNaN(n)) return "—";
+  const neg = n < 0;
+  const s = Math.abs(n).toLocaleString("en-US", {
+    minimumFractionDigits: d,
+    maximumFractionDigits: d,
+  });
+  return (neg ? "−" : "") + "$" + s;
+}
+function px(n) {
+  if (n == null || Number.isNaN(n)) return "—";
+  if (n >= 100) return money(n, 2);
+  if (n >= 1) return money(n, 4);
+  return money(n, 6);
+}
+function qty(n) {
+  return n.toLocaleString("en-US", {
+    maximumFractionDigits: n >= 1000 ? 0 : 4,
+  });
+}
+function cls(n) {
+  return n > 0 ? "up" : n < 0 ? "down" : "";
+}
+
+function render() {
+  let totVal = 0, totCost = 0, totPnl = 0;
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+
+  for (const p of state.positions) {
+    const cost = p.holdings * p.avg;
+    const value = p.holdings * p.mark;
+    const pnl = value - cost;
+    const pct = (pnl / cost) * 100;
+    totVal += value; totCost += cost; totPnl += pnl;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>
+        <div class="name">${p.symbol}</div>
+        <div class="venue">${p.venue}</div>
+      </td>
+      <td class="r">${qty(p.holdings)}</td>
+      <td class="r"><input data-id="${p.id}" data-f="avg" value="${p.avg}" /></td>
+      <td class="r"><input data-id="${p.id}" data-f="mark" value="${p.mark}" /></td>
+      <td class="r">${money(value)}</td>
+      <td class="r ${cls(pnl)}">${money(pnl)} <span style="opacity:.65">(${pct.toFixed(1)}%)</span></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  tbody.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("change", () => {
+      const p = state.positions.find(x => x.id === inp.dataset.id);
+      const n = Number(String(inp.value).replace(/,/g, ""));
+      if (!Number.isFinite(n)) return;
+      p[inp.dataset.f] = n;
+      save();
+      render();
+    });
+  });
+
+  const pnlEl = document.getElementById("pnl");
+  pnlEl.textContent = money(totPnl);
+  pnlEl.className = "pnl " + cls(totPnl);
+  document.getElementById("summary").textContent =
+    money(totVal) + " value · " + money(totCost) + " cost · " +
+    ((totPnl / totCost) * 100).toFixed(1) + "%";
+  document.getElementById("asof").textContent =
+    "USD · " + new Date().toLocaleString();
+}
+
+function reset() {
+  state = structuredClone(SEED);
+  save();
+  render();
+}
+
+async function refresh() {
+  try {
+    const [zecSpot, jup, kr] = await Promise.all([
+      fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
+      fetch("https://lite-api.jup.ag/tokens/v2/search?query=HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR").then(r => r.json()),
+      fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
+    ]);
+    const zec = Number(zecSpot?.data?.amount);
+    const zcat = (jup || []).find(t => t.id === "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR")?.usdPrice;
+    const drv = Number(kr?.result?.DRVUSD?.c?.[0]);
+    for (const p of state.positions) {
+      if (p.id === "zec" && zec) p.mark = zec;
+      if (p.id === "zcat" && zcat) p.mark = zcat;
+      if (p.id === "drv" && drv) p.mark = drv;
+    }
+    save();
+  } catch (e) {
+    console.warn(e);
+  }
+  render();
+}
+
+refresh(); // live marks on open
+</script>
+</body>
+</html>
