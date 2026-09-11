@@ -12,6 +12,7 @@
     --line: #222;
     --up: #3dd68c;
     --down: #ff6b6b;
+    --card: #121212;
   }
   * { box-sizing: border-box; }
   body {
@@ -21,16 +22,30 @@
     font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     padding: 40px 20px 80px;
   }
-  .wrap { max-width: 760px; margin: 0 auto; }
+  .wrap { max-width: 800px; margin: 0 auto; }
   h1 {
     font-size: 13px; font-weight: 500; color: var(--muted);
-    letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px;
+    letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 16px;
   }
-  .pnl {
-    font-size: 40px; font-weight: 560; letter-spacing: -0.03em;
-    margin: 0 0 4px;
+  .hero {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 32px;
   }
-  .sub { color: var(--muted); font-size: 14px; margin-bottom: 36px; }
+  @media (max-width: 640px) { .hero { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .card .lbl {
+    color: var(--muted); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 6px;
+  }
+  .card .val {
+    font-size: 26px; font-weight: 560; letter-spacing: -0.03em;
+  }
+  .card .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
   table { width: 100%; border-collapse: collapse; }
   th {
     text-align: left; font-size: 12px; font-weight: 500; color: var(--muted);
@@ -43,8 +58,6 @@
   }
   .name { font-weight: 560; }
   .venue { color: var(--muted); font-size: 12px; margin-top: 2px; }
-  .up { color: var(--up); }
-  .down { color: var(--down); }
   input {
     width: 96px; background: transparent; border: 1px solid transparent;
     color: inherit; font: inherit; text-align: right; padding: 2px 4px;
@@ -66,8 +79,23 @@
 <body>
 <div class="wrap">
   <h1>Portfolio</h1>
-  <div class="pnl" id="pnl">—</div>
-  <div class="sub" id="summary"></div>
+  <div class="hero">
+    <div class="card">
+      <div class="lbl">Total PnL</div>
+      <div class="val" id="pnl">—</div>
+      <div class="hint" id="pnlPct"></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Portfolio</div>
+      <div class="val" id="value">—</div>
+      <div class="hint">mark value</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Cost</div>
+      <div class="val" id="cost">—</div>
+      <div class="hint">cost basis</div>
+    </div>
+  </div>
 
   <table>
     <thead>
@@ -100,7 +128,7 @@ const SEED = {
       venue: "spot",
       holdings: 143517.106,
       avg: 0.1336 * 1.1614,
-      mark: 0.1511,
+      mark: 0.14649,
     },
     {
       id: "zec",
@@ -108,24 +136,23 @@ const SEED = {
       venue: "exchange",
       holdings: 85.1323656,
       avg: 1171.44276512,
-      mark: 1135.365,
+      mark: 1164.175,
     },
     {
       id: "zcat",
       symbol: "ZCAT",
-      venue: "Solana",
+      venue: "Solana · 5cN5…ZkrG",
       holdings: 1240843.570063622,
       avg: 0.04420703207790289,
-      mark: 0.09595985026720176,
+      mark: 0.09226858435437232,
     },
     {
       id: "ai",
       symbol: "AI",
       venue: "Robinhood · 0x7E3d…c869",
       holdings: 250663.2249268438,
-      // on-chain: ETH + USDG buys, 0 sells
       avg: 0.2334919495813812,
-      mark: 0.2142,
+      mark: 0.272,
     },
     {
       id: "sfi",
@@ -133,13 +160,20 @@ const SEED = {
       venue: "manual · 90 @ 10k USDC",
       holdings: 90,
       avg: 111.11111111111111,
-      mark: 141.93,
+      mark: 133.58,
     },
-
+    {
+      id: "jup",
+      symbol: "JUP",
+      venue: "locked · Ay1v…nMFi",
+      holdings: 47317.256018,
+      avg: 0.21133949517689463,
+      mark: 0.24265718316774845,
+    },
   ],
 };
 
-const KEY = "pnl-usd-v5";
+const KEY = "pnl-usd-v6";
 let state = load();
 
 function load() {
@@ -162,7 +196,7 @@ function money(n, d = 2) {
 }
 function qty(n) {
   return n.toLocaleString("en-US", {
-    maximumFractionDigits: n >= 1000 ? 0 : 4,
+    maximumFractionDigits: n >= 1000 ? 2 : 4,
   });
 }
 function cls(n) {
@@ -178,7 +212,7 @@ function render() {
     const cost = p.holdings * p.avg;
     const value = p.holdings * p.mark;
     const pnl = value - cost;
-    const pct = (pnl / cost) * 100;
+    const pct = cost ? (pnl / cost) * 100 : 0;
     totVal += value; totCost += cost; totPnl += pnl;
 
     const tr = document.createElement("tr");
@@ -209,10 +243,11 @@ function render() {
 
   const pnlEl = document.getElementById("pnl");
   pnlEl.textContent = money(totPnl);
-  pnlEl.className = "pnl " + cls(totPnl);
-  document.getElementById("summary").textContent =
-    money(totVal) + " value · " + money(totCost) + " cost · " +
-    ((totPnl / totCost) * 100).toFixed(1) + "%";
+  pnlEl.className = "val " + cls(totPnl);
+  document.getElementById("pnlPct").textContent =
+    (totCost ? ((totPnl / totCost) * 100).toFixed(1) : "0") + "% vs cost";
+  document.getElementById("value").textContent = money(totVal);
+  document.getElementById("cost").textContent = money(totCost);
   document.getElementById("asof").textContent =
     "USD · " + new Date().toLocaleString();
 }
@@ -227,15 +262,21 @@ async function refresh() {
   try {
     const AI = "0x2E8c31162b855A2ffa90F6F8634643Ad6F111e18";
     const SFI = "0xb753428af26E81097e7fD17f40c88aaA3E04902c";
-  const [zecSpot, jup, kr, ds, dsSfi] = await Promise.all([
+    const JUP = "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN";
+    const [zecSpot, jupTok, kr, ds, dsSfi] = await Promise.all([
       fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
-      fetch("https://lite-api.jup.ag/tokens/v2/search?query=HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR").then(r => r.json()),
+      fetch("https://lite-api.jup.ag/tokens/v2/search?query=" + JUP).then(r => r.json()),
       fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
       fetch("https://api.dexscreener.com/latest/dex/tokens/" + AI).then(r => r.json()),
       fetch("https://api.dexscreener.com/latest/dex/tokens/" + SFI).then(r => r.json()),
     ]);
+    let zcat = null;
+    try {
+      const zj = await fetch("https://lite-api.jup.ag/tokens/v2/search?query=HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR").then(r => r.json());
+      zcat = (zj || []).find(t => t.id === "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR")?.usdPrice;
+    } catch {}
     const zec = Number(zecSpot?.data?.amount);
-    const zcat = (jup || []).find(t => t.id === "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR")?.usdPrice;
+    const jup = (jupTok || []).find(t => t.id === JUP)?.usdPrice;
     const drv = Number(kr?.result?.DRVUSD?.c?.[0]);
     const ai = Number((ds?.pairs || [])[0]?.priceUsd);
     const sfi = Number((dsSfi?.pairs || [])[0]?.priceUsd);
@@ -245,6 +286,7 @@ async function refresh() {
       if (p.id === "drv" && drv) p.mark = drv;
       if (p.id === "ai" && ai) p.mark = ai;
       if (p.id === "sfi" && sfi) p.mark = sfi;
+      if (p.id === "jup" && jup) p.mark = jup;
     }
     save();
   } catch (e) {
