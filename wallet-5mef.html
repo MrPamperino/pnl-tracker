@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wallet 5Mef</title>
+<style>
+  :root {
+    --bg:#0a0a0a; --fg:#f2f2f2; --muted:#888; --line:#222;
+    --up:#3dd68c; --down:#ff6b6b; --card:#121212;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--fg);
+    font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    padding:40px 20px 80px;
+  }
+  .wrap { max-width:860px; margin:0 auto; }
+  a { color:#9ecbff; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  h1 {
+    font-size:13px; font-weight:500; color:var(--muted);
+    letter-spacing:.08em; text-transform:uppercase; margin:0 0 8px;
+  }
+  .addr {
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:13px; color:var(--muted); margin-bottom:20px; word-break:break-all;
+  }
+  .hero {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:28px;
+  }
+  @media (max-width:640px) { .hero { grid-template-columns:1fr; } }
+  .card {
+    background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px;
+  }
+  .lbl { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  .val { font-size:26px; font-weight:560; letter-spacing:-.03em; }
+  .hint { color:var(--muted); font-size:12px; margin-top:4px; }
+  .up { color:var(--up); } .down { color:var(--down); }
+  table { width:100%; border-collapse:collapse; }
+  th {
+    text-align:left; font-size:12px; font-weight:500; color:var(--muted);
+    padding:0 8px 10px; border-bottom:1px solid var(--line);
+  }
+  th.r, td.r { text-align:right; }
+  td { padding:14px 8px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  .name { font-weight:560; }
+  .venue { color:var(--muted); font-size:12px; margin-top:2px; }
+  input {
+    width:96px; background:transparent; border:1px solid transparent;
+    color:inherit; font:inherit; text-align:right; padding:2px 4px; border-radius:4px;
+  }
+  input:hover, input:focus { border-color:#333; outline:none; }
+  .foot { margin-top:24px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:12px; }
+  button {
+    background:transparent; border:1px solid #333; color:var(--fg);
+    border-radius:8px; padding:6px 12px; font:inherit; font-size:12px; cursor:pointer;
+  }
+  button:hover { border-color:#555; }
+  .note { margin-top:18px; color:var(--muted); font-size:12px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="margin-bottom:12px"><a href="./">← Portfolio PnL</a></div>
+  <h1>Wallet tracker</h1>
+  <div class="addr">5MefLSkN3mhKVe3gtXHnz2gjAkrkn6P5r9ufL4wi849r<br/>
+    <a href="https://solscan.io/account/5MefLSkN3mhKVe3gtXHnz2gjAkrkn6P5r9ufL4wi849r" target="_blank" rel="noopener">Solscan</a>
+  </div>
+
+  <div class="hero">
+    <div class="card">
+      <div class="lbl">Portfolio</div>
+      <div class="val" id="value">—</div>
+      <div class="hint">priced tokens + SOL</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Cost</div>
+      <div class="val" id="cost">—</div>
+      <div class="hint">where avg is set</div>
+    </div>
+    <div class="card">
+      <div class="lbl">PnL</div>
+      <div class="val" id="pnl">—</div>
+      <div class="hint" id="pnlPct"></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th class="r">Size</th>
+        <th class="r">Avg</th>
+        <th class="r">Mark</th>
+        <th class="r">Value</th>
+        <th class="r">PnL</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div class="foot">
+    <button onclick="refresh()">Refresh marks</button>
+    <button onclick="reset()">Reset</button>
+    <span id="asof"></span>
+  </div>
+  <p class="note">
+    Mostra tokens com preço utilizável. ~20 contas sem mark fiável (spam/illiquid) ficam de fora do total.
+    Preenche <b>Avg</b> para PnL. Marks: Jupiter / DexScreener / Kraken (SOL).
+  </p>
+</div>
+<script>
+const OWNER = "5MefLSkN3mhKVe3gtXHnz2gjAkrkn6P5r9ufL4wi849r";
+const SEED = {
+  positions: [
+  {
+    "id": "hcrlc9vd",
+    "symbol": "ZCAT",
+    "mint": "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR",
+    "holdings": 4480997.9977362,
+    "mark": 0.12181045822204091,
+    "avg": null
+  },
+  {
+    "id": "3nqhijnu",
+    "symbol": "TACZ",
+    "mint": "3nqHijNUExsnjNBb15WJsJ2xisyMVGN6FK4aUgZk1Rwj",
+    "holdings": 3567371.083215,
+    "mark": 0.0031740490639757817,
+    "avg": null
+  },
+  {
+    "id": "a7bdiyds",
+    "symbol": "ZEC",
+    "mint": "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
+    "holdings": 1.05292797,
+    "mark": 1144.1144572836756,
+    "avg": null
+  },
+  {
+    "id": "7wsyjrv3",
+    "symbol": "ZEC",
+    "mint": "7WsYjrv3ENVHNwHzRAmHtm96XppsFmhsP6oq136By1TC",
+    "holdings": 0.04865548,
+    "mark": 961.55,
+    "avg": null
+  },
+  {
+    "id": "sol",
+    "symbol": "SOL",
+    "mint": "So11111111111111111111111111111111111111112",
+    "holdings": 0.45033733,
+    "mark": 101.57,
+    "avg": null
+  }
+],
+};
+const KEY = "wallet-5mef-v1";
+let state = load();
+function load() {
+  try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch {}
+  return structuredClone(SEED);
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function money(n,d=2) {
+  if (n==null || Number.isNaN(n)) return "—";
+  const neg=n<0; const s=Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+  return (neg?"−":"")+"$"+s;
+}
+function qty(n) {
+  return n.toLocaleString("en-US",{maximumFractionDigits: n>=1000?2:4});
+}
+function cls(n) { return n>0?"up":n<0?"down":""; }
+
+function render() {
+  let totVal=0, totCost=0, totPnl=0, hasCost=false;
+  const tbody=document.getElementById("rows"); tbody.innerHTML="";
+  for (const p of state.positions) {
+    const value = p.holdings * (p.mark||0);
+    totVal += value;
+    let cost=null, pnl=null, pct=null;
+    if (p.avg!=null && Number.isFinite(p.avg)) {
+      cost = p.holdings * p.avg;
+      pnl = value - cost;
+      pct = cost ? (pnl/cost)*100 : 0;
+      totCost += cost; totPnl += pnl; hasCost = true;
+    }
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td><div class="name">${p.symbol}</div><div class="venue">${p.mint.slice(0,4)}…${p.mint.slice(-4)}</div></td>
+      <td class="r">${qty(p.holdings)}</td>
+      <td class="r"><input data-id="${p.id}" data-f="avg" value="${p.avg!=null?p.avg:''}" placeholder="—" /></td>
+      <td class="r"><input data-id="${p.id}" data-f="mark" value="${p.mark}" /></td>
+      <td class="r">${money(value)}</td>
+      <td class="r ${cls(pnl)}">${pnl!=null ? money(pnl)+' <span style="opacity:.65">('+pct.toFixed(1)+'%)</span>' : '<span style="color:#888">—</span>'}</td>`;
+    tbody.appendChild(tr);
+  }
+  tbody.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("change", () => {
+      const p = state.positions.find(x => x.id === inp.dataset.id);
+      const raw = String(inp.value).trim().replace(/,/g,"");
+      const n = raw==="" ? null : Number(raw);
+      if (inp.dataset.f==="avg") p.avg = (n==null || !Number.isFinite(n)) ? null : n;
+      else if (Number.isFinite(n)) p.mark = n;
+      save(); render();
+    });
+  });
+  document.getElementById("value").textContent = money(totVal);
+  document.getElementById("cost").textContent = hasCost ? money(totCost) : "—";
+  const pnlEl=document.getElementById("pnl");
+  if (hasCost) {
+    pnlEl.textContent = money(totPnl);
+    pnlEl.className = "val "+cls(totPnl);
+    document.getElementById("pnlPct").textContent = ((totPnl/totCost)*100).toFixed(1)+"% vs cost";
+  } else {
+    pnlEl.textContent = "—";
+    pnlEl.className = "val";
+    document.getElementById("pnlPct").textContent = "set avg buys for PnL";
+  }
+  document.getElementById("asof").textContent = "USD · "+new Date().toLocaleString();
+}
+
+function reset() { state=structuredClone(SEED); save(); render(); }
+
+async function refresh() {
+  try {
+    const mints = state.positions.map(p => p.mint).filter(m => !m.startsWith("So1111"));
+    const [solT, ...toks] = await Promise.all([
+      fetch("https://api.kraken.com/0/public/Ticker?pair=SOLUSD").then(r=>r.json()),
+      ...mints.map(m => fetch("https://lite-api.jup.ag/tokens/v2/search?query="+m).then(r=>r.json()).catch(()=>[])),
+    ]);
+    const sol = Number(solT?.result?.SOLUSD?.c?.[0]);
+    const byMint = {};
+    toks.forEach((arr,i) => {
+      const mint = mints[i];
+      const hit = (arr||[]).find(t => t.id===mint);
+      if (hit?.usdPrice) byMint[mint]=hit.usdPrice;
+    });
+    const missing = mints.filter(m => !byMint[m]);
+    if (missing.length) {
+      const ds = await fetch("https://api.dexscreener.com/latest/dex/tokens/"+missing.join(",")).then(r=>r.json());
+      for (const p of (ds.pairs||[])) {
+        const addr = p.baseToken?.address;
+        if (addr && p.priceUsd && !byMint[addr]) byMint[addr]=Number(p.priceUsd);
+      }
+    }
+    for (const p of state.positions) {
+      if (p.id==="sol" && sol) p.mark = sol;
+      else if (byMint[p.mint]) p.mark = byMint[p.mint];
+    }
+    save();
+  } catch(e) { console.warn(e); }
+  render();
+}
+refresh();
+</script>
+</body>
+</html>
