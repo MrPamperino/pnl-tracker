@@ -108,7 +108,7 @@
   </div>
   <p class="note">
     Mostra tokens com preço utilizável. ~20 contas sem mark fiável (spam/illiquid) ficam de fora do total.
-    Preenche <b>Avg</b> para PnL. Marks: Jupiter / DexScreener / Kraken (SOL).
+    Avg ZCAT <code>$0.02436</code> e TACZ <code>$0.00245</code> reconstruídos on-chain (USDC/ZEC). Edita se quiseres ajustar. Marks: Jupiter / DexScreener / Kraken (SOL).
   </p>
 </div>
 <script>
@@ -121,7 +121,7 @@ const SEED = {
     "mint": "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR",
     "holdings": 4480997.9977362,
     "mark": 0.12181045822204091,
-    "avg": null
+    "avg": 0.02436345
   },
   {
     "id": "3nqhijnu",
@@ -129,7 +129,7 @@ const SEED = {
     "mint": "3nqHijNUExsnjNBb15WJsJ2xisyMVGN6FK4aUgZk1Rwj",
     "holdings": 3567371.083215,
     "mark": 0.0031740490639757817,
-    "avg": null
+    "avg": 0.00244758
   },
   {
     "id": "a7bdiyds",
@@ -157,7 +157,7 @@ const SEED = {
   }
 ],
 };
-const KEY = "wallet-5mef-v1";
+const KEY = "wallet-5mef-v2";
 let state = load();
 function load() {
   try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch {}
