@@ -116,6 +116,7 @@
     <button onclick="refresh()">Refresh marks</button>
     <button onclick="reset()">Reset</button>
     <span id="asof"></span>
+    <span>JUP sold 18 Sep 2026 · 47,317.26 @ ~$0.2564 → $12,133.87 USDC · realized +$2,133.86 vs $10k cost</span>
   </div>
 </div>
 
@@ -163,18 +164,14 @@ const SEED = {
       avg: 111.11111111111111,
       mark: 133.58,
     },
-    {
-      id: "jup",
-      symbol: "JUP",
-      venue: "locked · Ay1v…nMFi",
-      holdings: 47317.256018,
-      avg: 0.21133949517689463,
-      mark: 0.24265718316774845,
-    },
+    // JUP closed 2026-09-18: unlocked vote escrow 2DPkr…kVZ5 (tx 5PCzdFoH…mekB),
+    // then sold 47,317.256018 JUP via Jupiter RouteV2 (tx D7yJvKz5…dgZMk)
+    // for 12,133.867468 USDC net (+12.146013 USDC aggregator fee).
+    // Cost $10,000.005 @ ~$0.2113 → realized +$2,133.86 (+21.3%).
   ],
 };
 
-const KEY = "pnl-usd-v6";
+const KEY = "pnl-usd-v7";
 let state = load();
 
 function load() {
@@ -263,10 +260,8 @@ async function refresh() {
   try {
     const AI = "0x2E8c31162b855A2ffa90F6F8634643Ad6F111e18";
     const SFI = "0xb753428af26E81097e7fD17f40c88aaA3E04902c";
-    const JUP = "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN";
-    const [zecSpot, jupTok, kr, ds, dsSfi] = await Promise.all([
+    const [zecSpot, kr, ds, dsSfi] = await Promise.all([
       fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
-      fetch("https://lite-api.jup.ag/tokens/v2/search?query=" + JUP).then(r => r.json()),
       fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
       fetch("https://api.dexscreener.com/latest/dex/tokens/" + AI).then(r => r.json()),
       fetch("https://api.dexscreener.com/latest/dex/tokens/" + SFI).then(r => r.json()),
@@ -277,7 +272,6 @@ async function refresh() {
       zcat = (zj || []).find(t => t.id === "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR")?.usdPrice;
     } catch {}
     const zec = Number(zecSpot?.data?.amount);
-    const jup = (jupTok || []).find(t => t.id === JUP)?.usdPrice;
     const drv = Number(kr?.result?.DRVUSD?.c?.[0]);
     const ai = Number((ds?.pairs || [])[0]?.priceUsd);
     const sfi = Number((dsSfi?.pairs || [])[0]?.priceUsd);
@@ -287,7 +281,6 @@ async function refresh() {
       if (p.id === "drv" && drv) p.mark = drv;
       if (p.id === "ai" && ai) p.mark = ai;
       if (p.id === "sfi" && sfi) p.mark = sfi;
-      if (p.id === "jup" && jup) p.mark = jup;
     }
     save();
   } catch (e) {
