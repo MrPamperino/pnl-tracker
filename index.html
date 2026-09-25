@@ -116,6 +116,7 @@
     <button onclick="refresh()">Refresh marks</button>
     <button onclick="reset()">Reset</button>
     <span id="asof"></span>
+    <span>AI sold 25 Sep 2026 · 250,663.22 @ ~$0.2419 → $60,622.01 USDG · realized +$2,094.16 (+3.6%) vs $58,527.85 cost</span>
     <span>JUP sold 18 Sep 2026 · 47,317.26 @ ~$0.2564 → $12,133.87 USDC · realized +$2,133.86 vs $10k cost</span>
   </div>
 </div>
@@ -130,7 +131,7 @@ const SEED = {
       venue: "spot",
       holdings: 143517.106,
       avg: 0.1336 * 1.1614,
-      mark: 0.14649,
+      mark: 0.43426,
     },
     {
       id: "zec",
@@ -138,7 +139,7 @@ const SEED = {
       venue: "exchange",
       holdings: 85.1323656,
       avg: 1171.44276512,
-      mark: 1164.175,
+      mark: 1557.86,
     },
     {
       id: "zcat",
@@ -146,15 +147,7 @@ const SEED = {
       venue: "Solana · 5cN5…ZkrG",
       holdings: 1240843.570063622,
       avg: 0.04420703207790289,
-      mark: 0.09226858435437232,
-    },
-    {
-      id: "ai",
-      symbol: "AI",
-      venue: "Robinhood · 0x7E3d…c869",
-      holdings: 250663.2249268438,
-      avg: 0.2334919495813812,
-      mark: 0.272,
+      mark: 0.05903274058068413,
     },
     {
       id: "sfi",
@@ -162,8 +155,21 @@ const SEED = {
       venue: "manual · 90 @ 10k USDC",
       holdings: 90,
       avg: 111.11111111111111,
-      mark: 133.58,
+      mark: 115.78,
     },
+    {
+      id: "aero",
+      symbol: "AERO",
+      venue: "Base · 0x9F0d…D2B0",
+      holdings: 34708.798064140174,
+      avg: 0.7828378460927585, // 27,171.360717 USDC / 34,708.798064 AERO
+      mark: 0.849485,
+    },
+    // AI closed 2026-09-25 20:04 PT: sold all 250,663.224927 AI from Robinhood EOA 0x7E3d…c869
+    // (tx 0x7cc5fa5a…b188a1) for 60,622.008648 USDG @ ~$0.24185.
+    // Cost $58,527.85 @ ~$0.23349 → realized +$2,094.16 (+3.58%).
+    // AERO bought 2026-09-25 13:45 PT on Base (tx 0x18c95ac8…db415f):
+    // 34,708.798064 AERO for 27,171.360717 USDC @ ~$0.78283.
     // JUP closed 2026-09-18: unlocked vote escrow 2DPkr…kVZ5 (tx 5PCzdFoH…mekB),
     // then sold 47,317.256018 JUP via Jupiter RouteV2 (tx D7yJvKz5…dgZMk)
     // for 12,133.867468 USDC net (+12.146013 USDC aggregator fee).
@@ -171,7 +177,7 @@ const SEED = {
   ],
 };
 
-const KEY = "pnl-usd-v7";
+const KEY = "pnl-usd-v8";
 let state = load();
 
 function load() {
@@ -258,12 +264,12 @@ function reset() {
 
 async function refresh() {
   try {
-    const AI = "0x2E8c31162b855A2ffa90F6F8634643Ad6F111e18";
     const SFI = "0xb753428af26E81097e7fD17f40c88aaA3E04902c";
-    const [zecSpot, kr, ds, dsSfi] = await Promise.all([
+    const AERO = "0x940181a94A35A4569E4529A3CDfB74e38FD98631";
+    const [zecSpot, kr, aeroSpot, dsSfi] = await Promise.all([
       fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
       fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
-      fetch("https://api.dexscreener.com/latest/dex/tokens/" + AI).then(r => r.json()),
+      fetch("https://api.coinbase.com/v2/prices/AERO-USD/spot").then(r => r.json()).catch(() => null),
       fetch("https://api.dexscreener.com/latest/dex/tokens/" + SFI).then(r => r.json()),
     ]);
     let zcat = null;
@@ -273,13 +279,19 @@ async function refresh() {
     } catch {}
     const zec = Number(zecSpot?.data?.amount);
     const drv = Number(kr?.result?.DRVUSD?.c?.[0]);
-    const ai = Number((ds?.pairs || [])[0]?.priceUsd);
+    let aero = Number(aeroSpot?.data?.amount);
+    if (!aero) {
+      try {
+        const da = await fetch("https://api.dexscreener.com/latest/dex/tokens/" + AERO).then(r => r.json());
+        aero = Number((da?.pairs || []).find(x => x.chainId === "base" && x.baseToken?.address === AERO)?.priceUsd);
+      } catch {}
+    }
     const sfi = Number((dsSfi?.pairs || [])[0]?.priceUsd);
     for (const p of state.positions) {
       if (p.id === "zec" && zec) p.mark = zec;
       if (p.id === "zcat" && zcat) p.mark = zcat;
       if (p.id === "drv" && drv) p.mark = drv;
-      if (p.id === "ai" && ai) p.mark = ai;
+      if (p.id === "aero" && aero) p.mark = aero;
       if (p.id === "sfi" && sfi) p.mark = sfi;
     }
     save();
