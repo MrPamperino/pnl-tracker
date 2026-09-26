@@ -78,6 +78,18 @@
     cursor: pointer;
   }
   button:hover { border-color: #555; }
+  tr.pos { cursor: pointer; }
+  tr.pos:hover td { background: #0f0f0f; }
+  .chev { display: inline-block; color: var(--muted); font-size: 10px; width: 12px; transition: transform .15s; }
+  tr.pos.open .chev { transform: rotate(90deg); }
+  tr.pos.open td { border-bottom-color: transparent; }
+  tr.detail td { padding: 0 8px 14px 20px; font-size: 12px; color: var(--muted); }
+  .lb { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px 16px;
+        background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .lb .k { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+  .lb .v { color: var(--fg); font-variant-numeric: tabular-nums; word-break: break-all; }
+  .lb .full { grid-column: 1 / -1; }
+  .lb a { color: #9ecbff; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -140,6 +152,13 @@ const SEED = {
       holdings: 166737.26215751874, // 143,517.106 spot + 23,220.156158 Base (bought 2026-09-26)
       avg: 0.19345138358749123, // $32,255.55 cost = $22,268.55 (143,517.106 @ €0.1336×1.1614) + $9,987.00 USDC
       mark: 0.42941,
+      lastBuy: {
+        time: "2026-09-26 09:45:57 PT", qty: 23220.15615751874, price: 0.43010062177235553,
+        paid: 9987.003601, paidToken: "USDC", chain: "Base",
+        wallet: "0x7e3d5bcc6158bf63c51a5d90d0ef9a29f27dc869",
+        tx: "0x237c178c61fd013616af0b1e353d11ce8abad8b62e92252e22618436d49419a1",
+        explorer: "https://basescan.org/tx/",
+      },
     },
     {
       id: "zec",
@@ -148,6 +167,12 @@ const SEED = {
       holdings: 85.1323656,
       avg: 1171.44276512,
       mark: 1557.86,
+      lastBuy: {
+        time: "2026-09-10 15:27:38 (exchange export time, tz not stated)", qty: 19.595, price: 1178.1364031640726,
+        paid: 23085.58282, paidToken: "USDT", chain: "CEX spot (UID 5106670119)",
+        wallet: null, orderId: "1481950522184904704",
+        note: "fee 0.0137165 ZEC → net 19.5812835 ZEC",
+      },
     },
     {
       id: "zcat",
@@ -156,6 +181,13 @@ const SEED = {
       holdings: 1240843.570063622,
       avg: 0.04420703207790289,
       mark: 0.05903274058068413,
+      lastBuy: {
+        time: "2026-09-09 22:31:36 PT", qty: 60011.32087786705, price: 0.08331761285801101,
+        paid: 5000, paidToken: "USDC", chain: "Solana",
+        wallet: "5cN5vAuXpRfE56QJTKFxw7m3UkuVVcZMjTwGb2DQZkrG",
+        tx: "N9NqqPSa541ybvPhT7ZEGMYGbNEXE2ernSze9RHD4dJW9yPVLk5s4jM2yXdDwkCV9tq1Zi6NemSxyuUAKxku8J3",
+        explorer: "https://solscan.io/tx/",
+      },
     },
     {
       id: "sfi",
@@ -164,6 +196,8 @@ const SEED = {
       holdings: 90,
       avg: 111.11111111111111,
       mark: 115.78,
+      lastBuy: null, // no dated tx on file; only the manual entry 90 SFI for 10,000 USDC
+      lastBuyNote: "Recorded manually: 90 SFI for 10,000 USDC (≈ $111.11) · no date / tx on file",
     },
     {
       id: "aero",
@@ -172,6 +206,13 @@ const SEED = {
       holdings: 34708.798064140174,
       avg: 0.7828378460927585, // 27,171.360717 USDC / 34,708.798064 AERO
       mark: 0.849485,
+      lastBuy: {
+        time: "2026-09-25 13:45:11 PT", qty: 34708.798064140174, price: 0.7828378460927585,
+        paid: 27171.360717, paidToken: "USDC", chain: "Base",
+        wallet: "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",
+        tx: "0x18c95ac85ec18eb5fdf7ea4d94f4045ab616a237b558ed2ec7a494c056db415f",
+        explorer: "https://basescan.org/tx/",
+      },
     },
     // DRV added 2026-09-26 09:45 PT on Base (tx 0x237c178c…d49419a1) from 0x7E3d…c869:
     // 23,220.156158 DRV for 9,987.003601 USDC @ ~$0.43010 via 0x Settler.
@@ -199,7 +240,7 @@ const REALIZED = [
   },
 ];
 
-const KEY = "pnl-usd-v9";
+const KEY = "pnl-usd-v10";
 let state = load();
 
 function load() {
@@ -241,10 +282,13 @@ function render() {
     const pct = cost ? (pnl / cost) * 100 : 0;
     totVal += value; totCost += cost; totPnl += pnl;
 
+    const isOpen = openRows.has(p.id);
     const tr = document.createElement("tr");
+    tr.className = "pos" + (isOpen ? " open" : "");
+    tr.dataset.id = p.id;
     tr.innerHTML = `
       <td>
-        <div class="name">${p.symbol}</div>
+        <div class="name"><span class="chev">▶</span>${p.symbol}</div>
         <div class="venue">${p.venue}</div>
       </td>
       <td class="r">${qty(p.holdings)}</td>
@@ -254,6 +298,17 @@ function render() {
       <td class="r ${cls(pnl)}">${money(pnl)} <span style="opacity:.65">(${pct.toFixed(1)}%)</span></td>
     `;
     tbody.appendChild(tr);
+    const dr = document.createElement("tr");
+    dr.className = "detail";
+    dr.hidden = !isOpen;
+    dr.innerHTML = `<td colspan="6">${lastBuyHtml(p)}</td>`;
+    tbody.appendChild(dr);
+    tr.addEventListener("click", e => {
+      if (e.target.closest("input")) return;
+      if (openRows.has(p.id)) openRows.delete(p.id); else openRows.add(p.id);
+      tr.classList.toggle("open");
+      dr.hidden = !dr.hidden;
+    });
   }
 
   tbody.querySelectorAll("input").forEach(inp => {
@@ -293,6 +348,37 @@ function render() {
 
   document.getElementById("asof").textContent =
     "USD · " + new Date().toLocaleString();
+}
+
+const openRows = new Set();
+function short(a) { return a && a.length > 12 ? a.slice(0, 6) + "…" + a.slice(-4) : a; }
+function lastBuyHtml(p) {
+  const seed = SEED.positions.find(x => x.id === p.id) || {};
+  const lb = p.lastBuy !== undefined ? p.lastBuy : seed.lastBuy;
+  const cell = (k, v, full) => `<div${full ? ' class="full"' : ""}><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  if (!lb) {
+    const note = p.lastBuyNote || seed.lastBuyNote || "";
+    return `<div class="lb">${cell("Last buy", "Last buy not recorded", true)}` +
+      (note ? cell("On file", note, true) : "") +
+      cell("Avg buy", money(p.avg, 4)) + cell("Current", money(p.mark, 4)) + `</div>`;
+  }
+  const chg = lb.price ? ((p.mark - lb.price) / lb.price) * 100 : 0;
+  const ref = lb.tx
+    ? `<a href="${lb.explorer}${lb.tx}" target="_blank" rel="noopener">${short(lb.tx)} ↗</a>`
+    : lb.orderId ? `order ${lb.orderId}` : "—";
+  return `<div class="lb">` +
+    cell("Last buy", lb.time) +
+    cell("Quantity", qty(lb.qty) + " " + p.symbol) +
+    cell("Price", money(lb.price, lb.price < 1 ? 5 : 2)) +
+    cell("Paid", Number(lb.paid).toLocaleString("en-US", { maximumFractionDigits: 2 }) + " " + lb.paidToken) +
+    cell("Chain", lb.chain) +
+    cell("Wallet", lb.wallet ? short(lb.wallet) : "—") +
+    cell(lb.tx ? "Tx" : "Ref", ref) +
+    (lb.note ? cell("Note", lb.note) : "") +
+    cell("Vs last buy",
+      `avg ${money(p.avg, 4)} vs last ${money(lb.price, 4)} · now ${money(p.mark, 4)} ` +
+      `<span class="${cls(chg)}">(${chg >= 0 ? "+" : ""}${chg.toFixed(1)}% since last buy)</span>`, true) +
+    `</div>`;
 }
 
 function reset() {
