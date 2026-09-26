@@ -28,10 +28,14 @@
     letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 16px;
   }
   .hero {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
     margin-bottom: 32px;
   }
-  @media (max-width: 640px) { .hero { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .hero { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .hero { grid-template-columns: 1fr; } }
+  .realized { margin: -16px 0 28px; font-size: 12px; color: var(--muted); }
+  .realized div { padding: 3px 0; }
+  .realized b { color: var(--fg); font-weight: 560; }
   .card {
     background: var(--card); border: 1px solid var(--line);
     border-radius: 12px; padding: 16px 18px;
@@ -96,7 +100,13 @@
       <div class="val" id="cost">—</div>
       <div class="hint">cost basis</div>
     </div>
+    <div class="card">
+      <div class="lbl">Realized PnL</div>
+      <div class="val" id="realized">—</div>
+      <div class="hint" id="combined"></div>
+    </div>
   </div>
+  <div class="realized" id="realizedRows"></div>
 
   <table>
     <thead>
@@ -116,8 +126,6 @@
     <button onclick="refresh()">Refresh marks</button>
     <button onclick="reset()">Reset</button>
     <span id="asof"></span>
-    <span>AI sold 25 Sep 2026 · 250,663.22 @ ~$0.2419 → $60,622.01 USDG · realized +$2,094.16 (+3.6%) vs $58,527.85 cost</span>
-    <span>JUP sold 18 Sep 2026 · 47,317.26 @ ~$0.2564 → $12,133.87 USDC · realized +$2,133.86 vs $10k cost</span>
   </div>
 </div>
 
@@ -128,10 +136,10 @@ const SEED = {
     {
       id: "drv",
       symbol: "DRV",
-      venue: "spot",
-      holdings: 143517.106,
-      avg: 0.1336 * 1.1614,
-      mark: 0.43426,
+      venue: "spot + Base · 0x7E3d…c869",
+      holdings: 166737.26215751874, // 143,517.106 spot + 23,220.156158 Base (bought 2026-09-26)
+      avg: 0.19345138358749123, // $32,255.55 cost = $22,268.55 (143,517.106 @ €0.1336×1.1614) + $9,987.00 USDC
+      mark: 0.42941,
     },
     {
       id: "zec",
@@ -165,6 +173,8 @@ const SEED = {
       avg: 0.7828378460927585, // 27,171.360717 USDC / 34,708.798064 AERO
       mark: 0.849485,
     },
+    // DRV added 2026-09-26 09:45 PT on Base (tx 0x237c178c…d49419a1) from 0x7E3d…c869:
+    // 23,220.156158 DRV for 9,987.003601 USDC @ ~$0.43010 via 0x Settler.
     // AI closed 2026-09-25 20:04 PT: sold all 250,663.224927 AI from Robinhood EOA 0x7E3d…c869
     // (tx 0x7cc5fa5a…b188a1) for 60,622.008648 USDG @ ~$0.24185.
     // Cost $58,527.85 @ ~$0.23349 → realized +$2,094.16 (+3.58%).
@@ -177,7 +187,19 @@ const SEED = {
   ],
 };
 
-const KEY = "pnl-usd-v8";
+// Closed positions (realized PnL). Append new closes here.
+const REALIZED = [
+  {
+    symbol: "JUP", venue: "Solana", closed: "2026-09-18",
+    qty: 47317.256018, cost: 10000.005, proceeds: 12133.867468, quote: "USDC",
+  },
+  {
+    symbol: "AI", venue: "Robinhood Chain · Artificial Inu", closed: "2026-09-25",
+    qty: 250663.224927, cost: 58527.85, proceeds: 60622.008648, quote: "USDG",
+  },
+];
+
+const KEY = "pnl-usd-v9";
 let state = load();
 
 function load() {
@@ -252,6 +274,23 @@ function render() {
     (totCost ? ((totPnl / totCost) * 100).toFixed(1) : "0") + "% vs cost";
   document.getElementById("value").textContent = money(totVal);
   document.getElementById("cost").textContent = money(totCost);
+  let rTot = 0;
+  const rRows = REALIZED.map(r => {
+    const pnl = r.proceeds - r.cost;
+    rTot += pnl;
+    const sign = pnl >= 0 ? "+" : "";
+    return `<div><b>${r.symbol}</b> · closed ${r.closed} · ${qty(r.qty)} sold for ${money(r.proceeds)} ${r.quote} · ` +
+      `cost ${money(r.cost)} (avg ${money(r.cost / r.qty, 4)} → sell ${money(r.proceeds / r.qty, 4)}) · ` +
+      `<span class="${cls(pnl)}">${sign}${money(pnl)} (${sign}${((pnl / r.cost) * 100).toFixed(1)}%)</span></div>`;
+  });
+  document.getElementById("realizedRows").innerHTML = rRows.join("");
+  const rEl = document.getElementById("realized");
+  rEl.textContent = (rTot >= 0 ? "+" : "") + money(rTot);
+  rEl.className = "val " + cls(rTot);
+  const comb = totPnl + rTot;
+  document.getElementById("combined").textContent =
+    "total incl. unrealized: " + (comb >= 0 ? "+" : "") + money(comb);
+
   document.getElementById("asof").textContent =
     "USD · " + new Date().toLocaleString();
 }
