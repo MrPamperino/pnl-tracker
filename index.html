@@ -33,7 +33,13 @@
   }
   @media (max-width: 760px) { .hero { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 480px) { .hero { grid-template-columns: 1fr; } }
-  .realized { margin: -16px 0 28px; font-size: 12px; color: var(--muted); }
+  .closed-wrap { margin: -16px 0 28px; }
+  .closed-toggle { background: none; border: none; padding: 2px 0; color: var(--muted); font-size: 12px; cursor: pointer; }
+  .closed-toggle:hover { color: var(--fg); }
+  .closed-toggle .chev { display: inline-block; font-size: 10px; transition: transform .15s; }
+  body.show-closed .closed-toggle .chev { transform: rotate(90deg); }
+  body:not(.show-closed) #realizedRows { display: none; }
+  .realized { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
   .realized div { padding: 3px 0; }
   .realized b { color: var(--fg); font-weight: 560; }
   .card {
@@ -132,7 +138,10 @@
       <div class="hint upnl-only" id="combined"></div>
     </div>
   </div>
-  <div class="realized" id="realizedRows"></div>
+  <div class="closed-wrap">
+    <button class="closed-toggle" onclick="toggleClosed()" aria-controls="realizedRows">Closed positions <span class="chev">▶</span> (<span id="closedCount">0</span>)</button>
+    <div class="realized" id="realizedRows"></div>
+  </div>
 
   <table>
     <thead>
@@ -256,6 +265,16 @@ const REALIZED = [
 
 const KEY = "pnl-usd-v10";
 const UPNL_KEY = "pnl-show-upnl";
+const CLOSED_KEY = "pnl-show-closed";
+function applyClosed() {
+  const on = localStorage.getItem(CLOSED_KEY) === "1";
+  document.body.classList.toggle("show-closed", on);
+  document.querySelector(".closed-toggle")?.setAttribute("aria-expanded", on ? "true" : "false");
+}
+function toggleClosed() {
+  localStorage.setItem(CLOSED_KEY, document.body.classList.contains("show-closed") ? "0" : "1");
+  applyClosed();
+}
 function applyUpnl() {
   document.body.classList.toggle("show-upnl", localStorage.getItem(UPNL_KEY) === "1");
   document.querySelectorAll("tr.detail td").forEach(td => td.colSpan = document.body.classList.contains("show-upnl") ? 6 : 5);
@@ -365,6 +384,8 @@ function render() {
       `<span class="${cls(pnl)}">${sign}${money(pnl)} (${sign}${((pnl / r.cost) * 100).toFixed(1)}%)</span></div>`;
   });
   document.getElementById("realizedRows").innerHTML = rRows.join("");
+  document.getElementById("closedCount").textContent = REALIZED.length;
+  applyClosed();
   const rEl = document.getElementById("realized");
   rEl.textContent = (rTot >= 0 ? "+" : "") + money(rTot);
   rEl.className = "val " + cls(rTot);
