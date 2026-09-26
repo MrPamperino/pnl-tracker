@@ -106,37 +106,47 @@
     <button onclick="reset()">Reset</button>
     <span id="asof"></span>
   </div>
+  <h1 style="margin-top:28px">Today · 26 Sep 2026 (PT)</h1>
+  <div id="activity" class="note" style="margin-top:6px"></div>
   <p class="note">
     Mostra tokens com preço utilizável. ~20 contas sem mark fiável (spam/illiquid) ficam de fora do total.
-    Avg ZCAT <code>$0.02436</code> e TACZ <code>$0.00245</code> reconstruídos on-chain (USDC/ZEC). Edita se quiseres ajustar. Marks: Jupiter / DexScreener / Kraken (SOL).
+    Avg ZCAT <code>$0.02436</code> reconstruído on-chain (USDC/ZEC). GROK avg = USDC gasto on-chain (3,345.68 / 1,057,365.58). TACZ fechado (ATA fechada). ZEC sem custo conhecido nesta wallet → vendas de hoje = só proceeds (4,675.85 USDC), realized desconhecido. Marks: Jupiter / DexScreener / Kraken (SOL).
   </p>
 </div>
 <script>
 const OWNER = "5MefLSkN3mhKVe3gtXHnz2gjAkrkn6P5r9ufL4wi849r";
 const SEED = {
+  asOf: "2026-09-26 ~12:30 PT (on-chain balances)",
   positions: [
   {
     "id": "hcrlc9vd",
     "symbol": "ZCAT",
     "mint": "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR",
-    "holdings": 4480997.9977362,
-    "mark": 0.12181045822204091,
+    "holdings": 4487839.441935892,
+    "mark": 0.05991825103684602,
     "avg": 0.02436345
   },
   {
-    "id": "3nqhijnu",
-    "symbol": "TACZ",
-    "mint": "3nqHijNUExsnjNBb15WJsJ2xisyMVGN6FK4aUgZk1Rwj",
-    "holdings": 3567371.083215,
-    "mark": 0.0031740490639757817,
-    "avg": 0.00244758
+    "id": "6hu4cmrb",
+    "symbol": "GROK",
+    "mint": "6HU4CmRb15C2nQDx8Ld2f2W2wTdmog6aZiiXdrT5Pzi8",
+    "holdings": 1057365.583891,
+    "mark": 0.003148,
+    "avg": 0.0031641616503993325,
+    "lastBuy": {
+      "time": "2026-09-26 11:04:12 PT",
+      "qty": 524358.413529,
+      "paid": 1672.837815,
+      "paidToken": "USDC",
+      "tx": "2miuEzeukZVSKTvLJxVYbnD58iR57dAAieB64uZNC4JtvoUbAiVYMT1DfCw7mWhMGbFGUwKGgGxe3euaMdrmbBJF"
+    }
   },
   {
     "id": "a7bdiyds",
     "symbol": "ZEC",
     "mint": "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
-    "holdings": 1.05292797,
-    "mark": 1144.1144572836756,
+    "holdings": 4,
+    "mark": 1537.27,
     "avg": null
   },
   {
@@ -148,16 +158,56 @@ const SEED = {
     "avg": null
   },
   {
+    "id": "usdc",
+    "symbol": "USDC",
+    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "holdings": 0.0011,
+    "mark": 1,
+    "avg": null
+  },
+  {
     "id": "sol",
     "symbol": "SOL",
     "mint": "So11111111111111111111111111111111111111112",
-    "holdings": 0.45033733,
-    "mark": 101.57,
+    "holdings": 0.457980783,
+    "mark": 120.59,
     "avg": null
   }
 ],
 };
-const KEY = "wallet-5mef-v2";
+const ACTIVITY = [
+  {
+    "time": "11:02:56",
+    "sig": "4c4WDh5ZsQ7mLZBHUk4HqGEn15e8Pa5u1cN9MoF6iKvZu3EYdKDsD2UsoTiqVUXgzwUTaCqniz5tWhvWbYyeGEHm",
+    "text": "Sold 2.2 ZEC → 3,345.675631 USDC (Jupiter, ~$1,520.76/ZEC)"
+  },
+  {
+    "time": "11:03:49",
+    "sig": "Ve1Fctdce1azerryRNgtgoYtGGx4nD28qFGauizfhsNq9LnMf1x9kWSoUC5yhHvHAkxDrqindR29E8Jqv6vZiej",
+    "text": "Bought 533,007.170362 GROK for 1,672.837816 USDC (~$0.0031385)"
+  },
+  {
+    "time": "11:04:12",
+    "sig": "2miuEzeukZVSKTvLJxVYbnD58iR57dAAieB64uZNC4JtvoUbAiVYMT1DfCw7mWhMGbFGUwKGgGxe3euaMdrmbBJF",
+    "text": "Bought 524,358.413529 GROK for 1,672.837815 USDC (~$0.0031903)"
+  },
+  {
+    "time": "11:04:30",
+    "sig": "4EviWVCjuJbFsHB5E6KGx8rkSoXadsDyQg1EDy6UodxXUtiBoNJKaa9fV2oZpThMeQrYJfRq3tEM6QaTdt3hcKRL",
+    "text": "Sold 0.87335569 ZEC → 1,330.172796 USDC net (RFQ fill 1,332.838472, fee 2.665676; ~$1,523.06/ZEC)"
+  },
+  {
+    "time": "11:04:48",
+    "sig": "2c321ALwTyYQNYwMiVRacC16AEVEXQadKhSXfA364eS3pvi8kQmfGfucmvEcJpB643bijMHTaRC7yjyxXZKkWWRD",
+    "text": "Sent 1,330.172796 USDC → 9QJvy7fh…VAQq"
+  },
+  {
+    "time": "11:04:59 / 11:10:01",
+    "sig": "cAeBuQNbTYb3mpDKmqpuaUzgqN2UnpNeWJ78jpqCSoiVegnQ467EoYdUXPEAZz33Eg1vzF3Q8k9sJ2QUkkqX8FP",
+    "text": "⚠ Dust 0.0001 + 0.001 USDC from look-alike 9QJvsrPA…VAQq (address poisoning — never copy it)"
+  }
+];
+const KEY = "wallet-5mef-v3";
 let state = load();
 function load() {
   try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch {}
@@ -189,7 +239,7 @@ function render() {
     }
     const tr=document.createElement("tr");
     tr.innerHTML = `
-      <td><div class="name">${p.symbol}</div><div class="venue">${p.mint.slice(0,4)}…${p.mint.slice(-4)}</div></td>
+      <td><div class="name">${p.symbol}</div><div class="venue">${p.mint.slice(0,4)}…${p.mint.slice(-4)}${p.lastBuy ? ` · last buy ${p.lastBuy.time.slice(5,16)} · ${qty(p.lastBuy.qty)} @ ${money(p.lastBuy.paid/p.lastBuy.qty,6)} · <a href="https://solscan.io/tx/${p.lastBuy.tx}" target="_blank" rel="noopener">tx</a>` : ""}</div></td>
       <td class="r">${qty(p.holdings)}</td>
       <td class="r"><input data-id="${p.id}" data-f="avg" value="${p.avg!=null?p.avg:''}" placeholder="—" /></td>
       <td class="r"><input data-id="${p.id}" data-f="mark" value="${p.mark}" /></td>
@@ -219,6 +269,8 @@ function render() {
     pnlEl.className = "val";
     document.getElementById("pnlPct").textContent = "set avg buys for PnL";
   }
+  document.getElementById("activity").innerHTML = ACTIVITY.map(a =>
+    `<div>${a.time} · ${a.text} · <a href="https://solscan.io/tx/${a.sig}" target="_blank" rel="noopener">${a.sig.slice(0,6)}…${a.sig.slice(-4)}</a></div>`).join("");
   document.getElementById("asof").textContent = "USD · "+new Date().toLocaleString();
 }
 
