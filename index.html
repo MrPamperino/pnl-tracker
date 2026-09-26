@@ -78,6 +78,14 @@
     cursor: pointer;
   }
   button:hover { border-color: #555; }
+  .upnl-card { cursor: pointer; user-select: none; }
+  .upnl-card:hover { border-color: #333; }
+  .upnl-card .chev { transition: transform .15s; margin-left: 2px; }
+  body.show-upnl .upnl-card .chev { transform: rotate(90deg); }
+  body:not(.show-upnl) .upnl-body,
+  body:not(.show-upnl) .upnl-only,
+  body:not(.show-upnl) .upnl-col { display: none; }
+  body.show-upnl .upnl-hidden { display: none; }
   tr.pos { cursor: pointer; }
   tr.pos:hover td { background: #0f0f0f; }
   .chev { display: inline-block; color: var(--muted); font-size: 10px; width: 12px; transition: transform .15s; }
@@ -97,10 +105,16 @@
   <h1>Portfolio</h1>
   <div style="margin:-8px 0 18px;font-size:13px"><a href="./wallet-5mef.html" style="color:#9ecbff;text-decoration:none">Wallet 5Mef…849r →</a></div>
   <div class="hero">
-    <div class="card">
-      <div class="lbl">Total PnL</div>
-      <div class="val" id="pnl">—</div>
-      <div class="hint" id="pnlPct"></div>
+    <div class="card upnl-card" onclick="toggleUpnl()" role="button" tabindex="0" title="Show / hide unrealized PnL">
+      <div class="lbl">Unrealized PnL <span class="chev">▶</span></div>
+      <div class="upnl-body">
+        <div class="val" id="pnl">—</div>
+        <div class="hint" id="pnlPct"></div>
+      </div>
+      <div class="upnl-hidden">
+        <div class="val" style="color:var(--muted)">••••</div>
+        <div class="hint">tap to show</div>
+      </div>
     </div>
     <div class="card">
       <div class="lbl">Portfolio</div>
@@ -115,7 +129,7 @@
     <div class="card">
       <div class="lbl">Realized PnL</div>
       <div class="val" id="realized">—</div>
-      <div class="hint" id="combined"></div>
+      <div class="hint upnl-only" id="combined"></div>
     </div>
   </div>
   <div class="realized" id="realizedRows"></div>
@@ -128,7 +142,7 @@
         <th class="r">Avg</th>
         <th class="r">Mark</th>
         <th class="r">Value</th>
-        <th class="r">PnL</th>
+        <th class="r upnl-col">PnL</th>
       </tr>
     </thead>
     <tbody id="rows"></tbody>
@@ -241,6 +255,18 @@ const REALIZED = [
 ];
 
 const KEY = "pnl-usd-v10";
+const UPNL_KEY = "pnl-show-upnl";
+function applyUpnl() {
+  document.body.classList.toggle("show-upnl", localStorage.getItem(UPNL_KEY) === "1");
+  document.querySelectorAll("tr.detail td").forEach(td => td.colSpan = document.body.classList.contains("show-upnl") ? 6 : 5);
+}
+function toggleUpnl() {
+  localStorage.setItem(UPNL_KEY, document.body.classList.contains("show-upnl") ? "0" : "1");
+  applyUpnl();
+}
+document.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("upnl-card")) { e.preventDefault(); toggleUpnl(); }
+});
 let state = load();
 
 function load() {
@@ -295,7 +321,7 @@ function render() {
       <td class="r"><input data-id="${p.id}" data-f="avg" value="${p.avg}" /></td>
       <td class="r"><input data-id="${p.id}" data-f="mark" value="${p.mark}" /></td>
       <td class="r">${money(value)}</td>
-      <td class="r ${cls(pnl)}">${money(pnl)} <span style="opacity:.65">(${pct.toFixed(1)}%)</span></td>
+      <td class="r upnl-col ${cls(pnl)}">${money(pnl)} <span style="opacity:.65">(${pct.toFixed(1)}%)</span></td>
     `;
     tbody.appendChild(tr);
     const dr = document.createElement("tr");
@@ -348,6 +374,7 @@ function render() {
 
   document.getElementById("asof").textContent =
     "USD · " + new Date().toLocaleString();
+  applyUpnl();
 }
 
 const openRows = new Set();
