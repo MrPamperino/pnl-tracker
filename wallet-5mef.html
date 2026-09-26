@@ -106,111 +106,146 @@
     <button onclick="reset()">Reset</button>
     <span id="asof"></span>
   </div>
-  <h1 style="margin-top:28px">Today · 26 Sep 2026 (PT)</h1>
+  <h1 style="margin-top:28px">Recent activity (PT)</h1>
+  <div id="realized" class="note" style="margin-top:6px"></div>
   <div id="activity" class="note" style="margin-top:6px"></div>
   <p class="note">
-    Mostra tokens com preço utilizável. ~20 contas sem mark fiável (spam/illiquid) ficam de fora do total.
-    Avg ZCAT <code>$0.02436</code> reconstruído on-chain (USDC/ZEC). GROK avg = USDC gasto on-chain (3,345.68 / 1,057,365.58). TACZ fechado (ATA fechada). ZEC sem custo conhecido nesta wallet → vendas de hoje = só proceeds (4,675.85 USDC), realized desconhecido. Marks: Jupiter / DexScreener / Kraken (SOL).
+    Auto-atualizado por <code>update_5mef_page.py</code> a partir dos saldos on-chain (<span id="dataAsOf"></span>). Spam/illiquid (&lt;$10k liquidez) fica de fora.
+    Custo: ZCAT reconstruído on-chain; tokens novos = USDC gasto. ZEC sem custo conhecido nesta wallet → vendas contam só proceeds. Marks: Jupiter / DexScreener / Kraken (SOL).
   </p>
 </div>
 <script>
 const OWNER = "5MefLSkN3mhKVe3gtXHnz2gjAkrkn6P5r9ufL4wi849r";
-const SEED = {
-  asOf: "2026-09-26 ~12:30 PT (on-chain balances)",
-  positions: [
+/*DATA_START*/
+const DATA = {
+ "asOf": "2026-09-26 12:31:34 PT",
+ "positions": [
   {
-    "id": "hcrlc9vd",
-    "symbol": "ZCAT",
-    "mint": "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR",
-    "holdings": 4487839.441935892,
-    "mark": 0.05991825103684602,
-    "avg": 0.02436345
+   "id": "hcrlc9vd",
+   "symbol": "ZCAT",
+   "mint": "HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR",
+   "holdings": 4487839.441935892,
+   "mark": 0.05789,
+   "avg": 0.02436345
   },
   {
-    "id": "6hu4cmrb",
-    "symbol": "GROK",
-    "mint": "6HU4CmRb15C2nQDx8Ld2f2W2wTdmog6aZiiXdrT5Pzi8",
-    "holdings": 1057365.583891,
-    "mark": 0.003148,
-    "avg": 0.0031641616503993325,
-    "lastBuy": {
-      "time": "2026-09-26 11:04:12 PT",
-      "qty": 524358.413529,
-      "paid": 1672.837815,
-      "paidToken": "USDC",
-      "tx": "2miuEzeukZVSKTvLJxVYbnD58iR57dAAieB64uZNC4JtvoUbAiVYMT1DfCw7mWhMGbFGUwKGgGxe3euaMdrmbBJF"
-    }
+   "id": "a7bdiyds",
+   "symbol": "ZEC",
+   "mint": "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
+   "holdings": 4.0,
+   "mark": 1538.099,
+   "avg": null
   },
   {
-    "id": "a7bdiyds",
-    "symbol": "ZEC",
-    "mint": "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
-    "holdings": 4,
-    "mark": 1537.27,
-    "avg": null
+   "id": "6hu4cmrb",
+   "symbol": "GROK",
+   "mint": "6HU4CmRb15C2nQDx8Ld2f2W2wTdmog6aZiiXdrT5Pzi8",
+   "holdings": 1057365.583891,
+   "mark": 0.00317,
+   "avg": 0.0031641616503993325,
+   "lastBuy": {
+    "time": "2026-09-26 11:04:12",
+    "qty": 524358.413529,
+    "paid": 1672.837815,
+    "paidToken": "USDC",
+    "tx": "2miuEzeukZVSKTvLJxVYbnD58iR57dAAieB64uZNC4JtvoUbAiVYMT1DfCw7mWhMGbFGUwKGgGxe3euaMdrmbBJF",
+    "approx": false
+   }
   },
   {
-    "id": "7wsyjrv3",
-    "symbol": "ZEC",
-    "mint": "7WsYjrv3ENVHNwHzRAmHtm96XppsFmhsP6oq136By1TC",
-    "holdings": 0.04865548,
-    "mark": 961.55,
-    "avg": null
+   "id": "7wsyjrv3",
+   "symbol": "ZEC (7WsY)",
+   "mint": "7WsYjrv3ENVHNwHzRAmHtm96XppsFmhsP6oq136By1TC",
+   "holdings": 0.04865548,
+   "mark": 0,
+   "avg": null
   },
   {
-    "id": "usdc",
-    "symbol": "USDC",
-    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-    "holdings": 0.0011,
-    "mark": 1,
-    "avg": null
+   "id": "sol",
+   "symbol": "SOL",
+   "mint": "So11111111111111111111111111111111111111112",
+   "holdings": 0.457980783,
+   "mark": 120.65,
+   "avg": null
   },
   {
-    "id": "sol",
-    "symbol": "SOL",
-    "mint": "So11111111111111111111111111111111111111112",
-    "holdings": 0.457980783,
-    "mark": 120.59,
-    "avg": null
+   "id": "usdc",
+   "symbol": "USDC",
+   "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+   "holdings": 0.0011,
+   "mark": 1.0,
+   "avg": null
   }
-],
+ ],
+ "activity": [
+  {
+   "time": "2026-09-26 11:10:01",
+   "sig": "56GKG42FXk8NSFwG84Mnj9css1mXY8ajw4djzDJob4FZT6VqtVq2yD6Z8tnUFu8an3S4aCr5fESz4gSEpCF6vYEW",
+   "text": "⚠ Dust 0.001 USDC from look-alike 9QJvsrPA…VAQq (address poisoning — never copy it)"
+  },
+  {
+   "time": "2026-09-26 11:04:59",
+   "sig": "cAeBuQNbTYb3mpDKmqpuaUzgqN2UnpNeWJ78jpqCSoiVegnQ467EoYdUXPEAZz33Eg1vzF3Q8k9sJ2QUkkqX8FP",
+   "text": "⚠ Dust 0.0001 USDC from look-alike 9QJvsrPA…VAQq (address poisoning — never copy it)"
+  },
+  {
+   "time": "2026-09-26 11:04:48",
+   "sig": "2c321ALwTyYQNYwMiVRacC16AEVEXQadKhSXfA364eS3pvi8kQmfGfucmvEcJpB643bijMHTaRC7yjyxXZKkWWRD",
+   "text": "Sent 1,330.172796 USDC → 9QJvy7fh…VAQq"
+  },
+  {
+   "time": "2026-09-26 11:04:30",
+   "sig": "4EviWVCjuJbFsHB5E6KGx8rkSoXadsDyQg1EDy6UodxXUtiBoNJKaa9fV2oZpThMeQrYJfRq3tEM6QaTdt3hcKRL",
+   "text": "Sold 0.87335569 ZEC → 1,330.172796 USDC net (RFQ fill 1,332.838472, fee 2.665676)"
+  },
+  {
+   "time": "2026-09-26 11:04:12",
+   "sig": "2miuEzeukZVSKTvLJxVYbnD58iR57dAAieB64uZNC4JtvoUbAiVYMT1DfCw7mWhMGbFGUwKGgGxe3euaMdrmbBJF",
+   "text": "Bought 524,358.413529 GROK for 1,672.837815 USDC (~$0.0031903)"
+  },
+  {
+   "time": "2026-09-26 11:03:49",
+   "sig": "Ve1Fctdce1azerryRNgtgoYtGGx4nD28qFGauizfhsNq9LnMf1x9kWSoUC5yhHvHAkxDrqindR29E8Jqv6vZiej",
+   "text": "Bought 533,007.170362 GROK for 1,672.837816 USDC (~$0.0031385)"
+  },
+  {
+   "time": "2026-09-26 11:02:56",
+   "sig": "4c4WDh5ZsQ7mLZBHUk4HqGEn15e8Pa5u1cN9MoF6iKvZu3EYdKDsD2UsoTiqVUXgzwUTaCqniz5tWhvWbYyeGEHm",
+   "text": "Sold 2.2 ZEC → 3,345.675631 USDC (Jupiter, ~$1,520.76/ZEC)"
+  }
+ ],
+ "realized": [
+  {
+   "time": "2026-09-26 11:02:56",
+   "sig": "4c4WDh5ZsQ7mLZBHUk4HqGEn15e8Pa5u1cN9MoF6iKvZu3EYdKDsD2UsoTiqVUXgzwUTaCqniz5tWhvWbYyeGEHm",
+   "symbol": "ZEC",
+   "mint": "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
+   "qty": 2.2,
+   "proceeds": 3345.675631,
+   "cost": null,
+   "pnl": null,
+   "approx": false
+  },
+  {
+   "time": "2026-09-26 11:04:30",
+   "sig": "4EviWVCjuJbFsHB5E6KGx8rkSoXadsDyQg1EDy6UodxXUtiBoNJKaa9fV2oZpThMeQrYJfRq3tEM6QaTdt3hcKRL",
+   "symbol": "ZEC",
+   "mint": "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
+   "qty": 0.87335569,
+   "proceeds": 1330.172796,
+   "cost": null,
+   "pnl": null,
+   "approx": false
+  }
+ ]
 };
-const ACTIVITY = [
-  {
-    "time": "11:02:56",
-    "sig": "4c4WDh5ZsQ7mLZBHUk4HqGEn15e8Pa5u1cN9MoF6iKvZu3EYdKDsD2UsoTiqVUXgzwUTaCqniz5tWhvWbYyeGEHm",
-    "text": "Sold 2.2 ZEC → 3,345.675631 USDC (Jupiter, ~$1,520.76/ZEC)"
-  },
-  {
-    "time": "11:03:49",
-    "sig": "Ve1Fctdce1azerryRNgtgoYtGGx4nD28qFGauizfhsNq9LnMf1x9kWSoUC5yhHvHAkxDrqindR29E8Jqv6vZiej",
-    "text": "Bought 533,007.170362 GROK for 1,672.837816 USDC (~$0.0031385)"
-  },
-  {
-    "time": "11:04:12",
-    "sig": "2miuEzeukZVSKTvLJxVYbnD58iR57dAAieB64uZNC4JtvoUbAiVYMT1DfCw7mWhMGbFGUwKGgGxe3euaMdrmbBJF",
-    "text": "Bought 524,358.413529 GROK for 1,672.837815 USDC (~$0.0031903)"
-  },
-  {
-    "time": "11:04:30",
-    "sig": "4EviWVCjuJbFsHB5E6KGx8rkSoXadsDyQg1EDy6UodxXUtiBoNJKaa9fV2oZpThMeQrYJfRq3tEM6QaTdt3hcKRL",
-    "text": "Sold 0.87335569 ZEC → 1,330.172796 USDC net (RFQ fill 1,332.838472, fee 2.665676; ~$1,523.06/ZEC)"
-  },
-  {
-    "time": "11:04:48",
-    "sig": "2c321ALwTyYQNYwMiVRacC16AEVEXQadKhSXfA364eS3pvi8kQmfGfucmvEcJpB643bijMHTaRC7yjyxXZKkWWRD",
-    "text": "Sent 1,330.172796 USDC → 9QJvy7fh…VAQq"
-  },
-  {
-    "time": "11:04:59 / 11:10:01",
-    "sig": "cAeBuQNbTYb3mpDKmqpuaUzgqN2UnpNeWJ78jpqCSoiVegnQ467EoYdUXPEAZz33Eg1vzF3Q8k9sJ2QUkkqX8FP",
-    "text": "⚠ Dust 0.0001 + 0.001 USDC from look-alike 9QJvsrPA…VAQq (address poisoning — never copy it)"
-  }
-];
-const KEY = "wallet-5mef-v3";
+/*DATA_END*/
+const SEED = { asOf: DATA.asOf, positions: DATA.positions };
+const ACTIVITY = DATA.activity || [];
+const KEY = "wallet-5mef-v4";
 let state = load();
 function load() {
-  try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch {}
+  try { const raw = localStorage.getItem(KEY); if (raw) { const c = JSON.parse(raw); if (c.asOf === SEED.asOf) return c; } } catch {}
   return structuredClone(SEED);
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
@@ -269,6 +304,13 @@ function render() {
     pnlEl.className = "val";
     document.getElementById("pnlPct").textContent = "set avg buys for PnL";
   }
+  const rz = DATA.realized || [];
+  const rKnown = rz.filter(r => r.pnl != null).reduce((a, r) => a + r.pnl, 0);
+  document.getElementById("realized").innerHTML = rz.length
+    ? `Realized: <b style="color:var(--fg)">${rz.some(r => r.pnl != null) ? money(rKnown) : "—"}</b>` +
+      rz.filter(r => r.pnl == null).map(r => ` · ${r.symbol} proceeds ${money(r.proceeds)} (cost unknown)`).join("")
+    : "";
+  document.getElementById("dataAsOf").textContent = DATA.asOf || "";
   document.getElementById("activity").innerHTML = ACTIVITY.map(a =>
     `<div>${a.time} · ${a.text} · <a href="https://solscan.io/tx/${a.sig}" target="_blank" rel="noopener">${a.sig.slice(0,6)}…${a.sig.slice(-4)}</a></div>`).join("");
   document.getElementById("asof").textContent = "USD · "+new Date().toLocaleString();
