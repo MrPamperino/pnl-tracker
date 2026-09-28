@@ -165,109 +165,13 @@
 </div>
 
 <script>
-const SEED = {
-  eurusd: 1.1614,
-  positions: [
-    {
-      id: "drv",
-      symbol: "DRV",
-      venue: "spot + Base · 0x7E3d…c869 + Derive",
-      holdings: 192824.91815751872, // 143,517.106 spot + 23,220.156158 Base (26 Sep) + 26,087.656 Derive limit fills (28 Sep)
-      avg: 0.2189658774063164, // $42,222.08 cost = $22,268.55 (143,517.106 @ €0.1336×1.1614) + $9,987.00 USDC (Base) + $9,966.523330 USDC (Derive)
-      mark: 0.37966,
-      lastBuy: {
-        time: "2026-09-28 (fill time not shown)", qty: 12975.714, price: 0.3840,
-        paid: 4982.674176, paidToken: "USDC", chain: "Derive · DRV/USDC limit order",
-        wallet: null,
-        note: "2 fills on 28 Sep: 13,111.942 @ 0.3801 (4,983.849154 USDC) + 12,975.714 @ 0.3840 (4,982.674176 USDC) = 26,087.656 DRV for 9,966.523330 USDC (avg 0.38204); no tx hash, fees unknown",
-      },
-    },
-    {
-      id: "zec",
-      symbol: "ZEC",
-      venue: "exchange",
-      holdings: 85.1323656,
-      avg: 1171.44276512,
-      mark: 1557.86,
-      lastBuy: {
-        time: "2026-09-10 15:27:38 (exchange export time, tz not stated)", qty: 19.595, price: 1178.1364031640726,
-        paid: 23085.58282, paidToken: "USDT", chain: "CEX spot (UID 5106670119)",
-        wallet: null, orderId: "1481950522184904704",
-        note: "fee 0.0137165 ZEC → net 19.5812835 ZEC",
-      },
-    },
-    {
-      id: "zcat",
-      symbol: "ZCAT",
-      venue: "Solana · 5cN5…ZkrG",
-      holdings: 1240843.570063622,
-      avg: 0.04420703207790289,
-      mark: 0.05903274058068413,
-      lastBuy: {
-        time: "2026-09-09 22:31:36 PT", qty: 60011.32087786705, price: 0.08331761285801101,
-        paid: 5000, paidToken: "USDC", chain: "Solana",
-        wallet: "5cN5vAuXpRfE56QJTKFxw7m3UkuVVcZMjTwGb2DQZkrG",
-        tx: "N9NqqPSa541ybvPhT7ZEGMYGbNEXE2ernSze9RHD4dJW9yPVLk5s4jM2yXdDwkCV9tq1Zi6NemSxyuUAKxku8J3",
-        explorer: "https://solscan.io/tx/",
-      },
-    },
-    {
-      id: "sfi",
-      symbol: "SFI",
-      venue: "manual · 90 @ 10k USDC",
-      holdings: 90,
-      avg: 111.11111111111111,
-      mark: 115.78,
-      lastBuy: null, // no dated tx on file; only the manual entry 90 SFI for 10,000 USDC
-      lastBuyNote: "Recorded manually: 90 SFI for 10,000 USDC (≈ $111.11) · no date / tx on file",
-    },
-    {
-      id: "aero",
-      symbol: "AERO",
-      venue: "Base · 0x9F0d…D2B0",
-      holdings: 110213.99607283046, // 34,708.798064 (25 Sep) + 31,689.769665 + 5,755.895611 (27 Sep) + 25,461.727793 + 12,597.804940 (28 Sep)
-      avg: 0.8097863987893414, // 89,249.794976 USDC / 110,213.996073 AERO
-      mark: 0.793625,
-      lastBuy: {
-        time: "2026-09-28 14:51:21 PT", qty: 12597.8049398716, price: 0.793789080536591,
-        paid: 10000, paidToken: "USDC", chain: "Base",
-        wallet: "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",
-        tx: "0x22dc61399459a7b78c08d326f84f2b0e6d2bbbd5c5598aaea01c83f1b7978a5d",
-        explorer: "https://basescan.org/tx/",
-      },
-    },
-    // DRV added 2026-09-28 via Derive DRV/USDC limit orders (from screenshot, no tx hash/fees): 13,111.942 @ 0.3801 + 12,975.714 @ 0.3840 = 26,087.656 DRV for 9966.523330 USDC.
-    // DRV added 2026-09-26 09:45 PT on Base (tx 0x237c178c…d49419a1) from 0x7E3d…c869:
-    // 23,220.156158 DRV for 9,987.003601 USDC @ ~$0.43010 via 0x Settler.
-    // AI closed 2026-09-25 20:04 PT: sold all 250,663.224927 AI from Robinhood EOA 0x7E3d…c869
-    // (tx 0x7cc5fa5a…b188a1) for 60,622.008648 USDG @ ~$0.24185.
-    // Cost $58,527.85 @ ~$0.23349 → realized +$2,094.16 (+3.58%).
-    // AERO added 2026-09-28 on Base: 11:51 PT (tx 0x4d506c6d…00faff) 25,461.727793 AERO for 20,000 USDC @ ~$0.78550;
-    //   14:51 PT (tx 0x22dc6139…978a5d) 12,597.804940 AERO for 10,000 USDC @ ~$0.79379.
-    // AERO added 2026-09-27 20:18 PT on Base (tx 0xbd5fbfed…0562ff): 5,755.895611 AERO for 4,907.073541 USDC @ ~$0.85253.
-    // AERO added 2026-09-27 11:39 PT on Base (tx 0x9a2a7129…76a83f): 31,689.769665 AERO for 27,171.360718 USDC @ ~$0.85741.
-    // AERO bought 2026-09-25 13:45 PT on Base (tx 0x18c95ac8…db415f):
-    // 34,708.798064 AERO for 27,171.360717 USDC @ ~$0.78283.
-    // JUP closed 2026-09-18: unlocked vote escrow 2DPkr…kVZ5 (tx 5PCzdFoH…mekB),
-    // then sold 47,317.256018 JUP via Jupiter RouteV2 (tx D7yJvKz5…dgZMk)
-    // for 12,133.867468 USDC net (+12.146013 USDC aggregator fee).
-    // Cost $10,000.005 @ ~$0.2113 → realized +$2,133.86 (+21.3%).
-  ],
-};
+// Holdings, cost basis, last buys and closed positions live in portfolio.json
+// (fetched fresh on every load / refresh). It is the single source of truth.
+let SEED = null;      // { eurusd, positions: [...] }
+let REALIZED = [];    // closed positions; append new closes in portfolio.json
 
-// Closed positions (realized PnL). Append new closes here.
-const REALIZED = [
-  {
-    symbol: "JUP", venue: "Solana", closed: "2026-09-18",
-    qty: 47317.256018, cost: 10000.005, proceeds: 12133.867468, quote: "USDC",
-  },
-  {
-    symbol: "AI", venue: "Robinhood Chain · Artificial Inu", closed: "2026-09-25",
-    qty: 250663.224927, cost: 58527.85, proceeds: 60622.008648, quote: "USDG",
-  },
-];
-
-const KEY = "pnl-usd-v14";
+const KEY = "pnl-usd-v15";
+const DATA_KEY = "pnl-portfolio-data";
 const UPNL_KEY = "pnl-show-upnl";
 const CLOSED_KEY = "pnl-show-closed";
 function applyClosed() {
@@ -290,14 +194,43 @@ function toggleUpnl() {
 document.addEventListener("keydown", e => {
   if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("upnl-card")) { e.preventDefault(); toggleUpnl(); }
 });
-let state = load();
+let state = null;
 
-function load() {
+async function loadData() {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return structuredClone(SEED);
+    const r = await fetch("portfolio.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    localStorage.setItem(DATA_KEY, JSON.stringify(d));
+    applyData(d);
+    return true;
+  } catch (e) {
+    console.warn("portfolio.json fetch failed, using last saved copy", e);
+    try { const c = localStorage.getItem(DATA_KEY); if (c) { applyData(JSON.parse(c)); return true; } } catch {}
+    return !!SEED;
+  }
+}
+function applyData(d) {
+  SEED = { eurusd: d.eurusd, positions: d.positions };
+  REALIZED = d.realized || [];
+}
+// Sizes / cost / last buys always come from portfolio.json; only live marks are kept
+// from the browser (current key or any older pnl-usd-v* key), so an old cached
+// state can never show stale holdings.
+function cachedMarks() {
+  const marks = {};
+  const keys = Object.keys(localStorage).filter(k => /^pnl-usd-v\d+$/.test(k))
+    .sort((a, b) => Number(a.split("-v")[1]) - Number(b.split("-v")[1]));
+  for (const k of keys) {
+    try { for (const p of JSON.parse(localStorage.getItem(k)).positions || []) if (p.mark > 0) marks[p.id] = p.mark; } catch {}
+  }
+  for (const k of keys) if (k !== KEY) localStorage.removeItem(k);   // tidy old versions
+  return marks;
+}
+function mergeState(marks) {
+  const s = structuredClone(SEED);
+  for (const p of s.positions) if (Number.isFinite(marks[p.id]) && marks[p.id] > 0) p.mark = marks[p.id];
+  return s;
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
 
@@ -312,7 +245,7 @@ function money(n, d = 2) {
 }
 function qty(n) {
   return n.toLocaleString("en-US", {
-    maximumFractionDigits: n >= 1000 ? 2 : 4,
+    maximumFractionDigits: n >= 1e6 ? 2 : n >= 1000 ? 3 : 4,
   });
 }
 function cls(n) {
@@ -434,20 +367,28 @@ function lastBuyHtml(p) {
 }
 
 function reset() {
-  state = structuredClone(SEED);
+  state = mergeState({});
   save();
   render();
 }
 
+let lastRefresh = 0;
 async function refresh() {
+  lastRefresh = Date.now();
+  await loadData();
+  if (!SEED) return;
+  const marks = {};
+  for (const p of (state?.positions || [])) marks[p.id] = p.mark;
+  state = mergeState(state ? marks : cachedMarks());
+  render();
   try {
     const SFI = "0xb753428af26E81097e7fD17f40c88aaA3E04902c";
     const AERO = "0x940181a94A35A4569E4529A3CDfB74e38FD98631";
     const [zecSpot, kr, aeroSpot, dsSfi] = await Promise.all([
-      fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()),
-      fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()),
+      fetch("https://api.coinbase.com/v2/prices/ZEC-USD/spot").then(r => r.json()).catch(() => null),
+      fetch("https://api.kraken.com/0/public/Ticker?pair=DRVUSD").then(r => r.json()).catch(() => null),
       fetch("https://api.coinbase.com/v2/prices/AERO-USD/spot").then(r => r.json()).catch(() => null),
-      fetch("https://api.dexscreener.com/latest/dex/tokens/" + SFI).then(r => r.json()),
+      fetch("https://api.dexscreener.com/latest/dex/tokens/" + SFI).then(r => r.json()).catch(() => null),
     ]);
     let zcat = null;
     try {
@@ -478,6 +419,10 @@ async function refresh() {
   render();
 }
 
+// Re-pull data + marks when a long-open tab comes back to the foreground.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && Date.now() - lastRefresh > 60000) refresh();
+});
 refresh();
 </script>
 </body>
