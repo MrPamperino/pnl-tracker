@@ -1,23 +1,24 @@
 {
-  "updated": "2026-09-28T15:50:00+01:00",
+  "updated": "2026-09-28T20:55:00+01:00",
   "eurusd": 1.1614,
   "positions": [
     {
       "id": "drv",
       "symbol": "DRV",
       "venue": "spot + Base · 0x7E3d…c869 + Derive",
-      "holdings": 192824.91815751872,
-      "avg": 0.2189658774063164,
-      "mark": 0.37966,
+      "holdings": 205936.58546798496,
+      "avg": 0.22930397393377883,
+      "mark": 0.38186,
       "lastBuy": {
-        "time": "2026-09-28 (fill time not shown)",
-        "qty": 12975.714,
-        "price": 0.384,
-        "paid": 4982.674176,
+        "time": "2026-09-28 20:44:05 PT",
+        "qty": 13111.667310466239,
+        "price": 0.38133975775977835,
+        "paid": 5000.000036,
         "paidToken": "USDC",
-        "chain": "Derive · DRV/USDC limit order",
-        "wallet": null,
-        "note": "2 fills on 28 Sep: 13,111.942 @ 0.3801 (4,983.849154 USDC) + 12,975.714 @ 0.3840 (4,982.674176 USDC) = 26,087.656 DRV for 9,966.523330 USDC (avg 0.38204); no tx hash, fees unknown"
+        "chain": "Base",
+        "wallet": "0x7e3d5bcc6158bf63c51a5d90d0ef9a29f27dc869",
+        "tx": "0xc64d155a84f81eba80824b773dc387f65a7f505024a56e6dd2fcbe2c38aa036a",
+        "explorer": "https://basescan.org/tx/"
       }
     },
     {
@@ -109,6 +110,7 @@
     }
   ],
   "history": [
+    "DRV added 2026-09-28 20:44 PT on Base (tx 0xc64d155a…aa036a) from 0x7E3d…c869: 13,111.667310 DRV for 5,000.000036 USDC @ ~$0.38134. Base wallet now holds 36,331.823468 DRV (23,220.156158 + 13,111.667310).",
     "DRV added 2026-09-28 via Derive DRV/USDC limit orders (from screenshot, no tx hash/fees): 13,111.942 @ 0.3801 + 12,975.714 @ 0.3840 = 26,087.656 DRV for 9966.523330 USDC.",
     "DRV added 2026-09-26 09:45 PT on Base (tx 0x237c178c…d49419a1) from 0x7E3d…c869:",
     "23,220.156158 DRV for 9,987.003601 USDC @ ~$0.43010 via 0x Settler.",
