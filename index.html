@@ -225,14 +225,14 @@ const SEED = {
       id: "aero",
       symbol: "AERO",
       venue: "Base · 0x9F0d…D2B0",
-      holdings: 72154.46334025417, // 34,708.798064 (25 Sep) + 31,689.769665 (27 Sep 11:39) + 5,755.895611 (27 Sep 20:18)
-      avg: 0.8211521814887535, // 59,249.794976 USDC / 72,154.463340 AERO
-      mark: 0.846375,
+      holdings: 110213.99607283046, // 34,708.798064 (25 Sep) + 31,689.769665 + 5,755.895611 (27 Sep) + 25,461.727793 + 12,597.804940 (28 Sep)
+      avg: 0.8097863987893414, // 89,249.794976 USDC / 110,213.996073 AERO
+      mark: 0.793625,
       lastBuy: {
-        time: "2026-09-27 20:18:29 PT", qty: 5755.8956107683425, price: 0.8525299749737756,
-        paid: 4907.073541, paidToken: "USDC", chain: "Base",
+        time: "2026-09-28 14:51:21 PT", qty: 12597.8049398716, price: 0.793789080536591,
+        paid: 10000, paidToken: "USDC", chain: "Base",
         wallet: "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",
-        tx: "0xbd5fbfed93d4c0e64a97c0b7435597109d9b38e2f1393a62467223c6690562ff",
+        tx: "0x22dc61399459a7b78c08d326f84f2b0e6d2bbbd5c5598aaea01c83f1b7978a5d",
         explorer: "https://basescan.org/tx/",
       },
     },
@@ -242,6 +242,8 @@ const SEED = {
     // AI closed 2026-09-25 20:04 PT: sold all 250,663.224927 AI from Robinhood EOA 0x7E3d…c869
     // (tx 0x7cc5fa5a…b188a1) for 60,622.008648 USDG @ ~$0.24185.
     // Cost $58,527.85 @ ~$0.23349 → realized +$2,094.16 (+3.58%).
+    // AERO added 2026-09-28 on Base: 11:51 PT (tx 0x4d506c6d…00faff) 25,461.727793 AERO for 20,000 USDC @ ~$0.78550;
+    //   14:51 PT (tx 0x22dc6139…978a5d) 12,597.804940 AERO for 10,000 USDC @ ~$0.79379.
     // AERO added 2026-09-27 20:18 PT on Base (tx 0xbd5fbfed…0562ff): 5,755.895611 AERO for 4,907.073541 USDC @ ~$0.85253.
     // AERO added 2026-09-27 11:39 PT on Base (tx 0x9a2a7129…76a83f): 31,689.769665 AERO for 27,171.360718 USDC @ ~$0.85741.
     // AERO bought 2026-09-25 13:45 PT on Base (tx 0x18c95ac8…db415f):
@@ -265,7 +267,7 @@ const REALIZED = [
   },
 ];
 
-const KEY = "pnl-usd-v13";
+const KEY = "pnl-usd-v14";
 const UPNL_KEY = "pnl-show-upnl";
 const CLOSED_KEY = "pnl-show-closed";
 function applyClosed() {
