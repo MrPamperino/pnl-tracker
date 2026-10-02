@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-28T20:55:00+01:00",
+  "updated": "2026-10-02T19:55:00+01:00",
   "eurusd": 1.1614,
   "positions": [
     {
@@ -19,25 +19,6 @@
         "wallet": "0x7e3d5bcc6158bf63c51a5d90d0ef9a29f27dc869",
         "tx": "0xc64d155a84f81eba80824b773dc387f65a7f505024a56e6dd2fcbe2c38aa036a",
         "explorer": "https://basescan.org/tx/"
-      }
-    },
-    {
-      "id": "zec",
-      "symbol": "ZEC",
-      "venue": "exchange",
-      "holdings": 85.1323656,
-      "avg": 1171.44276512,
-      "mark": 1557.86,
-      "lastBuy": {
-        "time": "2026-09-10 15:27:38 (exchange export time, tz not stated)",
-        "qty": 19.595,
-        "price": 1178.1364031640726,
-        "paid": 23085.58282,
-        "paidToken": "USDT",
-        "chain": "CEX spot (UID 5106670119)",
-        "wallet": null,
-        "orderId": "1481950522184904704",
-        "note": "fee 0.0137165 ZEC → net 19.5812835 ZEC"
       }
     },
     {
@@ -107,9 +88,38 @@
       "cost": 58527.85,
       "proceeds": 60622.008648,
       "quote": "USDG"
+    },
+    {
+      "symbol": "ZEC",
+      "venue": "Bitget · ZEC/USDT market sells",
+      "closed": "2026-10-01",
+      "qty": 85.132,
+      "cost": 99727.26548019584,
+      "proceeds": 119185.1840481,
+      "quote": "USDT",
+      "gross": 119268.6722,
+      "fees": 83.4881519,
+      "fills": [
+        {
+          "time": "2026-10-01 14:38:57",
+          "qty": 44.268,
+          "avg": 1400.87,
+          "volume": 62013.71316,
+          "fee": 43.40964884
+        },
+        {
+          "time": "2026-10-01 14:39:04",
+          "qty": 40.864,
+          "avg": 1401.11,
+          "volume": 57254.95904,
+          "fee": 40.07850306
+        }
+      ],
+      "note": "held 85.1323656 ZEC; sold 85.132; cost prorated; residual 0.0003656 ZEC dust (cost $0.4283) dropped from the book. Net proceeds = cash (USDT) on Bitget."
     }
   ],
   "history": [
+    "ZEC closed 2026-10-01 on Bitget (funds stuck there): 2 market sells 14:38:57 44.268 @ 1,400.87 + 14:39:04 40.864 @ 1,401.11 = 85.132 ZEC → 119,268.67220 USDT gross, 83.48815190 fees, 119,185.18404810 net. Cost $99,727.27 (prorated from 85.1323656) → realized $19,457.92. USDT proceeds held as cash on Bitget (not tracked as a position).",
     "DRV added 2026-09-28 20:44 PT on Base (tx 0xc64d155a…aa036a) from 0x7E3d…c869: 13,111.667310 DRV for 5,000.000036 USDC @ ~$0.38134. Base wallet now holds 36,331.823468 DRV (23,220.156158 + 13,111.667310).",
     "DRV added 2026-09-28 via Derive DRV/USDC limit orders (from screenshot, no tx hash/fees): 13,111.942 @ 0.3801 + 12,975.714 @ 0.3840 = 26,087.656 DRV for 9966.523330 USDC.",
     "DRV added 2026-09-26 09:45 PT on Base (tx 0x237c178c…d49419a1) from 0x7E3d…c869:",
