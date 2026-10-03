@@ -15,7 +15,7 @@ Truth: on-chain balances. Cost basis lives in _5mef_ledger.json:
 Every processed signature is stored in the ledger, so a trade is never counted twice.
 Prints one JSON line summary at the end. Never prints secrets.
 """
-import json, os, re, sys, time, subprocess, datetime, urllib.request, zoneinfo
+import json, os, re, sys, time, subprocess, datetime, urllib.request, urllib.error, zoneinfo
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(REPO, "wallet-5mef.html")
@@ -73,43 +73,105 @@ def kraken_sol():
     except Exception:
         return None
 
-def prices(mints):
-    """mint -> {price, liq, symbol, source}"""
-    out = {}
-    mints = [m for m in mints if m not in STABLE and m != SOL]
-    for i in range(0, len(mints), 30):
-        chunk = mints[i:i + 30]
-        for attempt in range(3):
-            try:
-                d = http_json("https://api.dexscreener.com/latest/dex/tokens/" + ",".join(chunk))
-                for p in d.get("pairs") or []:
-                    if p.get("chainId") != "solana":
-                        continue
-                    a = p["baseToken"]["address"]
-                    liq = float((p.get("liquidity") or {}).get("usd") or 0)
-                    if a in chunk and p.get("priceUsd") and liq > out.get(a, {}).get("liq", -1):
-                        out[a] = {"price": float(p["priceUsd"]), "liq": liq,
-                                  "symbol": p["baseToken"].get("symbol"), "source": f"DexScreener {p.get('dexId')}"}
-                break
-            except Exception as e:
-                log("dexscreener", type(e).__name__, str(e)[:80])
-                time.sleep(3 + 3 * attempt)
-    missing = [m for m in mints if m not in out]
-    if missing:
+PRICE_CACHE = os.path.join(REPO, "_price_cache.json")
+PRICE_TTL = 90          # seconds a cached price is reused (avoids hammering APIs -> 429)
+PRICE_STALE_MAX = 3600  # last-resort: reuse a cached price up to 1h old, flagged stale
+
+def _get_json_retry(url, tries=3, base=1.5):
+    """GET with backoff; honours 429/5xx. Returns None on failure."""
+    for i in range(tries):
         try:
-            q = ",".join("solana:" + m for m in missing)
-            d = http_json("https://coins.llama.fi/prices/current/" + q)
-            for k, v in (d.get("coins") or {}).items():
-                m = k.split(":", 1)[1]
-                if v.get("confidence", 0) >= 0.9:
-                    out[m] = {"price": float(v["price"]), "liq": None, "symbol": v.get("symbol"), "source": "DefiLlama"}
+            return http_json(url, timeout=15)
+        except urllib.error.HTTPError as e:
+            log("price", url.split("/")[2], "HTTP", e.code)
+            if e.code not in (429, 500, 502, 503, 504):
+                return None
+            ra = e.headers.get("Retry-After") if e.headers else None
+            time.sleep(min(float(ra) if ra and ra.isdigit() else base * (2 ** i), 10))
         except Exception as e:
-            log("defillama", type(e).__name__)
-    sol = kraken_sol()
+            log("price", url.split("/")[2], type(e).__name__)
+            time.sleep(base * (2 ** i))
+    return None
+
+def _load_cache():
+    try:
+        return json.load(open(PRICE_CACHE))
+    except Exception:
+        return {}
+
+def prices(mints, use_cache=True):
+    """mint -> {price, liq, symbol, source[, stale]}.
+    Order: cache (<90s) -> Jupiter price v3 -> DexScreener -> DefiLlama -> stale cache (<1h)."""
+    now = time.time()
+    cache = _load_cache() if use_cache else {}
+    out = {}
+    mints = list(dict.fromkeys(m for m in mints if m not in STABLE and m != SOL))
+    for m in mints:
+        c = cache.get(m)
+        if c and now - c.get("ts", 0) < PRICE_TTL and c.get("price"):
+            out[m] = {k: c[k] for k in ("price", "liq", "symbol", "source") if k in c}
+    todo = [m for m in mints if m not in out]
+    # 1) Jupiter price v3 (has liquidity)
+    for i in range(0, len(todo), 50):
+        chunk = todo[i:i + 50]
+        d = _get_json_retry("https://lite-api.jup.ag/price/v3?ids=" + ",".join(chunk))
+        for m, v in (d or {}).items():
+            if isinstance(v, dict) and v.get("usdPrice"):
+                out[m] = {"price": float(v["usdPrice"]), "liq": float(v.get("liquidity") or 0),
+                          "symbol": None, "source": "Jupiter"}
+    # 2) DexScreener (best-liquidity Solana pair)
+    missing = [m for m in todo if m not in out]
+    for i in range(0, len(missing), 30):
+        chunk = missing[i:i + 30]
+        d = _get_json_retry("https://api.dexscreener.com/latest/dex/tokens/" + ",".join(chunk), tries=2)
+        for p in (d or {}).get("pairs") or []:
+            if p.get("chainId") != "solana":
+                continue
+            a = p["baseToken"]["address"]
+            liq = float((p.get("liquidity") or {}).get("usd") or 0)
+            if a in chunk and p.get("priceUsd") and liq > out.get(a, {}).get("liq", -1):
+                out[a] = {"price": float(p["priceUsd"]), "liq": liq,
+                          "symbol": p["baseToken"].get("symbol"), "source": f"DexScreener {p.get('dexId')}"}
+    # 3) DefiLlama
+    missing = [m for m in todo if m not in out]
+    if missing:
+        d = _get_json_retry("https://coins.llama.fi/prices/current/" + ",".join("solana:" + m for m in missing), tries=2)
+        for k, v in ((d or {}).get("coins") or {}).items():
+            m = k.split(":", 1)[1]
+            if v.get("confidence", 0) >= 0.9:
+                out[m] = {"price": float(v["price"]), "liq": None, "symbol": v.get("symbol"), "source": "DefiLlama"}
+    # 4) stale cache as last resort
+    for m in todo:
+        if m not in out:
+            c = cache.get(m)
+            if c and c.get("price") and now - c.get("ts", 0) < PRICE_STALE_MAX:
+                out[m] = {k: c[k] for k in ("price", "liq", "symbol", "source") if k in c}
+                out[m]["stale"] = True
+    sol = None
+    c = cache.get(SOL)
+    if c and now - c.get("ts", 0) < PRICE_TTL:
+        sol = c["price"]
+    else:
+        sol = kraken_sol()
+        if not sol:
+            d = _get_json_retry("https://lite-api.jup.ag/price/v3?ids=" + SOL, tries=2)
+            sol = float(((d or {}).get(SOL) or {}).get("usdPrice") or 0) or None
+        if not sol and c and now - c.get("ts", 0) < PRICE_STALE_MAX:
+            sol = c["price"]
     if sol:
         out[SOL] = {"price": sol, "liq": None, "symbol": "SOL", "source": "Kraken SOLUSD"}
-    for m, s in STABLE.items():
-        out[m] = {"price": 1.0, "liq": None, "symbol": s, "source": "par"}
+    # write fresh results back to cache
+    try:
+        for m in todo + [SOL]:
+            v = out.get(m)
+            if v and v.get("price") and not v.get("stale") and not (m == SOL and c and now - c.get("ts", 0) < PRICE_TTL):
+                cache[m] = dict(v, ts=now)
+        tmp = PRICE_CACHE + ".tmp"
+        json.dump(cache, open(tmp, "w")); os.replace(tmp, PRICE_CACHE)
+    except Exception:
+        pass
+    for m, sy in STABLE.items():
+        out[m] = {"price": 1.0, "liq": None, "symbol": sy, "source": "par"}
     return out
 
 # ---------------------------------------------------------------- chain
@@ -191,6 +253,7 @@ def process(ledger, px, sym):
         outs = {m: -d for m, d in deltas.items() if d < 0}
         usd = lambda m, q: q * (px.get(m, {}).get("price") or 0)
         cost = ledger["cost"]
+        unk = ledger.setdefault("unknown_cost", [])
         entry = None
         if ins and outs:
             # swap
@@ -204,7 +267,7 @@ def process(ledger, px, sym):
                 if not any(k in STABLE for k in ins):
                     proceeds = usd(m, q)
                 pre_q = pre.get(m, q) if m != SOL else None
-                c = cost.get(m)
+                c = None if m in unk else cost.get(m)
                 cost_out = (c * q / pre_q) if (c is not None and pre_q) else None
                 if c is not None and cost_out is not None:
                     cost[m] = max(c - cost_out, 0)
@@ -220,7 +283,13 @@ def process(ledger, px, sym):
                 tw = sum(w.values())
                 for m, q in buys.items():
                     share = spent * w[m] / tw
-                    cost[m] = (cost.get(m) or 0) + share
+                    # buying into a balance whose cost is unknown keeps the whole position unknown
+                    if m in unk or (cost.get(m) is None and pre.get(m, 0) > 1e-12):
+                        if m not in unk:
+                            unk.append(m)
+                        cost.pop(m, None)
+                    else:
+                        cost[m] = (cost.get(m) or 0) + share
                     ledger["last_buy"][m] = {"time": t, "qty": q, "paid": share,
                         "paidToken": "/".join(sym(k) for k in outs), "tx": sig, "approx": approx}
             text = "Swap " + " + ".join(f"{fmt(q)} {sym(m)}" for m, q in outs.items()) + " → " + \
@@ -258,7 +327,8 @@ def build(ledger, bal, px):
     for m in order:
         q = bal[m]; p = px.get(m) or {}
         price = p.get("price")
-        tracked = ledger["cost"].get(m) is not None or m in (USDC, SOL) or m in ledger.get("pinned", [])
+        tracked = (ledger["cost"].get(m) is not None or m in (USDC, SOL) or m in ledger.get("pinned", [])
+                   or m in ledger.get("unknown_cost", []))
         if not tracked:
             if price is None or q * price < MIN_VALUE:
                 continue
@@ -272,6 +342,10 @@ def build(ledger, bal, px):
                "symbol": symbol, "mint": m, "holdings": q,
                "mark": price if price is not None else 0,
                "avg": (c / q) if (c is not None and q > 0) else None}
+        if m in ledger.get("unknown_cost", []):
+            row["costUnknown"] = True
+        if p.get("stale"):
+            row["markStale"] = True
         lb = ledger["last_buy"].get(m)
         if lb:
             row["lastBuy"] = lb
@@ -307,31 +381,47 @@ def publish(msg):
     if not git("diff", "--cached", "--quiet", check=False).returncode:
         return {"published": False, "reason": "no diff"}
     git(*ident, "commit", "-q", "-m", msg)
-    git("pull", "-q", "--rebase", "origin", "main")
+    git("pull", "-q", "--rebase", "--autostash", "origin", "main")
     r = git("push", "-q", "origin", "main", check=False)
     if r.returncode == 0:
         return {"published": True, "via": "push", "commit": git("rev-parse", "HEAD").stdout.strip()}
     # protected main -> PR + merge
     br = "auto/5mef-" + now_pt().strftime("%Y%m%d-%H%M%S")
     git("push", "-q", "origin", f"HEAD:refs/heads/{br}")
-    git("reset", "-q", "--hard", "origin/main")
+    git("reset", "-q", "--keep", "origin/main")  # keeps unrelated local edits
     subprocess.run(["gh", "pr", "create", "-R", "MrPamperino/pnl-tracker", "--base", "main", "--head", br,
                     "--title", msg, "--body", "Automated by update_5mef_page.py"], check=True, capture_output=True, cwd=REPO)
     subprocess.run(["gh", "pr", "merge", br, "-R", "MrPamperino/pnl-tracker", "--merge", "--delete-branch"],
                    check=True, capture_output=True, cwd=REPO)
-    git("pull", "-q", "--ff-only", "origin", "main")
+    git("pull", "-q", "--ff-only", "--autostash", "origin", "main", check=False)
     return {"published": True, "via": "pr", "branch": br, "commit": git("rev-parse", "HEAD").stdout.strip()}
+
+ZEC_MINT = "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS"
+
+def migrate_unknown_cost(ledger):
+    """One-time fix: ZEC was held before the ledger started (cost unknown); a small buy
+    had turned it into a fake known cost. Mark it unknown and null realized cost/pnl."""
+    if ledger.get("migrations", {}).get("zec_unknown_cost"):
+        return
+    if ZEC_MINT not in ledger["unknown_cost"]:
+        ledger["unknown_cost"].append(ZEC_MINT)
+    ledger["cost"].pop(ZEC_MINT, None)
+    for r in ledger["realized"]:
+        if r.get("mint") == ZEC_MINT and r.get("cost") is not None:
+            r["cost"] = None; r["pnl"] = None; r["note"] = "cost unknown (pre-ledger ZEC)"
+    ledger.setdefault("migrations", {})["zec_unknown_cost"] = datetime.datetime.now(TZ).isoformat(timespec="seconds")
 
 def main():
     args = set(sys.argv[1:])
     dry = "--dry-run" in args
     ledger = json.load(open(LEDGER))
     for k, v in (("processed", []), ("cost", {}), ("realized", []), ("activity", []),
-                 ("last_buy", {}), ("symbols", {}), ("pinned", [])):
+                 ("last_buy", {}), ("symbols", {}), ("pinned", []), ("unknown_cost", [])):
         ledger.setdefault(k, v)
+    migrate_unknown_cost(ledger)
     if not dry and "--no-push" not in args:
         if git("rev-parse", "--abbrev-ref", "HEAD").stdout.strip() == "main":
-            git("pull", "-q", "--ff-only", "origin", "main", check=False)
+            git("pull", "-q", "--rebase", "--autostash", "origin", "main", check=False)
     bal = balances()
     px = prices(list(bal.keys()) + list(ledger["cost"].keys()))
     for m, p in px.items():
@@ -343,6 +433,7 @@ def main():
     for m in list(ledger["cost"]):
         if bal.get(m, 0) <= 0:
             ledger["cost"].pop(m); ledger["last_buy"].pop(m, None)
+    ledger["unknown_cost"] = [m for m in ledger["unknown_cost"] if bal.get(m, 0) > 0]
     rows = build(ledger, bal, px)
     fp = fingerprint(rows, ledger)
     changed = fp != ledger.get("fingerprint") or "--refresh-marks" in args
