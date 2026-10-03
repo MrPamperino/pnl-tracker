@@ -1,0 +1,15 @@
+{
+  "_note": "Human labels for counterparties in 5Mef alerts. Exact full-address match only (owner wallet OR token account) — never prefix-match: look-alike poisoning addresses exist. Add more entries below.",
+  "labels": [
+    {
+      "label": "Binance (depósito da 5Mef)",
+      "owner": "BZahb4i11ihgFyAYJd85tY8CZtJUmCULLhCJyhwjLig2",
+      "token_accounts": ["41PkQTW8DuFPbk2uNF71wctgvE8MPMqrMs3ZotJq3jAy"]
+    },
+    {
+      "label": "Plasma One (top-up do cartão)",
+      "owner": "9QJvy7fh3ZxDJRPsGEtARfgnRyXG9L7sLkLC34Y7VAQq",
+      "token_accounts": ["9AV4WLYo3kXGPsnNWYkM39G14vahbALvDvBTV22KWGh3"]
+    }
+  ]
+}

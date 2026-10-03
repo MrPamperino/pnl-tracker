@@ -16,6 +16,8 @@ Every processed signature is stored in the ledger, so a trade is never counted t
 Prints one JSON line summary at the end. Never prints secrets.
 """
 import json, os, re, sys, time, subprocess, datetime, urllib.request, urllib.error, zoneinfo
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from address_labels import label_for
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(REPO, "wallet-5mef.html")
@@ -230,6 +232,10 @@ def tx_deltas(tx):
     deltas = {m: d for m, d in deltas.items() if abs(d) > 1e-12}
     return deltas, pre
 
+def _acct_key(tx, b):
+    k = tx["transaction"]["message"]["accountKeys"][b["accountIndex"]]
+    return k["pubkey"] if isinstance(k, dict) else k
+
 def transfer_counterparty(tx, mint):
     for ins in tx["transaction"]["message"]["instructions"]:
         p = ins.get("parsed") if isinstance(ins, dict) else None
@@ -315,7 +321,10 @@ def process(ledger, px, sym):
             vals = sum(usd(m, q) for m, q in outs.items())
             if vals >= MIN_VALUE:
                 dest = transfer_counterparty(tx, next(iter(outs)))
-                entry = "Sent " + " + ".join(f"{fmt(q)} {sym(m)}" for m, q in outs.items()) + (f" → token acct {short(dest)}" if dest else "")
+                lab = label_for(dest, *(b.get("owner") for b in (tx["meta"].get("postTokenBalances") or [])
+                                        if dest and _acct_key(tx, b) == dest)) if dest else None
+                entry = "Sent " + " + ".join(f"{fmt(q)} {sym(m)}" for m, q in outs.items()) + \
+                        ((f" → {lab} (token acct {short(dest)})" if lab else f" → token acct {short(dest)}") if dest else "")
         if entry:
             ledger["activity"].append({"time": t, "sig": sig, "text": entry})
         ledger["processed"].append(sig)

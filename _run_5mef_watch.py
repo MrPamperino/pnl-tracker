@@ -3,6 +3,8 @@
 import json, os, sys, time, subprocess, urllib.request, urllib.error, urllib.parse
 from datetime import datetime, timezone
 from collections import defaultdict
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from address_labels import label_for, party as addr_party, short as addr_short
 
 STATE_PATH = "/workspace/pnl-tracker/wallet5mef_watch_state.json"
 SECRETS_PATH = "/home/box/agent-data/box-secrets.json"
@@ -301,14 +303,18 @@ def refresh_token_accounts(owner, known_mints):
             continue
     return added
 
-def stable_out_destination(tx, owner, mint):
-    """Owner wallet of the destination token account for an outgoing transfer of `mint`."""
+def transfer_counterparty(tx, owner, mint, direction="out"):
+    """(token_account, owner_wallet) of the other side of a transfer of `mint`.
+    direction 'out': owner sent it (authority == owner) -> destination.
+    direction 'in' : owner received it (destination is owner's token account) -> source."""
     try:
         msg = tx["transaction"]["message"]
         keys = [a["pubkey"] if isinstance(a, dict) else a for a in msg["accountKeys"]]
-        owners = {}
+        owners, mints = {}, {}
         for b in (tx["meta"].get("postTokenBalances") or []) + (tx["meta"].get("preTokenBalances") or []):
             owners[keys[b["accountIndex"]]] = b.get("owner")
+            mints[keys[b["accountIndex"]]] = b.get("mint")
+        mine = {a for a, o in owners.items() if o == owner}
         ixs = list(msg.get("instructions") or [])
         for g in tx["meta"].get("innerInstructions") or []:
             ixs += g.get("instructions") or []
@@ -317,15 +323,32 @@ def stable_out_destination(tx, owner, mint):
             if not isinstance(p, dict) or p.get("type") not in ("transfer", "transferChecked"):
                 continue
             info = p.get("info") or {}
-            if info.get("authority") != owner:
+            src, dst = info.get("source"), info.get("destination")
+            m = info.get("mint") or mints.get(src) or mints.get(dst)
+            if m and m != mint:
                 continue
-            if info.get("mint") and info["mint"] != mint:
-                continue
-            dest = info.get("destination")
-            return owners.get(dest) or dest
+            if direction == "out" and (info.get("authority") == owner or src in mine) and dst not in mine:
+                return dst, owners.get(dst)
+            if direction == "in" and dst in mine and src not in mine:
+                return src, owners.get(src) or info.get("authority")
     except Exception:
         pass
-    return None
+    return None, None
+
+def fmt_party(acct, wallet):
+    """'Binance (depósito da 5Mef)' when labeled (exact match on wallet or token account), else short address."""
+    if not (acct or wallet):
+        return None
+    return addr_party(wallet, acct)
+
+def fmt_usd_amt(x):
+    s_ = f"{abs(x):,.2f}"
+    return s_[:-3] if s_.endswith(".00") else s_
+
+def stable_out_destination(tx, owner, mint):
+    """Owner wallet of the destination token account for an outgoing transfer of `mint`."""
+    acct, wallet = transfer_counterparty(tx, owner, mint, "out")
+    return wallet or acct
 
 def classify(deltas):
     bought = [(m, d) for m, d in deltas.items() if d > 0]
@@ -410,7 +433,7 @@ def main():
     # collect newer sigs across addresses
     by_sig = {}
     found_any = False
-    for addr in addrs:
+    for addr in ([] if REPLAY_SIGS else addrs):   # replay: no polling, only the given sigs
         newer, found = get_newer_sigs(addr, wm_slot, wm_sig)
         found_any = found_any or found
         for s in newer:
@@ -520,8 +543,25 @@ def main():
         else:
             line = cls
 
+        # counterparty (label only via exact full-address match)
+        cp = None
+        if cls in ("transfer_out", "transfer_in", "stable_move") and (sold_info or bought_info):
+            if sold_info and not bought_info:
+                top = max(sold_info, key=lambda x: abs(x["amount"])); direction = "out"
+            elif bought_info and not sold_info:
+                top = max(bought_info, key=lambda x: abs(x["amount"])); direction = "in"
+            else:
+                top = None
+            if top:
+                acct, wallet = transfer_counterparty(tx, owner, top["mint"], direction)
+                if acct or wallet:
+                    cp = {"direction": direction, "token_account": acct, "wallet": wallet,
+                          "label": label_for(wallet, acct)}
+                    if cls != "stable_move" or cp["label"]:
+                        line += (" → " if direction == "out" else " ← ") + fmt_party(acct, wallet)
         summaries.append({
             "signature": sig, "slot": slot, "blockTime": bt,
+            "counterparty": cp,
             "classification": cls, "meaningful": meaningful or is_new_token,
             "is_new_token": is_new_token,
             "bought": bought_info, "sold": sold_info,
@@ -559,16 +599,25 @@ def main():
                         body = f"+{fmt_amt(main_buy['amount'])} {main_buy['symbol']} ← {fmt_amt(abs(top_sell['amount']))} {sold_sym}"
                     else:
                         body = f"+{fmt_amt(main_buy['amount'])} {main_buy['symbol']}"
+                        if cls == "transfer_in" and cp and cp["direction"] == "in":
+                            body = f"↙️ {body} ← {fmt_party(cp['token_account'], cp['wallet'])}"
                     if is_swapish and is_major:
                         msg = f"⚡ SWAP\n{body}\n{dex}"
                     else:
                         msg = f"{body}\n{dex}"
             elif sold_info and cls == "transfer_out" and max(sold_info, key=lambda x: abs(x["amount"]))["mint"] in USD_STABLES:
                 top_sell = max(sold_info, key=lambda x: abs(x["amount"]))
-                dest = stable_out_destination(tx, owner, top_sell["mint"])
-                to = f" → {dest[:6]}…{dest[-4:]}" if dest else ""
-                msg = (f"📤 TRANSFER OUT\n-{fmt_amt(abs(top_sell['amount']))} {STABLE_SYM.get(top_sell['mint'], 'USD')}{to}"
-                       f"\nhttps://solscan.io/tx/{sig}")
+                acct, wallet = transfer_counterparty(tx, owner, top_sell["mint"], "out")
+                sym_ = STABLE_SYM.get(top_sell["mint"], "USD")
+                head = f"↗️ −{fmt_usd_amt(top_sell['amount'])} {sym_}"
+                if acct or wallet:
+                    lab = label_for(wallet, acct)
+                    head += f" → {lab}" if lab else f" → {addr_short(wallet or acct)} (sem etiqueta)"
+                    where = f"\nPara: {addr_short(wallet)}" if wallet else ""
+                    where += f" (conta {sym_} {addr_short(acct)})" if acct and wallet else (f"\nConta {sym_}: {addr_short(acct)}" if acct else "")
+                else:
+                    head += " → destino desconhecido"; where = ""
+                msg = f"📤 Transferência de saída\n{head}{where}\nhttps://solscan.io/tx/{sig}"
             elif sold_info:
                 top_sell = max(sold_info, key=lambda x: abs(x["amount"]))
                 mint = top_sell["mint"]
@@ -577,6 +626,8 @@ def main():
                 if stable_buys:
                     top_buy = max(stable_buys, key=lambda x: abs(x["amount"]))
                     body = f"Sold {fmt_amt(abs(top_sell['amount']))} {top_sell['symbol']} → +{fmt_amt(top_buy['amount'])} {top_buy['symbol']}"
+                elif cls == "transfer_out" and cp and cp["direction"] == "out":
+                    body = f"↗️ −{fmt_amt(abs(top_sell['amount']))} {top_sell['symbol']} → {fmt_party(cp['token_account'], cp['wallet'])}"
                 else:
                     body = f"Sold {fmt_amt(abs(top_sell['amount']))} {top_sell['symbol']}"
                 if is_major:
