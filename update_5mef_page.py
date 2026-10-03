@@ -77,20 +77,21 @@ PRICE_CACHE = os.path.join(REPO, "_price_cache.json")
 PRICE_TTL = 90          # seconds a cached price is reused (avoids hammering APIs -> 429)
 PRICE_STALE_MAX = 3600  # last-resort: reuse a cached price up to 1h old, flagged stale
 
-def _get_json_retry(url, tries=3, base=1.5):
+def _get_json_retry(url, tries=2, base=1.5):
     """GET with backoff; honours 429/5xx. Returns None on failure."""
     for i in range(tries):
         try:
             return http_json(url, timeout=15)
         except urllib.error.HTTPError as e:
             log("price", url.split("/")[2], "HTTP", e.code)
-            if e.code not in (429, 500, 502, 503, 504):
+            if e.code not in (429, 500, 502, 503, 504) or i == tries - 1:
                 return None
             ra = e.headers.get("Retry-After") if e.headers else None
-            time.sleep(min(float(ra) if ra and ra.isdigit() else base * (2 ** i), 10))
+            time.sleep(min(float(ra) if ra and ra.isdigit() else base * (2 ** i), 5))
         except Exception as e:
             log("price", url.split("/")[2], type(e).__name__)
-            time.sleep(base * (2 ** i))
+            if i < tries - 1:
+                time.sleep(base * (2 ** i))
     return None
 
 def _load_cache():
@@ -110,7 +111,8 @@ def prices(mints, use_cache=True):
         c = cache.get(m)
         if c and now - c.get("ts", 0) < PRICE_TTL and c.get("price"):
             out[m] = {k: c[k] for k in ("price", "liq", "symbol", "source") if k in c}
-    todo = [m for m in mints if m not in out]
+    # tokens with no price anywhere (e.g. dead pools) are skipped for 10 min instead of re-hitting every API
+    todo = [m for m in mints if m not in out and not (cache.get(m, {}).get("miss") and now - cache[m].get("ts", 0) < 600)]
     # 1) Jupiter price v3 (has liquidity)
     for i in range(0, len(todo), 50):
         chunk = todo[i:i + 50]
@@ -144,7 +146,9 @@ def prices(mints, use_cache=True):
     for m in todo:
         if m not in out:
             c = cache.get(m)
-            if c and c.get("price") and now - c.get("ts", 0) < PRICE_STALE_MAX:
+            if not (c and c.get("price")):
+                cache[m] = {"miss": True, "ts": now}
+            elif now - c.get("ts", 0) < PRICE_STALE_MAX:
                 out[m] = {k: c[k] for k in ("price", "liq", "symbol", "source") if k in c}
                 out[m]["stale"] = True
     sol = None
