@@ -1,0 +1,11 @@
+{
+  "_note": "Spam/fake token mints for the 5Mef watch, page and /pnl. Matched by FULL mint only (never by symbol/name: fakes copy real tickers). Listed mints get no Telegram alerts, are not meaningful trades, and are dropped from page holdings/totals/activity and /pnl.",
+  "spam": [
+    {
+      "mint": "BWBmDY9tpPJtVVK2PX9VrvpBtzauuDLVwokt3FoDbsxj",
+      "label": "fake ZCAT (copies 'Anonymous Cat'/ZCAT; real ZCAT is HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR)",
+      "sender": "ExvKX4…Fg71 (sends 1.1x each real ZCAT buy)",
+      "added": "2026-10-04"
+    }
+  ]
+}

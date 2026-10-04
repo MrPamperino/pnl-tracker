@@ -43,3 +43,19 @@ def party(wallet=None, token_account=None):
     """'Binance (depósito da 5Mef)' if labeled, else short address."""
     lab = label_for(wallet, token_account)
     return lab if lab else short(wallet or token_account)
+
+
+# ---------------------------------------------------------------- spam mints
+SPAM_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_spam_mints.json")
+
+
+def load_spam(path=SPAM_PATH):
+    """-> set of full spam mint addresses (exact match only)."""
+    try:
+        d = json.load(open(path))
+    except Exception:
+        return set()
+    return {e["mint"] for e in d.get("spam") or [] if isinstance(e.get("mint"), str) and _B58.match(e["mint"])}
+
+
+SPAM_MINTS = load_spam()

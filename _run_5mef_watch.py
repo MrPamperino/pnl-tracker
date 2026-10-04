@@ -4,7 +4,7 @@ import json, os, sys, time, subprocess, urllib.request, urllib.error, urllib.par
 from datetime import datetime, timezone
 from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from address_labels import label_for, party as addr_party, short as addr_short
+from address_labels import label_for, party as addr_party, short as addr_short, SPAM_MINTS
 
 STATE_PATH = "/workspace/pnl-tracker/wallet5mef_watch_state.json"
 SECRETS_PATH = "/home/box/agent-data/box-secrets.json"
@@ -427,6 +427,8 @@ def main():
     # receives/swaps show up on ATAs first (incl. spam + new mints).
     for m, info in list(known.items()):
         ata = (info or {}).get("ata")
+        if m in SPAM_MINTS:          # don't poll fake-token ATAs
+            continue
         if ata and ata not in addrs:
             addrs.append(ata)
 
@@ -490,7 +492,11 @@ def main():
             continue
 
         deltas = token_deltas(tx["meta"], owner)
+        spam_hit = sorted(m for m in deltas if m in SPAM_MINTS)   # full-mint match only, never by symbol
+        deltas = {m: d for m, d in deltas.items() if m not in SPAM_MINTS}
         cls, bought, sold, meaningful = classify(deltas)
+        if spam_hit and not deltas:
+            cls = "spam"
 
         bought_info = []
         is_new_token = False
@@ -562,6 +568,7 @@ def main():
         summaries.append({
             "signature": sig, "slot": slot, "blockTime": bt,
             "counterparty": cp,
+            "spam_ignored": spam_hit,
             "classification": cls, "meaningful": meaningful or is_new_token,
             "is_new_token": is_new_token,
             "bought": bought_info, "sold": sold_info,

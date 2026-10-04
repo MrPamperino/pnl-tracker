@@ -17,7 +17,7 @@ Prints one JSON line summary at the end. Never prints secrets.
 """
 import json, os, re, sys, time, subprocess, datetime, urllib.request, urllib.error, zoneinfo
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from address_labels import label_for
+from address_labels import label_for, SPAM_MINTS
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(REPO, "wallet-5mef.html")
@@ -188,7 +188,7 @@ def balances():
         for a in r["value"]:
             info = a["account"]["data"]["parsed"]["info"]
             amt = float(info["tokenAmount"]["uiAmountString"] or 0)
-            if amt > 0:
+            if amt > 0 and info["mint"] not in SPAM_MINTS:   # fake tokens: full-mint match only
                 bal[info["mint"]] = bal.get(info["mint"], 0) + amt
     bal[SOL] = rpc("getBalance", [OWNER])["value"] / 1e9
     bal.setdefault(USDC, 0.0)
@@ -229,8 +229,8 @@ def tx_deltas(tx):
             sol += tx["meta"]["fee"] / 1e9
         if abs(sol) >= 0.01:          # ignore fees / rent
             deltas[SOL] = deltas.get(SOL, 0) + sol
-    deltas = {m: d for m, d in deltas.items() if abs(d) > 1e-12}
-    return deltas, pre
+    deltas = {m: d for m, d in deltas.items() if abs(d) > 1e-12 and m not in SPAM_MINTS}
+    return deltas, {m: q for m, q in pre.items() if m not in SPAM_MINTS}
 
 def _acct_key(tx, b):
     k = tx["transaction"]["message"]["accountKeys"][b["accountIndex"]]
@@ -338,6 +338,8 @@ def build(ledger, bal, px):
     known = ledger["symbols"]
     order = sorted(bal, key=lambda m: -(bal[m] * (px.get(m, {}).get("price") or 0)))
     for m in order:
+        if m in SPAM_MINTS:
+            continue
         q = bal[m]; p = px.get(m) or {}
         price = p.get("price")
         tracked = (ledger["cost"].get(m) is not None or m in (USDC, SOL) or m in ledger.get("pinned", [])
