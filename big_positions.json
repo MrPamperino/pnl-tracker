@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-06T21:05:48+01:00",
+  "updated": "2026-10-06T21:18:24+01:00",
   "threshold_usd": 100.0,
-  "snapshot_total_usd": 4071407.59,
+  "snapshot_total_usd": 4433985.98,
   "wallets": [
     {
       "id": "ay1vrqfs",
@@ -104,12 +104,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 342236.308619,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0367715755212583,
-          "value": 354820.88,
+          "price": 1.0369211270430982,
+          "value": 354872.06,
           "cost": null
         }
       ],
-      "value": 354820.88
+      "value": 354872.06
     },
     {
       "id": "0xa74c0c",
@@ -125,12 +125,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 1272017.362436,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0367715755212583,
-          "value": 1318791.44,
+          "price": 1.0369211270430982,
+          "value": 1318981.68,
           "cost": null
         }
       ],
-      "value": 1318791.44
+      "value": 1318981.68
     },
     {
       "id": "0xaef093",
@@ -146,8 +146,8 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 408678.315438,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0367715755212583,
-          "value": 423706.06,
+          "price": 1.0369211270430982,
+          "value": 423767.18,
           "cost": null
         },
         {
@@ -157,12 +157,12 @@
           "token": null,
           "qty": 0.037977960585088774,
           "priceKey": "coingecko:ethereum",
-          "price": 2691.3967168278955,
-          "value": 102.21,
+          "price": 2693.6564630897005,
+          "value": 102.3,
           "cost": null
         }
       ],
-      "value": 423808.27
+      "value": 423869.48
     },
     {
       "id": "0xc14346",
@@ -178,12 +178,12 @@
           "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
           "qty": 107.93368229932749,
           "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "price": 2690.5178805260175,
-          "value": 290397.5,
+          "price": 2691.563162846238,
+          "value": 290510.32,
           "cost": null
         }
       ],
-      "value": 290397.5
+      "value": 290510.32
     },
     {
       "id": "0x7efa55",
@@ -193,6 +193,38 @@
       "explorer": "https://debank.com/profile/0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
       "holdings": [],
       "value": 0
+    },
+    {
+      "id": "0x9f0d7b",
+      "label": "0x9F0d…D2B0",
+      "chain": "EVM",
+      "address": "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",
+      "explorer": "https://debank.com/profile/0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",
+      "holdings": [
+        {
+          "symbol": "stETH",
+          "name": "Lido Staked ETH",
+          "chain": "Ethereum",
+          "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+          "qty": 101.044311055816,
+          "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+          "price": 2691.563162846238,
+          "value": 271967.15,
+          "cost": null
+        },
+        {
+          "symbol": "AERO",
+          "name": "Aerodrome Finance",
+          "chain": "Base",
+          "token": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+          "qty": 110213.99607283044,
+          "priceKey": "base:0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+          "price": 0.8125220408392985,
+          "value": 89551.3,
+          "cost": null
+        }
+      ],
+      "value": 361518.45
     }
   ],
   "manual": [
@@ -202,8 +234,8 @@
       "qty": 12.02,
       "priceKey": "coingecko:bitcoin",
       "note": "manual · off-chain (no address given)",
-      "price": 85589.07737212048,
-      "value": 1028780.71,
+      "price": 85642.69529020925,
+      "value": 1029425.2,
       "cost": null
     }
   ],
@@ -213,7 +245,7 @@
       "chain": "Solana",
       "symbol": "SOL",
       "qty": 0.077288091,
-      "value": 9.33,
+      "value": 9.35,
       "reason": "< $100"
     },
     {
@@ -222,7 +254,8 @@
       "symbol": "MARCO",
       "qty": 7.722920796,
       "value": 0.0,
-      "reason": "< $100"
+      "reason": "< $100",
+      "priceKey": "solana:6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF"
     },
     {
       "wallet": "Ay1v…nMFi",
@@ -230,12 +263,13 @@
       "symbol": "HALLOWEEK",
       "qty": 30.0,
       "value": null,
-      "reason": "no price (spam/airdrop)"
+      "reason": "no price (spam/airdrop)",
+      "priceKey": "solana:E1ACvsno8rdqwuxF5vygfCNKVfKEz41qms8fShdgyoVf"
     },
     {
       "wallet": "Ay1v…nMFi",
       "chain": "Solana",
-      "symbol": "LLY (Backpack)",
+      "symbol": "LLY",
       "qty": 3.8e-05,
       "value": 0.04,
       "reason": "< $100"
@@ -257,11 +291,27 @@
       "reason": "< $100"
     },
     {
+      "wallet": "0xFaD2…B69D",
+      "chain": "Base",
+      "symbol": "USDC",
+      "qty": 0.000207,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
       "wallet": "0xA74C…133C",
       "chain": "Ethereum",
       "symbol": "ETH",
       "qty": 0.008586807091513986,
-      "value": 23.11,
+      "value": 23.13,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xaeF0…1d46",
+      "chain": "Base",
+      "symbol": "wstETH",
+      "qty": 1.7001e-09,
+      "value": 0.0,
       "reason": "< $100"
     },
     {
@@ -277,7 +327,15 @@
       "chain": "Ethereum",
       "symbol": "ETH",
       "qty": 0.018972971250356054,
-      "value": 51.06,
+      "value": 51.11,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xc143…810F",
+      "chain": "Base",
+      "symbol": "wstETH",
+      "qty": 1.7001e-09,
+      "value": 0.0,
       "reason": "< $100"
     },
     {
@@ -301,6 +359,38 @@
       "chain": "Polygon",
       "symbol": "POL",
       "qty": 0.027764674435883083,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x9F0d…D2B0",
+      "chain": "Ethereum",
+      "symbol": "ETH",
+      "qty": 0.000232922242478012,
+      "value": 0.63,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x9F0d…D2B0",
+      "chain": "Base",
+      "symbol": "ETH",
+      "qty": 0.005353145856338403,
+      "value": 14.42,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x9F0d…D2B0",
+      "chain": "Base",
+      "symbol": "WETH",
+      "qty": 6e-18,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x9F0d…D2B0",
+      "chain": "Base",
+      "symbol": "wstETH",
+      "qty": 1.7001e-09,
       "value": 0.0,
       "reason": "< $100"
     }

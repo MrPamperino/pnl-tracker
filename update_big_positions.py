@@ -22,7 +22,8 @@ UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.3
 SOLANA_WALLETS = ["Ay1vrqfSSmn5JYz7viZcKmki751bEh7v5V4WPp67nMFi"]
 EVM_WALLETS = ["0xFaD2A6e902154CA7675d0Df4e0F6F091cf3aB69D", "0xA74C0C14E29a2aE6fc45c0de80D5D7BC469B133C",
                "0xaeF0939EFAE51BfD325bC38E9Dc9FB0df09B1d46", "0xc14346768592DddD9cD6d6964916Ed93a553810F",
-               "0x7Efa55f129Eb43477aA0309C106120F55dE8684F"]
+               "0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
+               "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0"]   # also the AERO wallet of the main tracker (portfolio.json untouched)
 MANUAL = [{"symbol": "BTC", "name": "Bitcoin", "qty": 12.02, "priceKey": "coingecko:bitcoin",
            "note": "manual · off-chain (no address given)"}]
 
@@ -54,6 +55,11 @@ TRACKED = [
     ("Ethereum", "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", "wstETH", "Wrapped stETH", 18, "ethereum:0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"),
     ("Ethereum", "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", "WBTC", "Wrapped BTC", 8, "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"),
     ("Ethereum", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "WETH", "Wrapped Ether", 18, "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
+    # Base (no scripted token discovery there: explorer blocks bots -> check known tokens)
+    ("Base", "0x940181a94A35A4569E4529A3CDfB74e38FD98631", "AERO", "Aerodrome Finance", 18, "base:0x940181a94A35A4569E4529A3CDfB74e38FD98631"),
+    ("Base", "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", "USDC", "USD Coin (Base)", 6, "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"),
+    ("Base", "0x4200000000000000000000000000000000000006", "WETH", "Wrapped Ether (Base)", 18, "base:0x4200000000000000000000000000000000000006"),
+    ("Base", "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452", "wstETH", "Bridged wstETH (Base)", 18, "base:0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"),
 ]
 SOL_RPCS = ["https://api.mainnet-beta.solana.com", "https://solana-rpc.publicnode.com", "https://solana.drpc.org"]
 SOL = "So11111111111111111111111111111111111111112"
@@ -206,7 +212,9 @@ def main():
     px = llama_prices(keys)
     # stable symbols/names: previous file > Jupiter > DefiLlama
     try:
-        prev = {h["priceKey"]: h for w in json.load(open(OUT))["wallets"] for h in w["holdings"]}
+        _old = json.load(open(OUT))
+        prev = {h["priceKey"]: h for w in _old["wallets"] for h in w["holdings"]}
+        prev.update({x["priceKey"]: x for x in _old.get("skipped", []) if x.get("priceKey") and not x["symbol"].endswith("…")})
     except Exception:
         prev = {}
     for wl in wallets:
@@ -228,7 +236,7 @@ def main():
             h["cost"] = None
             h.pop("_note", None)
             if p is None or h["value"] < THRESHOLD_USD:
-                skipped.append({"wallet": wl["label"], "chain": h["chain"], "symbol": h["symbol"], "qty": h["qty"],
+                skipped.append({"wallet": wl["label"], "chain": h["chain"], "symbol": h["symbol"], "priceKey": h["priceKey"], "qty": h["qty"],
                                 "value": h["value"], "reason": "no price (spam/airdrop)" if p is None else f"< ${THRESHOLD_USD:.0f}"})
                 continue
             kept.append(h)
