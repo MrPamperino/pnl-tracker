@@ -83,6 +83,7 @@ const STABLE = new Set(["USDC","USDT","DAI","USDS","USDE","PYUSD","USDG","SPUSDC
 const ETHS = new Set(["ETH","WETH","STETH","WSTETH","WEETH","RETH","CBETH"]);
 const BTCS = new Set(["BTC","WBTC","CBBTC","TBTC"]);
 function assetClass(h) {
+  if (h.kind === "lp") return "LP (Raydium/Orca)";
   if (h.kind === "cash") return `Cash (${h.currency || h.symbol})`;
   const s = String(h.symbol || "").toUpperCase();
   if (STABLE.has(s)) return "Stablecoins";
@@ -108,7 +109,7 @@ async function ethCall(to, data) {
   return r.result;
 }
 async function fetchPrices() {
-  const keys = [...new Set(allHoldings().map(h => h.priceKey))];
+  const keys = [...new Set(allHoldings().flatMap(h => h.kind === "lp" ? h.underlying.map(u => u.priceKey) : [h.priceKey]))];
   PX = {}; PXSRC = {};
   try {
     const d = await fetch("https://coins.llama.fi/prices/current/" + keys.filter(k => !k.startsWith("fx:")).join(",")).then(r => r.json());
@@ -152,6 +153,15 @@ async function fetchPrices() {
     } catch {}
   }
 }
+function lpValue(h) {   // LP = underlying token amounts x live prices (snapshot price per token as fallback)
+  let v = 0, live = true;
+  for (const u of h.underlying || []) {
+    const p = PX[u.priceKey] ?? u.price;
+    if (!PX[u.priceKey]) live = false;
+    v += p ? u.qty * p : 0;
+  }
+  return { v, live };
+}
 function priceOf(h) {
   if (PX[h.priceKey]) return { p: PX[h.priceKey], live: true };
   return { p: h.price, live: false };   // snapshot from big_positions.json
@@ -160,9 +170,9 @@ function render() {
   const hs = allHoldings();
   let total = 0, stale = 0;
   for (const h of hs) {
-    const { p, live } = priceOf(h);
-    h._p = p; h._live = live; h._v = p ? h.qty * p : null;
-    if (!live && p) stale++;
+    if (h.kind === "lp") { const r = lpValue(h); h._p = null; h._live = r.live; h._v = r.v; }
+    else { const { p, live } = priceOf(h); h._p = p; h._live = live; h._v = p ? h.qty * p : null; }
+    if (!h._live && h._v) stale++;
     total += h._v || 0;
   }
   const pct = v => total ? (v / total * 100).toFixed(1) + "%" : "—";
@@ -174,12 +184,13 @@ function render() {
   // by asset class
   const cls = {};
   for (const h of hs) {
-    const c = cls[assetClass(h)] ||= { v: 0, syms: {} };
+    const c = cls[assetClass(h)] ||= { v: 0, syms: {}, npos: 0 };
     c.v += h._v || 0;
+    if (h.kind === "lp") c.npos += h.qty;
     c.syms[h.symbol] = (c.syms[h.symbol] || 0) + (h._v || 0);
   }
   document.getElementById("classRows").innerHTML = Object.entries(cls).sort((a, b) => b[1].v - a[1].v).map(([name, c]) =>
-    `<tr><td><span class="name">${esc(name)}</span><div class="venue">${Object.entries(c.syms).sort((a, b) => b[1] - a[1]).map(([s]) => esc(s)).join(" · ")}</div></td>` +
+    `<tr><td><span class="name">${esc(name)}</span><div class="venue">${c.npos ? `${c.npos} posições · ` : ""}${Object.entries(c.syms).sort((a, b) => b[1] - a[1]).map(([s]) => esc(s)).join(" · ")}</div></td>` +
     `<td class="r name">${big(c.v)}</td><td class="r pct muted">${pct(c.v)}<div class="bar"><i style="width:${total ? c.v / total * 100 : 0}%"></i></div></td></tr>`).join("");
 
   // by wallet (collapsed)
@@ -193,7 +204,10 @@ function render() {
                     (w.error ? `<span class="tag stale" title="${esc(w.error)}">saldos antigos</span>` : "")
                   : m.kind === "cash" ? `<span class="name">${esc(m.name)}</span><span class="tag">manual · ${esc(m.currency)}</span> <span class="muted" style="font-size:13px">${cashAmt(m)}</span>`
                   : `<span class="name">${esc(m.symbol)}</span><span class="tag">manual</span>`;
-    const body = g.length ? `<table>${g.sort((a, b) => (b._v || 0) - (a._v || 0)).map(h =>
+    const body = g.length ? `<table>${g.sort((a, b) => (b._v || 0) - (a._v || 0)).map(h => h.kind === "lp" ?
+        `<tr><td><span class="name">${esc(h.symbol)}</span> <span class="tag">LP</span> <span class="muted" style="font-size:12px">${esc(h.name)} · ${h.qty} ${h.qty === 1 ? "posição" : "posições"}</span></td>` +
+        `<td class="r muted" colspan="2" style="font-size:12px">${h.underlying.map(u => `${qty(u.qty)} ${esc(u.symbol)}`).join(" + ")}</td>` +
+        `<td class="r${h._live ? "" : " stale"}">${big(h._v)}</td></tr>` :
         `<tr><td><span class="name">${esc(h.symbol)}</span> <span class="muted" style="font-size:12px">${h.wallet ? esc(h.chain) : h.kind === "cash" ? "fiat" : "off-chain"}</span></td>` +
         `<td class="r">${h.kind === "cash" ? cashAmt(h) : qty(h.qty)}</td><td class="r${h._live ? "" : " stale"}" title="${h._live ? esc(PXSRC[h.priceKey]) : "snapshot"}">${price(h._p)}</td><td class="r">${big(h._v)}</td></tr>`).join("")}</table>` +
         (w ? `<div style="margin:0 0 12px 26px;font-size:12px"><a href="${esc(w.explorer)}" target="_blank" rel="noopener">ver no explorer ↗</a></div>` : "")

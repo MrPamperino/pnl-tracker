@@ -12,6 +12,8 @@ Positions under THRESHOLD_USD and tokens without a real price (spam/airdrops) ar
 Cost basis is unknown -> not stored (cost: null). Never prints secrets.
 """
 import json, os, sys, time, subprocess, datetime, zoneinfo
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import solana_lp
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(REPO, "big_positions.json")
@@ -19,7 +21,8 @@ TZ = zoneinfo.ZoneInfo("Europe/Lisbon")
 THRESHOLD_USD = 100.0
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 
-SOLANA_WALLETS = ["Ay1vrqfSSmn5JYz7viZcKmki751bEh7v5V4WPp67nMFi"]
+SOLANA_WALLETS = ["Ay1vrqfSSmn5JYz7viZcKmki751bEh7v5V4WPp67nMFi",
+                  "DmSGgpE1u3fdvgtBcFEFfdA4kuv9sNHt5WfN2PCXHzHa"]   # Raydium CLMM + Orca LP positions (solana_lp.py)
 EVM_WALLETS = ["0xFaD2A6e902154CA7675d0Df4e0F6F091cf3aB69D", "0xA74C0C14E29a2aE6fc45c0de80D5D7BC469B133C",
                "0xaeF0939EFAE51BfD325bC38E9Dc9FB0df09B1d46", "0xc14346768592DddD9cD6d6964916Ed93a553810F",
                "0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
@@ -79,6 +82,8 @@ TRACKED = [
 ]
 SOL_RPCS = ["https://api.mainnet-beta.solana.com", "https://solana-rpc.publicnode.com", "https://solana.drpc.org"]
 SOL = "So11111111111111111111111111111111111111112"
+KNOWN_SYMBOLS = {"solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "USDC", "solana:Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB": "USDT",
+                 "solana:" + SOL: "SOL"}
 
 errors = []
 
@@ -156,22 +161,45 @@ def jup_info(mints):
 
 # ---------------------------------------------------------------- discovery
 def solana_wallet(w):
-    raw = []
+    """Returns (holdings, lp_error). LP positions (Raydium CLMM / Orca Whirlpool) become kind="lp" holdings,
+    one per protocol+pair, valued from their underlying token amounts."""
+    raw, nfts = [], []
     for prog in ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"]:
         for a in sol_rpc("getTokenAccountsByOwner", [w, {"programId": prog}, {"encoding": "jsonParsed"}])["value"]:
             i = a["account"]["data"]["parsed"]["info"]
             q = float(i["tokenAmount"]["uiAmountString"] or 0)
             if q > 0:
                 raw.append((i["mint"], q))
+                if i["tokenAmount"]["decimals"] == 0 and i["tokenAmount"]["amount"] == "1":
+                    nfts.append(i["mint"])
+    lp, lp_error = [], None
+    try:
+        lp = solana_lp.positions(sol_rpc, nfts)
+    except Exception as e:
+        lp_error = f"{type(e).__name__}: {e}"[:160]
+    lp_nfts = set(nfts) if lp_error else {p["nft"] for p in lp}   # on failure drop all 1-of-1 NFTs (never priced anyway)
+    raw = [(m, q) for m, q in raw if m not in lp_nfts]
     sol = sol_rpc("getBalance", [w])["value"] / 1e9
     hold = [{"symbol": "SOL", "name": "Solana", "chain": "Solana", "token": SOL, "qty": sol, "priceKey": "coingecko:solana"}]
-    info = jup_info([m for m, _ in raw])
+    info = jup_info(list({m for m, _ in raw} | {p[k] for p in lp for k in ("mint0", "mint1")}))
     for m, q in raw:
         t = info.get(m, {})
         hold.append({"symbol": t.get("symbol") or m[:4] + "…", "name": t.get("name") or "", "chain": "Solana",
                      "token": m, "qty": q, "priceKey": "solana:" + m,
                      "_jup": {"price": t.get("usdPrice"), "liq": t.get("liquidity"), "verified": t.get("isVerified")}})
-    return hold
+    groups = {}
+    for p in lp:
+        g = groups.setdefault((p["protocol"], p["mint0"], p["mint1"]), [])
+        g.append(p)
+    for (proto, m0, m1), ps in groups.items():
+        sym = lambda m: (info.get(m) or {}).get("symbol") or m[:4] + "…"
+        hold.append({"symbol": f"{sym(m0)}/{sym(m1)}", "name": proto, "kind": "lp", "chain": "Solana", "token": None,
+                     "qty": len(ps), "priceKey": f"lp:{proto}:{m0}/{m1}",
+                     "underlying": [{"symbol": sym(m0), "priceKey": "solana:" + m0, "qty": sum(p["amount0"] + p["fee0"] for p in ps)},
+                                    {"symbol": sym(m1), "priceKey": "solana:" + m1, "qty": sum(p["amount1"] + p["fee1"] for p in ps)}],
+                     "positions": [{"nft": p["nft"], "pool": p["pool"], "amount0": p["amount0"], "amount1": p["amount1"],
+                                    "fee0": p["fee0"], "fee1": p["fee1"], "in_range": p["in_range"]} for p in ps]})
+    return hold, lp_error
 
 def evm_wallet(w):
     hold = []
@@ -245,8 +273,17 @@ def main():
     wallets = []
     for w in SOLANA_WALLETS:
         try:
-            wallets.append({"id": w[:8].lower(), "label": short(w), "chain": "Solana", "address": w,
-                            "explorer": "https://solscan.io/account/" + w, "holdings": solana_wallet(w)})
+            hold, lp_err = solana_wallet(w)
+            wl = {"id": w[:8].lower(), "label": short(w), "chain": "Solana", "address": w,
+                  "explorer": "https://solscan.io/account/" + w, "holdings": hold}
+            if lp_err:   # LP valuation failed: keep last known LP holdings instead of zeroing them
+                errors.append(f"Solana LP {w}: {lp_err} (kept previous LP values)")
+                prev_w = next((x for x in _prev_file().get("wallets", []) if x.get("address") == w), None)
+                prev_lp = [h for h in (prev_w or {}).get("holdings", []) if h.get("kind") == "lp"]
+                hold += [{k: v for k, v in h.items() if k not in ("price", "value", "cost")} for h in prev_lp]
+                if prev_lp:
+                    wl["error"] = f"LP: avaliação falhou — valores LP da atualização anterior ({_prev_file().get('updated')})"
+            wallets.append(wl)
         except Exception as e:
             # keep the last known balances instead of showing an empty wallet
             errors.append(f"Solana {w}: {e} (kept previous balances)")
@@ -263,7 +300,8 @@ def main():
         wallets.append({"id": w[:8].lower(), "label": short(w), "chain": "EVM", "address": w,
                         "explorer": "https://debank.com/profile/" + w, "holdings": hold,
                         **({"note": "só ETH (stETH + ETH nativo)"} if allow is not None else {})})
-    keys = [h["priceKey"] for wl in wallets for h in wl["holdings"]] + [m["priceKey"] for m in MANUAL]
+    keys = [k for wl in wallets for h in wl["holdings"]
+            for k in ([u["priceKey"] for u in h["underlying"]] if h.get("kind") == "lp" else [h["priceKey"]])] + [m["priceKey"] for m in MANUAL]
     px = llama_prices([k for k in keys if not k.startswith("fx:")])
     fx = eur_usd()
     if fx:
@@ -273,18 +311,45 @@ def main():
         _old = json.load(open(OUT))
         prev = {h["priceKey"]: h for w in _old["wallets"] for h in w["holdings"]}
         prev.update({x["priceKey"]: x for x in _old.get("skipped", []) if x.get("priceKey") and not x["symbol"].endswith("…")})
+        prev.update({u["priceKey"]: u for w in _old["wallets"] for h in w["holdings"] for u in h.get("underlying", []) if not u["symbol"].endswith("…")})
     except Exception:
         prev = {}
+    def _sym(k, cur):
+        if not cur.endswith("…"):
+            return cur
+        s_ = KNOWN_SYMBOLS.get(k) or (prev.get(k) or {}).get("symbol") or (px.get(k) or {}).get("symbol") or cur
+        return s_[:-1] + "x" if k.startswith("solana:Xs") and s_.endswith("X") else s_   # xStocks: DefiLlama upper-cases
     for wl in wallets:
         for h in wl["holdings"]:
-            if h["symbol"].endswith("…"):
-                h["symbol"] = (prev.get(h["priceKey"]) or {}).get("symbol") or (px.get(h["priceKey"]) or {}).get("symbol") or h["symbol"]
+            if h.get("kind") == "lp":
+                for un in h["underlying"]:
+                    un["symbol"] = _sym(un["priceKey"], un["symbol"])
+                h["symbol"] = "/".join(un["symbol"] for un in h["underlying"])
+                continue
+            h["symbol"] = _sym(h["priceKey"], h["symbol"])
             if not h.get("name"):
                 h["name"] = (prev.get(h["priceKey"]) or {}).get("name") or ""
     skipped = []
     for wl in wallets:
         kept = []
         for h in wl["holdings"]:
+            if h.get("kind") == "lp":   # value = underlying amounts (incl. stored unclaimed fees) x prices
+                tot, ok = 0.0, True
+                for un in h["underlying"]:
+                    up = (px.get(un["priceKey"]) or {}).get("price")
+                    un["price"] = up
+                    un["value"] = round(un["qty"] * up, 2) if up is not None else None
+                    ok &= up is not None
+                    tot += un["value"] or 0
+                h["price"], h["value"], h["cost"] = None, round(tot, 2), None
+                if not ok:
+                    errors.append(f"LP {h['symbol']} ({wl['label']}): missing price for an underlying token")
+                if h["value"] < THRESHOLD_USD:
+                    skipped.append({"wallet": wl["label"], "chain": h["chain"], "symbol": h["symbol"] + " LP", "priceKey": h["priceKey"],
+                                    "qty": h["qty"], "value": h["value"], "reason": f"< ${THRESHOLD_USD:.0f}"})
+                    continue
+                kept.append(h)
+                continue
             p = (px.get(h["priceKey"]) or {}).get("price")
             j = h.pop("_jup", None)
             if p is None and j and j.get("price") and j.get("verified"):
@@ -324,7 +389,8 @@ def main():
         old = json.load(open(OUT))
     except Exception:
         pass
-    strip = lambda d: json.dumps([[(h["chain"], h["symbol"], round(h["qty"], 6)) for h in w["holdings"]] for w in d["wallets"]]) if d else None
+    strip = lambda d: json.dumps([[(h["chain"], h["symbol"], round(h["qty"], 6),
+                                    [round(u["qty"], 2) for u in h.get("underlying", [])]) for h in w["holdings"]] for w in d["wallets"]]) if d else None
     mstrip = lambda d: json.dumps([(m.get("id"), m.get("qty")) for m in d.get("manual", [])]) if d else None
     changed = strip(old) != strip(data) or mstrip(old) != mstrip(data)
     with open(OUT, "w") as f:
