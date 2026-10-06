@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-06T21:18:24+01:00",
+  "updated": "2026-10-06T21:27:24+01:00",
   "threshold_usd": 100.0,
-  "snapshot_total_usd": 4433985.98,
+  "snapshot_total_usd": 4343863.99,
   "wallets": [
     {
       "id": "ay1vrqfs",
@@ -17,8 +17,8 @@
           "token": "9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
           "qty": 376680.99455,
           "priceKey": "solana:9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
-          "price": 1.0630788213836324,
-          "value": 400441.59,
+          "price": 1.0631107165857248,
+          "value": 400453.6,
           "cost": null
         },
         {
@@ -28,8 +28,8 @@
           "token": "Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
           "qty": 123.58014886,
           "priceKey": "solana:Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
-          "price": 743.9276356045956,
-          "value": 91934.69,
+          "price": 741.625761646097,
+          "value": 91650.22,
           "cost": null
         },
         {
@@ -39,8 +39,8 @@
           "token": "XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
           "qty": 222.51200297,
           "priceKey": "solana:XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
-          "price": 349.12171800518274,
-          "value": 77683.77,
+          "price": 348.34084863581836,
+          "value": 77510.02,
           "cost": null
         },
         {
@@ -50,8 +50,8 @@
           "token": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
           "qty": 147.61683891,
           "priceKey": "solana:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
-          "price": 256.35197322287536,
-          "value": 37841.87,
+          "price": 256.5452037107018,
+          "value": 37870.39,
           "cost": null
         },
         {
@@ -61,8 +61,8 @@
           "token": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
           "qty": 74.62177909,
           "priceKey": "solana:XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
-          "price": 380.84196111337263,
-          "value": 28419.1,
+          "price": 380.42034264007555,
+          "value": 28387.64,
           "cost": null
         },
         {
@@ -72,8 +72,8 @@
           "token": "Xsnuv4omNoHozR6EEW5mXkw8Nrny5rB3jVfLqi6gKMH",
           "qty": 11.55174915,
           "priceKey": "solana:Xsnuv4omNoHozR6EEW5mXkw8Nrny5rB3jVfLqi6gKMH",
-          "price": 1168.4208347442516,
-          "value": 13497.3,
+          "price": 1169.7693488071986,
+          "value": 13512.88,
           "cost": null
         },
         {
@@ -83,12 +83,12 @@
           "token": "XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
           "qty": 44.53532999,
           "priceKey": "solana:XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
-          "price": 112.05631736684732,
-          "value": 4990.47,
+          "price": 112.07747057746901,
+          "value": 4991.41,
           "cost": null
         }
       ],
-      "value": 654808.79
+      "value": 654376.16
     },
     {
       "id": "0xfad2a6",
@@ -104,12 +104,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 342236.308619,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0369211270430982,
-          "value": 354872.06,
+          "price": 1.0369192570624994,
+          "value": 354871.42,
           "cost": null
         }
       ],
-      "value": 354872.06
+      "value": 354871.42
     },
     {
       "id": "0xa74c0c",
@@ -125,12 +125,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 1272017.362436,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0369211270430982,
-          "value": 1318981.68,
+          "price": 1.0369192570624994,
+          "value": 1318979.3,
           "cost": null
         }
       ],
-      "value": 1318981.68
+      "value": 1318979.3
     },
     {
       "id": "0xaef093",
@@ -146,8 +146,8 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 408678.315438,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0369211270430982,
-          "value": 423767.18,
+          "price": 1.0369192570624994,
+          "value": 423766.42,
           "cost": null
         },
         {
@@ -157,12 +157,12 @@
           "token": null,
           "qty": 0.037977960585088774,
           "priceKey": "coingecko:ethereum",
-          "price": 2693.6564630897005,
+          "price": 2693.719314958827,
           "value": 102.3,
           "cost": null
         }
       ],
-      "value": 423869.48
+      "value": 423868.72
     },
     {
       "id": "0xc14346",
@@ -211,20 +211,10 @@
           "price": 2691.563162846238,
           "value": 271967.15,
           "cost": null
-        },
-        {
-          "symbol": "AERO",
-          "name": "Aerodrome Finance",
-          "chain": "Base",
-          "token": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
-          "qty": 110213.99607283044,
-          "priceKey": "base:0x940181a94A35A4569E4529A3CDfB74e38FD98631",
-          "price": 0.8125220408392985,
-          "value": 89551.3,
-          "cost": null
         }
       ],
-      "value": 361518.45
+      "note": "só ETH (stETH + ETH nativo)",
+      "value": 271967.15
     }
   ],
   "manual": [
@@ -234,8 +224,8 @@
       "qty": 12.02,
       "priceKey": "coingecko:bitcoin",
       "note": "manual · off-chain (no address given)",
-      "price": 85642.69529020925,
-      "value": 1029425.2,
+      "price": 85631.52405389356,
+      "value": 1029290.92,
       "cost": null
     }
   ],
@@ -244,32 +234,34 @@
       "wallet": "Ay1v…nMFi",
       "chain": "Solana",
       "symbol": "SOL",
+      "priceKey": "coingecko:solana",
       "qty": 0.077288091,
-      "value": 9.35,
+      "value": 9.36,
       "reason": "< $100"
     },
     {
       "wallet": "Ay1v…nMFi",
       "chain": "Solana",
       "symbol": "MARCO",
+      "priceKey": "solana:6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF",
       "qty": 7.722920796,
       "value": 0.0,
-      "reason": "< $100",
-      "priceKey": "solana:6SWgjmuTyPAcYYU77Mzf1gE6QA7ZcZsbsfiThz2cW1VF"
+      "reason": "< $100"
     },
     {
       "wallet": "Ay1v…nMFi",
       "chain": "Solana",
       "symbol": "HALLOWEEK",
+      "priceKey": "solana:E1ACvsno8rdqwuxF5vygfCNKVfKEz41qms8fShdgyoVf",
       "qty": 30.0,
       "value": null,
-      "reason": "no price (spam/airdrop)",
-      "priceKey": "solana:E1ACvsno8rdqwuxF5vygfCNKVfKEz41qms8fShdgyoVf"
+      "reason": "no price (spam/airdrop)"
     },
     {
       "wallet": "Ay1v…nMFi",
       "chain": "Solana",
       "symbol": "LLY",
+      "priceKey": "solana:LLYuwZ33keFihgwoxXsBawy31AiRFLFSva32TYq5TvD",
       "qty": 3.8e-05,
       "value": 0.04,
       "reason": "< $100"
@@ -278,6 +270,7 @@
       "wallet": "0xFaD2…B69D",
       "chain": "Ethereum",
       "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
       "qty": 0.000358876192703691,
       "value": 0.97,
       "reason": "< $100"
@@ -286,6 +279,7 @@
       "wallet": "0xFaD2…B69D",
       "chain": "Base",
       "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
       "qty": 3e-09,
       "value": 0.0,
       "reason": "< $100"
@@ -294,6 +288,7 @@
       "wallet": "0xFaD2…B69D",
       "chain": "Base",
       "symbol": "USDC",
+      "priceKey": "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "qty": 0.000207,
       "value": 0.0,
       "reason": "< $100"
@@ -302,6 +297,7 @@
       "wallet": "0xA74C…133C",
       "chain": "Ethereum",
       "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
       "qty": 0.008586807091513986,
       "value": 23.13,
       "reason": "< $100"
@@ -310,6 +306,7 @@
       "wallet": "0xaeF0…1d46",
       "chain": "Base",
       "symbol": "wstETH",
+      "priceKey": "base:0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",
       "qty": 1.7001e-09,
       "value": 0.0,
       "reason": "< $100"
@@ -318,6 +315,7 @@
       "wallet": "0xaeF0…1d46",
       "chain": "Avalanche",
       "symbol": "AVAX",
+      "priceKey": "coingecko:avalanche-2",
       "qty": 8.4688e-06,
       "value": 0.0,
       "reason": "< $100"
@@ -326,6 +324,7 @@
       "wallet": "0xc143…810F",
       "chain": "Ethereum",
       "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
       "qty": 0.018972971250356054,
       "value": 51.11,
       "reason": "< $100"
@@ -334,6 +333,7 @@
       "wallet": "0xc143…810F",
       "chain": "Base",
       "symbol": "wstETH",
+      "priceKey": "base:0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",
       "qty": 1.7001e-09,
       "value": 0.0,
       "reason": "< $100"
@@ -342,6 +342,7 @@
       "wallet": "0x7Efa…684F",
       "chain": "Ethereum",
       "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
       "qty": 0.002867606272438479,
       "value": 7.72,
       "reason": "< $100"
@@ -350,6 +351,7 @@
       "wallet": "0x7Efa…684F",
       "chain": "Ethereum",
       "symbol": "USDC",
+      "priceKey": "ethereum:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "qty": 1.000007,
       "value": 1.0,
       "reason": "< $100"
@@ -358,6 +360,7 @@
       "wallet": "0x7Efa…684F",
       "chain": "Polygon",
       "symbol": "POL",
+      "priceKey": "coingecko:polygon-ecosystem-token",
       "qty": 0.027764674435883083,
       "value": 0.0,
       "reason": "< $100"
@@ -366,32 +369,9 @@
       "wallet": "0x9F0d…D2B0",
       "chain": "Ethereum",
       "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
       "qty": 0.000232922242478012,
       "value": 0.63,
-      "reason": "< $100"
-    },
-    {
-      "wallet": "0x9F0d…D2B0",
-      "chain": "Base",
-      "symbol": "ETH",
-      "qty": 0.005353145856338403,
-      "value": 14.42,
-      "reason": "< $100"
-    },
-    {
-      "wallet": "0x9F0d…D2B0",
-      "chain": "Base",
-      "symbol": "WETH",
-      "qty": 6e-18,
-      "value": 0.0,
-      "reason": "< $100"
-    },
-    {
-      "wallet": "0x9F0d…D2B0",
-      "chain": "Base",
-      "symbol": "wstETH",
-      "qty": 1.7001e-09,
-      "value": 0.0,
       "reason": "< $100"
     }
   ],

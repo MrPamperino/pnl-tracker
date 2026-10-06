@@ -161,7 +161,7 @@ function render() {
     const v = g.reduce((s, h) => s + (h._v || 0), 0);
     const head = w ? `<a href="${w.explorer}" target="_blank" rel="noopener" title="${w.address}">${esc(w.label)}</a><span class="tag">${esc(w.chain)}</span>`
                    : `BTC<span class="tag">manual · off-chain</span>`;
-    html += `<tr class="wallet"><td colspan="3"><span class="name">${head}</span>${w && w.error ? ` <span class="stale">erro: ${esc(w.error)}</span>` : ""}` +
+    html += `<tr class="wallet"><td colspan="3"><span class="name">${head}</span>${w && w.error ? ` <span class="stale">erro: ${esc(w.error)}</span>` : ""}${w && w.note ? ` <span class="muted" style="font-size:12px">· ${esc(w.note)}</span>` : ""}` +
             `<div class="bar"><i style="width:${total ? v / total * 100 : 0}%"></i></div></td><td class="r name">${big(v)}</td><td class="r muted">${pct(v)}</td></tr>`;
     html += g.length ? g.map(row).join("") : `<tr><td colspan="5" class="muted">vazia (nada acima de $${DATA.threshold_usd})</td></tr>`;
   }

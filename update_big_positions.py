@@ -24,6 +24,14 @@ EVM_WALLETS = ["0xFaD2A6e902154CA7675d0Df4e0F6F091cf3aB69D", "0xA74C0C14E29a2aE6
                "0xaeF0939EFAE51BfD325bC38E9Dc9FB0df09B1d46", "0xc14346768592DddD9cD6d6964916Ed93a553810F",
                "0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
                "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0"]   # also the AERO wallet of the main tracker (portfolio.json untouched)
+# Per-wallet allowlist: only these (chain, token) pairs are kept for the wallet (token None = native coin).
+# 0x9F0d…D2B0: big-positions shows only its ETH (stETH + native ETH); its AERO lives in the main tracker (portfolio.json).
+WALLET_ONLY = {
+    "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0": {
+        ("Ethereum", "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84".lower()),   # stETH
+        ("Ethereum", None),                                                   # native ETH
+    },
+}
 MANUAL = [{"symbol": "BTC", "name": "Bitcoin", "qty": 12.02, "priceKey": "coingecko:bitcoin",
            "note": "manual · off-chain (no address given)"}]
 
@@ -194,6 +202,12 @@ def evm_wallet(w):
 def short(a):
     return f"{a[:4]}…{a[-4:]}" if a.startswith("0x") is False else f"{a[:6]}…{a[-4:]}"
 
+def _prev_file():
+    try:
+        return json.load(open(OUT))
+    except Exception:
+        return {}
+
 def main():
     args = set(sys.argv[1:])
     wallets = []
@@ -202,12 +216,21 @@ def main():
             wallets.append({"id": w[:8].lower(), "label": short(w), "chain": "Solana", "address": w,
                             "explorer": "https://solscan.io/account/" + w, "holdings": solana_wallet(w)})
         except Exception as e:
-            errors.append(f"Solana {w}: {e}")
+            # keep the last known balances instead of showing an empty wallet
+            errors.append(f"Solana {w}: {e} (kept previous balances)")
+            prev_w = next((x for x in _prev_file().get("wallets", []) if x.get("address") == w), None)
+            prev_h = [{k: v for k, v in h.items() if k not in ("price", "value", "cost")} for h in (prev_w or {}).get("holdings", [])]
             wallets.append({"id": w[:8].lower(), "label": short(w), "chain": "Solana", "address": w,
-                            "explorer": "https://solscan.io/account/" + w, "holdings": [], "error": str(e)})
+                            "explorer": "https://solscan.io/account/" + w, "holdings": prev_h,
+                            "error": "RPC falhou — saldos da atualização anterior" + (f" ({_prev_file().get('updated')})" if prev_w else "")})
     for w in EVM_WALLETS:
+        hold = evm_wallet(w)
+        allow = WALLET_ONLY.get(w)
+        if allow is not None:   # drop everything not allow-listed (not shown, not in skipped)
+            hold = [h for h in hold if (h["chain"], (h["token"] or "").lower() or None) in allow]
         wallets.append({"id": w[:8].lower(), "label": short(w), "chain": "EVM", "address": w,
-                        "explorer": "https://debank.com/profile/" + w, "holdings": evm_wallet(w)})
+                        "explorer": "https://debank.com/profile/" + w, "holdings": hold,
+                        **({"note": "só ETH (stETH + ETH nativo)"} if allow is not None else {})})
     keys = [h["priceKey"] for wl in wallets for h in wl["holdings"]] + [m["priceKey"] for m in MANUAL]
     px = llama_prices(keys)
     # stable symbols/names: previous file > Jupiter > DefiLlama
