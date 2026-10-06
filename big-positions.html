@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Big positions</title>
+<style>
+  :root { --bg:#0a0a0a; --fg:#f2f2f2; --muted:#888; --line:#222; --up:#3dd68c; --down:#ff6b6b; --card:#121212; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; padding:40px 20px 80px; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size:13px; font-weight:500; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin:0 0 16px; }
+  h2 { font-size:12px; font-weight:500; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:34px 0 10px; }
+  a { color:#9ecbff; text-decoration:none; }
+  .hero { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
+  @media (max-width:640px) { .hero { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .card .lbl { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  .card .val { font-size:26px; font-weight:560; letter-spacing:-.03em; }
+  .card .hint { color:var(--muted); font-size:12px; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; font-size:12px; font-weight:500; color:var(--muted); padding:0 8px 10px; border-bottom:1px solid var(--line); }
+  th.r, td.r { text-align:right; }
+  td { padding:12px 8px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  tr.wallet td { padding-top:22px; border-bottom-color:#333; }
+  tr.wallet .name { font-size:15px; }
+  .name { font-weight:560; }
+  .venue { color:var(--muted); font-size:12px; margin-top:2px; }
+  .muted { color:var(--muted); }
+  .tag { display:inline-block; font-size:10px; border:1px solid #333; border-radius:6px; padding:0 5px; margin-left:6px; color:var(--muted); vertical-align:middle; }
+  .stale { color:#e0b050; }
+  .foot { margin-top:24px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; color:var(--muted); font-size:12px; }
+  button { background:transparent; border:1px solid #333; color:var(--fg); border-radius:8px; padding:6px 12px; font:inherit; font-size:12px; cursor:pointer; }
+  button:hover { border-color:#555; }
+  .bar { height:4px; background:#1d1d1d; border-radius:2px; margin-top:6px; overflow:hidden; }
+  .bar i { display:block; height:100%; background:#3a6ea5; }
+  details { margin-top:18px; color:var(--muted); font-size:12px; }
+  details div { padding:2px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Big positions</h1>
+  <div style="margin:-8px 0 18px;font-size:13px"><a href="./">← Portfolio</a></div>
+  <div class="hero">
+    <div class="card"><div class="lbl">Valor total</div><div class="val" id="total">—</div><div class="hint" id="totalHint"></div></div>
+    <div class="card"><div class="lbl">On-chain</div><div class="val" id="onchain">—</div><div class="hint" id="onchainHint"></div></div>
+    <div class="card"><div class="lbl">BTC (manual)</div><div class="val" id="btc">—</div><div class="hint" id="btcHint"></div></div>
+  </div>
+  <div class="muted" style="font-size:12px">Custo / PnL: n/d (custo desconhecido — só valor de mercado).</div>
+
+  <h2>Por wallet</h2>
+  <table>
+    <thead><tr><th>Ativo</th><th class="r">Qtd</th><th class="r">Preço</th><th class="r">Valor</th><th class="r">%</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <h2>Por token</h2>
+  <table>
+    <thead><tr><th>Token</th><th class="r">Qtd</th><th class="r">Preço</th><th class="r">Valor</th><th class="r">%</th></tr></thead>
+    <tbody id="tokRows"></tbody>
+  </table>
+
+  <details id="skippedBox"><summary>Fora da lista (abaixo do limite / sem preço)</summary><div id="skipped"></div></details>
+
+  <div class="foot">
+    <button onclick="refresh()">Atualizar preços</button>
+    <span id="asof"></span>
+  </div>
+</div>
+<script>
+const DATA_URL = "./big_positions.json";
+let DATA = null, PX = {}, PXSRC = {};
+
+function money(n, d = 2) {
+  if (n == null || !Number.isFinite(n)) return "—";
+  return (n < 0 ? "−" : "") + "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+function big(n) { return n == null ? "—" : money(n, n >= 1000 ? 0 : 2); }
+function qty(n) { return n.toLocaleString("en-US", { maximumFractionDigits: n >= 1000 ? 2 : n >= 1 ? 4 : 6 }); }
+function price(p) { return p == null ? "—" : money(p, p >= 100 ? 2 : p >= 1 ? 4 : 6); }
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+async function loadData() {
+  const r = await fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" });
+  DATA = await r.json();
+}
+function allHoldings() {
+  const out = [];
+  for (const w of DATA.wallets) for (const h of w.holdings) out.push({ ...h, wallet: w });
+  for (const m of DATA.manual || []) out.push({ ...m, chain: "manual", wallet: null });
+  return out;
+}
+async function fetchPrices() {
+  const keys = [...new Set(allHoldings().map(h => h.priceKey))];
+  PX = {}; PXSRC = {};
+  try {
+    const d = await fetch("https://coins.llama.fi/prices/current/" + keys.join(",")).then(r => r.json());
+    for (const [k, v] of Object.entries(d.coins || {})) if (v.price) { PX[k] = v.price; PXSRC[k] = "DefiLlama"; }
+  } catch (e) { console.warn("llama", e); }
+  const missing = keys.filter(k => !PX[k]);
+  // Solana fallback: Jupiter
+  const sol = missing.filter(k => k.startsWith("solana:")).map(k => k.slice(7));
+  if (sol.length) {
+    try {
+      const j = await fetch("https://lite-api.jup.ag/price/v3?ids=" + sol.join(",")).then(r => r.json());
+      for (const m of sol) if (j[m]?.usdPrice) { PX["solana:" + m] = j[m].usdPrice; PXSRC["solana:" + m] = "Jupiter"; }
+    } catch (e) { console.warn("jup", e); }
+  }
+  // majors fallback: Coinbase spot
+  const cb = { "coingecko:bitcoin": "BTC", "coingecko:ethereum": "ETH", "coingecko:solana": "SOL" };
+  for (const [k, s] of Object.entries(cb)) {
+    if (keys.includes(k) && !PX[k]) {
+      try { const r = await fetch(`https://api.coinbase.com/v2/prices/${s}-USD/spot`).then(r => r.json()); const p = Number(r?.data?.amount); if (p) { PX[k] = p; PXSRC[k] = "Coinbase"; } } catch {}
+    }
+  }
+  // stETH ≈ ETH
+  const st = "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84";
+  if (keys.includes(st) && !PX[st] && PX["coingecko:ethereum"]) { PX[st] = PX["coingecko:ethereum"]; PXSRC[st] = "≈ETH"; }
+  // spUSDC: ERC-4626 convertToAssets(1e6) on Ethereum
+  const sp = "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d";
+  if (keys.includes(sp) && !PX[sp]) {
+    try {
+      const r = await fetch("https://ethereum-rpc.publicnode.com", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d", data: "0x07a2d13a" + (1e6).toString(16).padStart(64, "0") }, "latest"] }) }).then(r => r.json());
+      const v = parseInt(r.result, 16) / 1e6; if (v) { PX[sp] = v; PXSRC[sp] = "vault rate"; }
+    } catch {}
+  }
+}
+function priceOf(h) {
+  if (PX[h.priceKey]) return { p: PX[h.priceKey], live: true };
+  return { p: h.price, live: false };   // snapshot from big_positions.json
+}
+function render() {
+  const hs = allHoldings();
+  let total = 0, onchain = 0, btc = 0, stale = 0;
+  for (const h of hs) {
+    const { p, live } = priceOf(h);
+    h._p = p; h._live = live; h._v = p ? h.qty * p : null;
+    if (!live && p) stale++;
+    total += h._v || 0;
+    if (h.wallet) onchain += h._v || 0; else btc += h._v || 0;
+  }
+  document.getElementById("total").textContent = big(total);
+  document.getElementById("totalHint").textContent = `${DATA.wallets.length} wallets + manual · limite $${DATA.threshold_usd}`;
+  document.getElementById("onchain").textContent = big(onchain);
+  document.getElementById("onchainHint").textContent = `saldos de ${new Date(DATA.updated).toLocaleString("pt-PT")}`;
+  const m = (DATA.manual || [])[0];
+  document.getElementById("btc").textContent = big(btc);
+  document.getElementById("btcHint").textContent = m ? `${qty(m.qty)} BTC · ${price(PX[m.priceKey] || m.price)} · manual` : "";
+  const pct = v => total ? (v / total * 100).toFixed(1) + "%" : "—";
+  const row = h => `<tr><td><span class="name">${esc(h.symbol)}</span>${h.wallet ? "" : '<span class="tag">manual</span>'}` +
+      `<div class="venue">${[h.name, h.wallet ? h.chain : null, h.note].filter(Boolean).map(esc).join(" · ")}</div></td>` +
+      `<td class="r">${qty(h.qty)}</td><td class="r${h._live ? "" : " stale"}" title="${h._live ? PXSRC[h.priceKey] : "snapshot (preço ao vivo indisponível)"}">${price(h._p)}</td>` +
+      `<td class="r">${big(h._v)}</td><td class="r muted">${pct(h._v || 0)}</td></tr>`;
+  let html = "";
+  const groups = DATA.wallets.map(w => ({ w, hs: hs.filter(h => h.wallet === w) }));
+  groups.push({ w: null, hs: hs.filter(h => !h.wallet) });
+  groups.sort((a, b) => b.hs.reduce((s, h) => s + (h._v || 0), 0) - a.hs.reduce((s, h) => s + (h._v || 0), 0));
+  for (const { w, hs: g } of groups) {
+    const v = g.reduce((s, h) => s + (h._v || 0), 0);
+    const head = w ? `<a href="${w.explorer}" target="_blank" rel="noopener" title="${w.address}">${esc(w.label)}</a><span class="tag">${esc(w.chain)}</span>`
+                   : `BTC<span class="tag">manual · off-chain</span>`;
+    html += `<tr class="wallet"><td colspan="3"><span class="name">${head}</span>${w && w.error ? ` <span class="stale">erro: ${esc(w.error)}</span>` : ""}` +
+            `<div class="bar"><i style="width:${total ? v / total * 100 : 0}%"></i></div></td><td class="r name">${big(v)}</td><td class="r muted">${pct(v)}</td></tr>`;
+    html += g.length ? g.map(row).join("") : `<tr><td colspan="5" class="muted">vazia (nada acima de $${DATA.threshold_usd})</td></tr>`;
+  }
+  document.getElementById("rows").innerHTML = html;
+  // per token (aggregate by priceKey)
+  const agg = {};
+  for (const h of hs) {
+    const a = agg[h.priceKey] ||= { symbol: h.symbol, name: h.name, chains: new Set(), qty: 0, v: 0, p: h._p, live: h._live, n: 0, priceKey: h.priceKey };
+    a.qty += h.qty; a.v += h._v || 0; a.chains.add(h.chain); a.n++;
+  }
+  document.getElementById("tokRows").innerHTML = Object.values(agg).sort((a, b) => b.v - a.v).map(a =>
+    `<tr><td><span class="name">${esc(a.symbol)}</span><div class="venue">${esc(a.name || "")} · ${[...a.chains].join(", ")} · ${a.n} posição(ões)</div></td>` +
+    `<td class="r">${qty(a.qty)}</td><td class="r${a.live ? "" : " stale"}">${price(a.p)}</td><td class="r">${big(a.v)}</td><td class="r muted">${pct(a.v)}</td></tr>`).join("");
+  const sk = DATA.skipped || [];
+  document.getElementById("skipped").innerHTML = sk.length ? sk.map(s =>
+    `<div>${esc(s.wallet)} · ${esc(s.chain)} · ${esc(s.symbol)} ${qty(s.qty)} — ${s.value != null ? big(s.value) : "sem preço"} (${esc(s.reason)})</div>`).join("") : "—";
+  document.getElementById("asof").textContent = `Preços ao vivo ${new Date().toLocaleTimeString("pt-PT")}` + (stale ? ` · ${stale} com preço snapshot` : "");
+}
+async function refresh() {
+  if (!DATA) await loadData(); else { try { await loadData(); } catch {} }
+  render();
+  await fetchPrices();
+  render();
+}
+refresh();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+</script>
+</body>
+</html>

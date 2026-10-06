@@ -1,0 +1,310 @@
+{
+  "updated": "2026-10-06T21:05:48+01:00",
+  "threshold_usd": 100.0,
+  "snapshot_total_usd": 4071407.59,
+  "wallets": [
+    {
+      "id": "ay1vrqfs",
+      "label": "Ay1v…nMFi",
+      "chain": "Solana",
+      "address": "Ay1vrqfSSmn5JYz7viZcKmki751bEh7v5V4WPp67nMFi",
+      "explorer": "https://solscan.io/account/Ay1vrqfSSmn5JYz7viZcKmki751bEh7v5V4WPp67nMFi",
+      "holdings": [
+        {
+          "symbol": "jlUSDC",
+          "name": "Jupiter Lend USDC",
+          "chain": "Solana",
+          "token": "9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
+          "qty": 376680.99455,
+          "priceKey": "solana:9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
+          "price": 1.0630788213836324,
+          "value": 400441.59,
+          "cost": null
+        },
+        {
+          "symbol": "METAx",
+          "name": "Meta xStock",
+          "chain": "Solana",
+          "token": "Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
+          "qty": 123.58014886,
+          "priceKey": "solana:Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
+          "price": 743.9276356045956,
+          "value": 91934.69,
+          "cost": null
+        },
+        {
+          "symbol": "GOOGLx",
+          "name": "Alphabet xStock",
+          "chain": "Solana",
+          "token": "XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
+          "qty": 222.51200297,
+          "priceKey": "solana:XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
+          "price": 349.12171800518274,
+          "value": 77683.77,
+          "cost": null
+        },
+        {
+          "symbol": "AMZNx",
+          "name": "Amazon xStock",
+          "chain": "Solana",
+          "token": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
+          "qty": 147.61683891,
+          "priceKey": "solana:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
+          "price": 256.35197322287536,
+          "value": 37841.87,
+          "cost": null
+        },
+        {
+          "symbol": "TSLAx",
+          "name": "Tesla xStock",
+          "chain": "Solana",
+          "token": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+          "qty": 74.62177909,
+          "priceKey": "solana:XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+          "price": 380.84196111337263,
+          "value": 28419.1,
+          "cost": null
+        },
+        {
+          "symbol": "LLYx",
+          "name": "Eli Lilly xStock",
+          "chain": "Solana",
+          "token": "Xsnuv4omNoHozR6EEW5mXkw8Nrny5rB3jVfLqi6gKMH",
+          "qty": 11.55174915,
+          "priceKey": "solana:Xsnuv4omNoHozR6EEW5mXkw8Nrny5rB3jVfLqi6gKMH",
+          "price": 1168.4208347442516,
+          "value": 13497.3,
+          "cost": null
+        },
+        {
+          "symbol": "HOODx",
+          "name": "Robinhood xStock",
+          "chain": "Solana",
+          "token": "XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
+          "qty": 44.53532999,
+          "priceKey": "solana:XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
+          "price": 112.05631736684732,
+          "value": 4990.47,
+          "cost": null
+        }
+      ],
+      "value": 654808.79
+    },
+    {
+      "id": "0xfad2a6",
+      "label": "0xFaD2…B69D",
+      "chain": "EVM",
+      "address": "0xFaD2A6e902154CA7675d0Df4e0F6F091cf3aB69D",
+      "explorer": "https://debank.com/profile/0xFaD2A6e902154CA7675d0Df4e0F6F091cf3aB69D",
+      "holdings": [
+        {
+          "symbol": "spUSDC",
+          "name": "Spark Savings USDC",
+          "chain": "Ethereum",
+          "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
+          "qty": 342236.308619,
+          "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
+          "price": 1.0367715755212583,
+          "value": 354820.88,
+          "cost": null
+        }
+      ],
+      "value": 354820.88
+    },
+    {
+      "id": "0xa74c0c",
+      "label": "0xA74C…133C",
+      "chain": "EVM",
+      "address": "0xA74C0C14E29a2aE6fc45c0de80D5D7BC469B133C",
+      "explorer": "https://debank.com/profile/0xA74C0C14E29a2aE6fc45c0de80D5D7BC469B133C",
+      "holdings": [
+        {
+          "symbol": "spUSDC",
+          "name": "Spark Savings USDC",
+          "chain": "Ethereum",
+          "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
+          "qty": 1272017.362436,
+          "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
+          "price": 1.0367715755212583,
+          "value": 1318791.44,
+          "cost": null
+        }
+      ],
+      "value": 1318791.44
+    },
+    {
+      "id": "0xaef093",
+      "label": "0xaeF0…1d46",
+      "chain": "EVM",
+      "address": "0xaeF0939EFAE51BfD325bC38E9Dc9FB0df09B1d46",
+      "explorer": "https://debank.com/profile/0xaeF0939EFAE51BfD325bC38E9Dc9FB0df09B1d46",
+      "holdings": [
+        {
+          "symbol": "spUSDC",
+          "name": "Spark Savings USDC",
+          "chain": "Ethereum",
+          "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
+          "qty": 408678.315438,
+          "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
+          "price": 1.0367715755212583,
+          "value": 423706.06,
+          "cost": null
+        },
+        {
+          "symbol": "ETH",
+          "name": "ETH (native)",
+          "chain": "Ethereum",
+          "token": null,
+          "qty": 0.037977960585088774,
+          "priceKey": "coingecko:ethereum",
+          "price": 2691.3967168278955,
+          "value": 102.21,
+          "cost": null
+        }
+      ],
+      "value": 423808.27
+    },
+    {
+      "id": "0xc14346",
+      "label": "0xc143…810F",
+      "chain": "EVM",
+      "address": "0xc14346768592DddD9cD6d6964916Ed93a553810F",
+      "explorer": "https://debank.com/profile/0xc14346768592DddD9cD6d6964916Ed93a553810F",
+      "holdings": [
+        {
+          "symbol": "stETH",
+          "name": "Lido Staked ETH",
+          "chain": "Ethereum",
+          "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+          "qty": 107.93368229932749,
+          "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+          "price": 2690.5178805260175,
+          "value": 290397.5,
+          "cost": null
+        }
+      ],
+      "value": 290397.5
+    },
+    {
+      "id": "0x7efa55",
+      "label": "0x7Efa…684F",
+      "chain": "EVM",
+      "address": "0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
+      "explorer": "https://debank.com/profile/0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
+      "holdings": [],
+      "value": 0
+    }
+  ],
+  "manual": [
+    {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "qty": 12.02,
+      "priceKey": "coingecko:bitcoin",
+      "note": "manual · off-chain (no address given)",
+      "price": 85589.07737212048,
+      "value": 1028780.71,
+      "cost": null
+    }
+  ],
+  "skipped": [
+    {
+      "wallet": "Ay1v…nMFi",
+      "chain": "Solana",
+      "symbol": "SOL",
+      "qty": 0.077288091,
+      "value": 9.33,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "Ay1v…nMFi",
+      "chain": "Solana",
+      "symbol": "MARCO",
+      "qty": 7.722920796,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "Ay1v…nMFi",
+      "chain": "Solana",
+      "symbol": "HALLOWEEK",
+      "qty": 30.0,
+      "value": null,
+      "reason": "no price (spam/airdrop)"
+    },
+    {
+      "wallet": "Ay1v…nMFi",
+      "chain": "Solana",
+      "symbol": "LLY (Backpack)",
+      "qty": 3.8e-05,
+      "value": 0.04,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xFaD2…B69D",
+      "chain": "Ethereum",
+      "symbol": "ETH",
+      "qty": 0.000358876192703691,
+      "value": 0.97,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xFaD2…B69D",
+      "chain": "Base",
+      "symbol": "ETH",
+      "qty": 3e-09,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xA74C…133C",
+      "chain": "Ethereum",
+      "symbol": "ETH",
+      "qty": 0.008586807091513986,
+      "value": 23.11,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xaeF0…1d46",
+      "chain": "Avalanche",
+      "symbol": "AVAX",
+      "qty": 8.4688e-06,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xc143…810F",
+      "chain": "Ethereum",
+      "symbol": "ETH",
+      "qty": 0.018972971250356054,
+      "value": 51.06,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x7Efa…684F",
+      "chain": "Ethereum",
+      "symbol": "ETH",
+      "qty": 0.002867606272438479,
+      "value": 7.72,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x7Efa…684F",
+      "chain": "Ethereum",
+      "symbol": "USDC",
+      "qty": 1.000007,
+      "value": 1.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x7Efa…684F",
+      "chain": "Polygon",
+      "symbol": "POL",
+      "qty": 0.027764674435883083,
+      "value": 0.0,
+      "reason": "< $100"
+    }
+  ],
+  "errors": [],
+  "notes": "Balances refreshed by update_big_positions.py; the page re-prices live (DefiLlama, fallbacks). Cost basis unknown (cost: null)."
+}
