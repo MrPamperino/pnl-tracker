@@ -405,7 +405,24 @@ async function refresh() {
       } catch {}
     }
     const sfi = Number((dsSfi?.pairs || [])[0]?.priceUsd);
+    // Coins without a DEX pair (e.g. QTC): CoinGecko by p.cgId → DefiLlama coingecko:<id> → stored mark from portfolio.json
+    const cg = {};
+    const cgIds = [...new Set(state.positions.map(p => p.cgId).filter(Boolean))];
+    if (cgIds.length) {
+      try {
+        const j = await fetch("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=" + cgIds.join(",")).then(r => r.json());
+        for (const id of cgIds) if (Number(j?.[id]?.usd) > 0) cg[id] = Number(j[id].usd);
+      } catch {}
+      const miss = cgIds.filter(id => !cg[id]);
+      if (miss.length) {
+        try {
+          const j = await fetch("https://coins.llama.fi/prices/current/" + miss.map(id => "coingecko:" + id).join(",")).then(r => r.json());
+          for (const id of miss) if (Number(j?.coins?.["coingecko:" + id]?.price) > 0) cg[id] = Number(j.coins["coingecko:" + id].price);
+        } catch {}
+      }
+    }
     for (const p of state.positions) {
+      if (p.cgId && cg[p.cgId]) p.mark = cg[p.cgId];
       if (p.id === "zec" && zec) p.mark = zec;
       if (p.id === "zcat" && zcat) p.mark = zcat;
       if (p.id === "drv" && drv) p.mark = drv;

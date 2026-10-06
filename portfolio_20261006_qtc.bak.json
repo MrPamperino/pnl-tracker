@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-06T23:10:00+01:00",
+  "updated": "2026-10-06T21:00:00+01:00",
   "eurusd": 1.1614,
   "positions": [
     {
@@ -91,28 +91,6 @@
         "approx": true,
         "note": "Bitget spot (CEX) · no on-chain tx · from wallet-app screenshot 2026-10-06: balance 8,425.288365 @ cost price $0.80700852 (market $0.81106756); time/fills/fees not on file → approx"
       }
-    },
-    {
-      "id": "qtc",
-      "symbol": "QTC",
-      "venue": "SafeTrade (CEX) · Quantus Network (native coin) · thin liquidity",
-      "holdings": 126,
-      "avg": 173.8542857142857,
-      "mark": 91.61,
-      "cgId": "quantus",
-      "lastBuy": {
-        "time": "2026-10-06 (hora n/d) PT",
-        "qty": 126,
-        "price": 173.8542857142857,
-        "paid": 21905.64,
-        "paidToken": "USDT",
-        "chain": "SafeTrade (CEX)",
-        "wallet": null,
-        "tx": null,
-        "explorer": "",
-        "approx": false,
-        "note": "SafeTrade QTC/USDT (CEX) · user-provided figures (126 QTC for 21,905.64 USDT), not on-chain verified · native PoW L1 coin, no contract · price: CoinGecko 'quantus' (only market is SafeTrade, very thin liquidity → mark-to-market may not be realizable) · heads-up: $173.85 matches the QTC market of 3–4 Oct (CoinGecko 4h candles ~$168–$175), while 6 Oct traded ~$67–$114, so the buy date may be earlier"
-      }
     }
   ],
   "realized": [
@@ -164,7 +142,6 @@
     }
   ],
   "history": [
-    "QTC opened 2026-10-06 on SafeTrade (CEX, QTC/USDT; time n/d, user-provided, not on-chain verified): 126 QTC for 21,905.64 USDT @ $173.854286. Price source CoinGecko 'quantus' (SafeTrade only, thin liquidity). Note: $173.85 matches the 3–4 Oct market; 6 Oct range was ~$67–$114.",
     "ZEC re-opened 2026-10-06 on Bitget (spot, paid from the USDT cash; time/fills n/d, no on-chain tx): 33.14348375 ZEC @ cost price $1,362.77 = $45,166.95 (approx, from wallet-app screenshot; market then $1,355.90). Realized ZEC line from 1 Oct unchanged.",
     "AERO added 2026-10-06 on Bitget (spot, USDT; time/fills n/d, no on-chain tx): 8,425.288365 AERO @ cost price $0.80700852 = $6,799.28 (approx, from screenshot; market then $0.81106756). Base wallet 0x9F0d…D2B0 unchanged at 110,213.996073 AERO (verified on-chain; no Base transfers today on 0x9F0d…/0x7E3d…).",
     "ZEC closed 2026-10-01 on Bitget (funds stuck there): 2 market sells 14:38:57 44.268 @ 1,400.87 + 14:39:04 40.864 @ 1,401.11 = 85.132 ZEC → 119,268.67220 USDT gross, 83.48815190 fees, 119,185.18404810 net. Cost $99,727.27 (prorated from 85.1323656) → realized $19,457.92. USDT proceeds held as cash on Bitget (not tracked as a position).",
