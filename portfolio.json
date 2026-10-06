@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-02T19:55:00+01:00",
+  "updated": "2026-10-06T21:00:00+01:00",
   "eurusd": 1.1614,
   "positions": [
     {
@@ -19,6 +19,27 @@
         "wallet": "0x7e3d5bcc6158bf63c51a5d90d0ef9a29f27dc869",
         "tx": "0xc64d155a84f81eba80824b773dc387f65a7f505024a56e6dd2fcbe2c38aa036a",
         "explorer": "https://basescan.org/tx/"
+      }
+    },
+    {
+      "id": "zec",
+      "symbol": "ZEC",
+      "venue": "Bitget · spot (new lot 2026-10-06)",
+      "holdings": 33.14348375,
+      "avg": 1362.77,
+      "mark": 1355.9,
+      "lastBuy": {
+        "time": "2026-10-06 (hora n/d) PT",
+        "qty": 33.14348375,
+        "price": 1362.77,
+        "paid": 45166.9453499875,
+        "paidToken": "USDT",
+        "chain": "Bitget (CEX)",
+        "wallet": null,
+        "tx": null,
+        "explorer": "",
+        "approx": true,
+        "note": "Bitget spot (CEX) · no on-chain tx · from wallet-app screenshot 2026-10-06: balance 33.14348375 @ cost price $1,362.77 (market $1,355.90); time/fills/fees not on file → approx; may include 0.0003656 ZEC dust left from the 1 Oct sale"
       }
     },
     {
@@ -53,20 +74,22 @@
     {
       "id": "aero",
       "symbol": "AERO",
-      "venue": "Base · 0x9F0d…D2B0",
-      "holdings": 110213.99607283046,
-      "avg": 0.8097863987893414,
-      "mark": 0.793625,
+      "venue": "Base · 0x9F0d…D2B0 + Bitget",
+      "holdings": 118639.28443783046,
+      "avg": 0.809589124927196,
+      "mark": 0.81106756,
       "lastBuy": {
-        "time": "2026-09-28 14:51:21 PT",
-        "qty": 12597.8049398716,
-        "price": 0.793789080536591,
-        "paid": 10000,
-        "paidToken": "USDC",
-        "chain": "Base",
-        "wallet": "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",
-        "tx": "0x22dc61399459a7b78c08d326f84f2b0e6d2bbbd5c5598aaea01c83f1b7978a5d",
-        "explorer": "https://basescan.org/tx/"
+        "time": "2026-10-06 (hora n/d) PT",
+        "qty": 8425.288365,
+        "price": 0.80700852,
+        "paid": 6799.27949401187,
+        "paidToken": "USDT",
+        "chain": "Bitget (CEX)",
+        "wallet": null,
+        "tx": null,
+        "explorer": "",
+        "approx": true,
+        "note": "Bitget spot (CEX) · no on-chain tx · from wallet-app screenshot 2026-10-06: balance 8,425.288365 @ cost price $0.80700852 (market $0.81106756); time/fills/fees not on file → approx"
       }
     }
   ],
@@ -119,6 +142,8 @@
     }
   ],
   "history": [
+    "ZEC re-opened 2026-10-06 on Bitget (spot, paid from the USDT cash; time/fills n/d, no on-chain tx): 33.14348375 ZEC @ cost price $1,362.77 = $45,166.95 (approx, from wallet-app screenshot; market then $1,355.90). Realized ZEC line from 1 Oct unchanged.",
+    "AERO added 2026-10-06 on Bitget (spot, USDT; time/fills n/d, no on-chain tx): 8,425.288365 AERO @ cost price $0.80700852 = $6,799.28 (approx, from screenshot; market then $0.81106756). Base wallet 0x9F0d…D2B0 unchanged at 110,213.996073 AERO (verified on-chain; no Base transfers today on 0x9F0d…/0x7E3d…).",
     "ZEC closed 2026-10-01 on Bitget (funds stuck there): 2 market sells 14:38:57 44.268 @ 1,400.87 + 14:39:04 40.864 @ 1,401.11 = 85.132 ZEC → 119,268.67220 USDT gross, 83.48815190 fees, 119,185.18404810 net. Cost $99,727.27 (prorated from 85.1323656) → realized $19,457.92. USDT proceeds held as cash on Bitget (not tracked as a position).",
     "DRV added 2026-09-28 20:44 PT on Base (tx 0xc64d155a…aa036a) from 0x7E3d…c869: 13,111.667310 DRV for 5,000.000036 USDC @ ~$0.38134. Base wallet now holds 36,331.823468 DRV (23,220.156158 + 13,111.667310).",
     "DRV added 2026-09-28 via Derive DRV/USDC limit orders (from screenshot, no tx hash/fees): 13,111.942 @ 0.3801 + 12,975.714 @ 0.3840 = 26,087.656 DRV for 9966.523330 USDC.",
