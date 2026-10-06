@@ -23,7 +23,8 @@ SOLANA_WALLETS = ["Ay1vrqfSSmn5JYz7viZcKmki751bEh7v5V4WPp67nMFi"]
 EVM_WALLETS = ["0xFaD2A6e902154CA7675d0Df4e0F6F091cf3aB69D", "0xA74C0C14E29a2aE6fc45c0de80D5D7BC469B133C",
                "0xaeF0939EFAE51BfD325bC38E9Dc9FB0df09B1d46", "0xc14346768592DddD9cD6d6964916Ed93a553810F",
                "0x7Efa55f129Eb43477aA0309C106120F55dE8684F",
-               "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0"]   # also the AERO wallet of the main tracker (portfolio.json untouched)
+               "0x9F0d7B28D30B4a3936e0288948dd29d32c85D2B0",   # also the AERO wallet of the main tracker (portfolio.json untouched)
+               "0x4c34c3fd980Ba9B4304BcD4C284f55f852638a1b"]
 # Per-wallet allowlist: only these (chain, token) pairs are kept for the wallet (token None = native coin).
 # 0x9F0d…D2B0: big-positions shows only its ETH (stETH + native ETH); its AERO lives in the main tracker (portfolio.json).
 WALLET_ONLY = {
@@ -63,6 +64,9 @@ TRACKED = [
     ("Ethereum", "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", "wstETH", "Wrapped stETH", 18, "ethereum:0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"),
     ("Ethereum", "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", "WBTC", "Wrapped BTC", 8, "ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"),
     ("Ethereum", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "WETH", "Wrapped Ether", 18, "ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
+    ("Ethereum", "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD", "sUSDS", "Savings USDS", 18, "ethereum:0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"),
+    ("Ethereum", "0x83F20F44975D03b1b09e64809B757c47f942BEeA", "sDAI", "Savings Dai", 18, "ethereum:0x83F20F44975D03b1b09e64809B757c47f942BEeA"),
+    ("Ethereum", "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497", "sUSDe", "Ethena Staked USDe", 18, "ethereum:0x9D39A5DE30e57443BfF2A8307A4256c8797A3497"),
     # Base (no scripted token discovery there: explorer blocks bots -> check known tokens)
     ("Base", "0x940181a94A35A4569E4529A3CDfB74e38FD98631", "AERO", "Aerodrome Finance", 18, "base:0x940181a94A35A4569E4529A3CDfB74e38FD98631"),
     ("Base", "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", "USDC", "USD Coin (Base)", 6, "base:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"),
@@ -187,14 +191,24 @@ def evm_wallet(w):
     try:
         d = curl_json(f"https://eth.blockscout.com/api/v2/addresses/{w}/tokens?type=ERC-20")
         have = {(h["chain"], (h["token"] or "").lower()) for h in hold}
+        cand = []
         for it in d.get("items") or []:
             t = it["token"]
             if ("Ethereum", t["address_hash"].lower()) in have or not t.get("exchange_rate"):
                 continue   # no market price -> spam/airdrop
             q = int(it["value"]) / 10 ** int(t.get("decimals") or 0)
             if q * float(t["exchange_rate"]) >= THRESHOLD_USD:
-                hold.append({"symbol": t["symbol"], "name": t["name"], "chain": "Ethereum", "token": t["address_hash"],
-                             "qty": q, "priceKey": "ethereum:" + t["address_hash"], "_note": "discovered via Blockscout"})
+                cand.append(t)
+        if cand:   # Blockscout balances can be stale -> confirm each one on-chain with balanceOf
+            r = evm_batch(EVM_CHAINS["Ethereum"][0], [("eth_call", [{"to": t["address_hash"], "data": "0x70a08231" + pad}, "latest"]) for t in cand])
+            if r is None:
+                errors.append(f"Ethereum balanceOf check failed for discovered tokens of {w}")
+                r = []
+            for t, v in zip(cand, r):
+                q = int(v or "0x0", 16) / 10 ** int(t.get("decimals") or 0)
+                if q > 0:
+                    hold.append({"symbol": t["symbol"], "name": t["name"], "chain": "Ethereum", "token": t["address_hash"],
+                                 "qty": q, "priceKey": "ethereum:" + t["address_hash"], "_note": "discovered via Blockscout"})
     except Exception as e:
         errors.append(f"Ethereum token discovery failed for {w}: {type(e).__name__}")
     return hold

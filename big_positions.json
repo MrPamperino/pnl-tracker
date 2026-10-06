@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-06T21:27:24+01:00",
+  "updated": "2026-10-06T21:33:12+01:00",
   "threshold_usd": 100.0,
-  "snapshot_total_usd": 4343863.99,
+  "snapshot_total_usd": 4584360.12,
   "wallets": [
     {
       "id": "ay1vrqfs",
@@ -157,12 +157,12 @@
           "token": null,
           "qty": 0.037977960585088774,
           "priceKey": "coingecko:ethereum",
-          "price": 2693.719314958827,
-          "value": 102.3,
+          "price": 2695.0703247702845,
+          "value": 102.35,
           "cost": null
         }
       ],
-      "value": 423868.72
+      "value": 423868.77
     },
     {
       "id": "0xc14346",
@@ -178,12 +178,12 @@
           "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
           "qty": 107.93368229932749,
           "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "price": 2691.563162846238,
-          "value": 290510.32,
+          "price": 2694.59854638763,
+          "value": 290837.94,
           "cost": null
         }
       ],
-      "value": 290510.32
+      "value": 290837.94
     },
     {
       "id": "0x7efa55",
@@ -208,13 +208,45 @@
           "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
           "qty": 101.044311055816,
           "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "price": 2691.563162846238,
-          "value": 271967.15,
+          "price": 2694.59854638763,
+          "value": 272273.85,
           "cost": null
         }
       ],
       "note": "só ETH (stETH + ETH nativo)",
-      "value": 271967.15
+      "value": 272273.85
+    },
+    {
+      "id": "0x4c34c3",
+      "label": "0x4c34…8a1b",
+      "chain": "EVM",
+      "address": "0x4c34c3fd980Ba9B4304BcD4C284f55f852638a1b",
+      "explorer": "https://debank.com/profile/0x4c34c3fd980Ba9B4304BcD4C284f55f852638a1b",
+      "holdings": [
+        {
+          "symbol": "sUSDS",
+          "name": "Savings USDS",
+          "chain": "Ethereum",
+          "token": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+          "qty": 214923.98715132507,
+          "priceKey": "ethereum:0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+          "price": 1.1117100212886342,
+          "value": 238933.15,
+          "cost": null
+        },
+        {
+          "symbol": "sUSDe",
+          "name": "Ethena Staked USDe",
+          "chain": "Ethereum",
+          "token": "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
+          "qty": 831.1290527619616,
+          "priceKey": "ethereum:0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
+          "price": 1.2515518995402126,
+          "value": 1040.2,
+          "cost": null
+        }
+      ],
+      "value": 239973.35
     }
   ],
   "manual": [
@@ -224,8 +256,8 @@
       "qty": 12.02,
       "priceKey": "coingecko:bitcoin",
       "note": "manual · off-chain (no address given)",
-      "price": 85631.52405389356,
-      "value": 1029290.92,
+      "price": 85622.24050469855,
+      "value": 1029179.33,
       "cost": null
     }
   ],
@@ -277,6 +309,15 @@
     },
     {
       "wallet": "0xFaD2…B69D",
+      "chain": "Ethereum",
+      "symbol": "sUSDS",
+      "priceKey": "ethereum:0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+      "qty": 0.021476734559567515,
+      "value": 0.02,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xFaD2…B69D",
       "chain": "Base",
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
@@ -299,7 +340,16 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.008586807091513986,
-      "value": 23.13,
+      "value": 23.14,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0xaeF0…1d46",
+      "chain": "Ethereum",
+      "symbol": "sUSDS",
+      "priceKey": "ethereum:0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
+      "qty": 0.02502603260373686,
+      "value": 0.03,
       "reason": "< $100"
     },
     {
@@ -326,7 +376,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.018972971250356054,
-      "value": 51.11,
+      "value": 51.13,
       "reason": "< $100"
     },
     {
@@ -344,7 +394,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.002867606272438479,
-      "value": 7.72,
+      "value": 7.73,
       "reason": "< $100"
     },
     {
@@ -372,6 +422,33 @@
       "priceKey": "coingecko:ethereum",
       "qty": 0.000232922242478012,
       "value": 0.63,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x4c34…8a1b",
+      "chain": "Ethereum",
+      "symbol": "ETH",
+      "priceKey": "coingecko:ethereum",
+      "qty": 0.021842132952801643,
+      "value": 58.87,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x4c34…8a1b",
+      "chain": "Ethereum",
+      "symbol": "USDT",
+      "priceKey": "ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "qty": 2e-06,
+      "value": 0.0,
+      "reason": "< $100"
+    },
+    {
+      "wallet": "0x4c34…8a1b",
+      "chain": "Avalanche",
+      "symbol": "AVAX",
+      "priceKey": "coingecko:avalanche-2",
+      "qty": 9.1384e-06,
+      "value": 0.0,
       "reason": "< $100"
     }
   ],
