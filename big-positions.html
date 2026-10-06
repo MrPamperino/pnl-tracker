@@ -73,6 +73,7 @@ function money(n, d = 2) {
   return (n < 0 ? "−" : "") + "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 function big(n) { return n == null ? "—" : money(n, n >= 1000 ? 0 : 2); }
+function cashAmt(h) { return (h.currency === "EUR" ? "€" : (h.currency || "") + " ") + h.qty.toLocaleString("en-US", { maximumFractionDigits: 0 }); }
 function qty(n) { return n.toLocaleString("en-US", { maximumFractionDigits: n >= 1000 ? 2 : n >= 1 ? 4 : 6 }); }
 function price(p) { return p == null ? "—" : money(p, p >= 100 ? 2 : p >= 1 ? 4 : 6); }
 function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
@@ -82,6 +83,7 @@ const STABLE = new Set(["USDC","USDT","DAI","USDS","USDE","PYUSD","USDG","SPUSDC
 const ETHS = new Set(["ETH","WETH","STETH","WSTETH","WEETH","RETH","CBETH"]);
 const BTCS = new Set(["BTC","WBTC","CBBTC","TBTC"]);
 function assetClass(h) {
+  if (h.kind === "cash") return `Cash (${h.currency || h.symbol})`;
   const s = String(h.symbol || "").toUpperCase();
   if (STABLE.has(s)) return "Stablecoins";
   if (BTCS.has(s)) return "BTC";
@@ -109,9 +111,18 @@ async function fetchPrices() {
   const keys = [...new Set(allHoldings().map(h => h.priceKey))];
   PX = {}; PXSRC = {};
   try {
-    const d = await fetch("https://coins.llama.fi/prices/current/" + keys.join(",")).then(r => r.json());
+    const d = await fetch("https://coins.llama.fi/prices/current/" + keys.filter(k => !k.startsWith("fx:")).join(",")).then(r => r.json());
     for (const [k, v] of Object.entries(d.coins || {})) if (v.price) { PX[k] = v.price; PXSRC[k] = "DefiLlama"; }
   } catch (e) { console.warn("llama", e); }
+  // EUR/USD (live): Coinbase > Frankfurter (ECB) > open.er-api; else the stored rate in big_positions.json
+  if (keys.includes("fx:EURUSD")) {
+    const srcs = [["Coinbase", "https://api.coinbase.com/v2/exchange-rates?currency=EUR", d => d.data.rates.USD],
+                  ["ECB (Frankfurter)", "https://api.frankfurter.dev/v1/latest?from=EUR&to=USD", d => d.rates.USD],
+                  ["open.er-api", "https://open.er-api.com/v6/latest/EUR", d => d.rates.USD]];
+    for (const [name, url, get] of srcs) {
+      try { const v = Number(get(await fetch(url).then(r => r.json()))); if (v > 0.5 && v < 2) { PX["fx:EURUSD"] = v; PXSRC["fx:EURUSD"] = name; break; } } catch {}
+    }
+  }
   const missing = keys.filter(k => !PX[k]);
   const sol = missing.filter(k => k.startsWith("solana:")).map(k => k.slice(7));
   if (sol.length) {
@@ -155,10 +166,10 @@ function render() {
     total += h._v || 0;
   }
   const pct = v => total ? (v / total * 100).toFixed(1) + "%" : "—";
-  const m = (DATA.manual || [])[0];
+  const man = (DATA.manual || []).map(m => m.kind === "cash" ? cashAmt(m) : `${qty(m.qty)} ${m.symbol}`);
   document.getElementById("total").textContent = big(total);
   document.getElementById("totalHint").textContent =
-    `${DATA.wallets.length} wallets` + (m ? ` + ${qty(m.qty)} BTC manual` : "") + ` · saldos de ${new Date(DATA.updated).toLocaleString("pt-PT")}`;
+    `${DATA.wallets.length} wallets` + (man.length ? ` + ${man.join(" + ")} manual` : "") + ` · saldos de ${new Date(DATA.updated).toLocaleString("pt-PT")}`;
 
   // by asset class
   const cls = {};
@@ -174,16 +185,17 @@ function render() {
   // by wallet (collapsed)
   const openIds = new Set([...document.querySelectorAll("details.w[open]")].map(d => d.dataset.id));
   const groups = DATA.wallets.map(w => ({ id: w.id, w, hs: hs.filter(h => h.wallet === w) }));
-  groups.push({ id: "manual", w: null, hs: hs.filter(h => !h.wallet) });
+  for (const h of hs.filter(h => !h.wallet)) groups.push({ id: h.id || h.symbol, w: null, m: h, hs: [h] });
   for (const g of groups) g.v = g.hs.reduce((s, h) => s + (h._v || 0), 0);
   groups.sort((a, b) => b.v - a.v);
-  document.getElementById("wallets").innerHTML = groups.map(({ id, w, hs: g, v }) => {
+  document.getElementById("wallets").innerHTML = groups.map(({ id, w, m, hs: g, v }) => {
     const lab = w ? `<span class="name" title="${esc(w.address)}${w.note ? " · " + esc(w.note) : ""}">${esc(w.label)}</span><span class="tag">${esc(w.chain)}</span>` +
                     (w.error ? `<span class="tag stale" title="${esc(w.error)}">saldos antigos</span>` : "")
-                  : `<span class="name">BTC</span><span class="tag">manual</span>`;
+                  : m.kind === "cash" ? `<span class="name">${esc(m.name)}</span><span class="tag">manual · ${esc(m.currency)}</span> <span class="muted" style="font-size:13px">${cashAmt(m)}</span>`
+                  : `<span class="name">${esc(m.symbol)}</span><span class="tag">manual</span>`;
     const body = g.length ? `<table>${g.sort((a, b) => (b._v || 0) - (a._v || 0)).map(h =>
-        `<tr><td><span class="name">${esc(h.symbol)}</span> <span class="muted" style="font-size:12px">${h.wallet ? esc(h.chain) : "off-chain"}</span></td>` +
-        `<td class="r">${qty(h.qty)}</td><td class="r${h._live ? "" : " stale"}" title="${h._live ? esc(PXSRC[h.priceKey]) : "snapshot"}">${price(h._p)}</td><td class="r">${big(h._v)}</td></tr>`).join("")}</table>` +
+        `<tr><td><span class="name">${esc(h.symbol)}</span> <span class="muted" style="font-size:12px">${h.wallet ? esc(h.chain) : h.kind === "cash" ? "fiat" : "off-chain"}</span></td>` +
+        `<td class="r">${h.kind === "cash" ? cashAmt(h) : qty(h.qty)}</td><td class="r${h._live ? "" : " stale"}" title="${h._live ? esc(PXSRC[h.priceKey]) : "snapshot"}">${price(h._p)}</td><td class="r">${big(h._v)}</td></tr>`).join("")}</table>` +
         (w ? `<div style="margin:0 0 12px 26px;font-size:12px"><a href="${esc(w.explorer)}" target="_blank" rel="noopener">ver no explorer ↗</a></div>` : "")
       : `<div class="muted" style="margin:0 0 12px 26px;font-size:12px">vazia (nada acima de $${DATA.threshold_usd})</div>`;
     return `<details class="w" data-id="${esc(id)}"${openIds.has(id) ? " open" : ""}><summary><span class="chev">▶</span><span class="lab">${lab}</span>` +

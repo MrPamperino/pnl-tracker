@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-06T21:33:12+01:00",
+  "updated": "2026-10-06T21:40:29+01:00",
   "threshold_usd": 100.0,
-  "snapshot_total_usd": 4584360.12,
+  "snapshot_total_usd": 5045753.12,
   "wallets": [
     {
       "id": "ay1vrqfs",
@@ -17,8 +17,8 @@
           "token": "9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
           "qty": 376680.99455,
           "priceKey": "solana:9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
-          "price": 1.0631107165857248,
-          "value": 400453.6,
+          "price": 1.06306991948427,
+          "value": 400438.23,
           "cost": null
         },
         {
@@ -88,7 +88,7 @@
           "cost": null
         }
       ],
-      "value": 654376.16
+      "value": 654360.79
     },
     {
       "id": "0xfad2a6",
@@ -104,12 +104,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 342236.308619,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0369192570624994,
-          "value": 354871.42,
+          "price": 1.0368850989668827,
+          "value": 354859.73,
           "cost": null
         }
       ],
-      "value": 354871.42
+      "value": 354859.73
     },
     {
       "id": "0xa74c0c",
@@ -125,12 +125,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 1272017.362436,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0369192570624994,
-          "value": 1318979.3,
+          "price": 1.0368850989668827,
+          "value": 1318935.85,
           "cost": null
         }
       ],
-      "value": 1318979.3
+      "value": 1318935.85
     },
     {
       "id": "0xaef093",
@@ -146,8 +146,8 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 408678.315438,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0369192570624994,
-          "value": 423766.42,
+          "price": 1.0368850989668827,
+          "value": 423752.46,
           "cost": null
         },
         {
@@ -157,12 +157,12 @@
           "token": null,
           "qty": 0.037977960585088774,
           "priceKey": "coingecko:ethereum",
-          "price": 2695.0703247702845,
-          "value": 102.35,
+          "price": 2695.859181684187,
+          "value": 102.38,
           "cost": null
         }
       ],
-      "value": 423868.77
+      "value": 423854.84
     },
     {
       "id": "0xc14346",
@@ -230,8 +230,8 @@
           "token": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
           "qty": 214923.98715132507,
           "priceKey": "ethereum:0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
-          "price": 1.1117100212886342,
-          "value": 238933.15,
+          "price": 1.111785869300463,
+          "value": 238949.45,
           "cost": null
         },
         {
@@ -241,23 +241,37 @@
           "token": "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
           "qty": 831.1290527619616,
           "priceKey": "ethereum:0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
-          "price": 1.2515518995402126,
-          "value": 1040.2,
+          "price": 1.2514762438598535,
+          "value": 1040.14,
           "cost": null
         }
       ],
-      "value": 239973.35
+      "value": 239989.59
     }
   ],
   "manual": [
     {
+      "id": "btc-manual",
       "symbol": "BTC",
       "name": "Bitcoin",
       "qty": 12.02,
       "priceKey": "coingecko:bitcoin",
       "note": "manual · off-chain (no address given)",
-      "price": 85622.24050469855,
-      "value": 1029179.33,
+      "price": 85610.39447299187,
+      "value": 1029036.94,
+      "cost": null
+    },
+    {
+      "id": "eur-bank",
+      "symbol": "EUR",
+      "name": "Conta bancária",
+      "qty": 410000,
+      "priceKey": "fx:EURUSD",
+      "kind": "cash",
+      "currency": "EUR",
+      "note": "manual · fiat (no address)",
+      "price": 1.1258624155958104,
+      "value": 461603.59,
       "cost": null
     }
   ],
@@ -268,7 +282,7 @@
       "symbol": "SOL",
       "priceKey": "coingecko:solana",
       "qty": 0.077288091,
-      "value": 9.36,
+      "value": 9.35,
       "reason": "< $100"
     },
     {
@@ -340,7 +354,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.008586807091513986,
-      "value": 23.14,
+      "value": 23.15,
       "reason": "< $100"
     },
     {
@@ -376,7 +390,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.018972971250356054,
-      "value": 51.13,
+      "value": 51.15,
       "reason": "< $100"
     },
     {
@@ -430,7 +444,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.021842132952801643,
-      "value": 58.87,
+      "value": 58.88,
       "reason": "< $100"
     },
     {

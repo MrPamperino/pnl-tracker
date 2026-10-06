@@ -33,8 +33,12 @@ WALLET_ONLY = {
         ("Ethereum", None),                                                   # native ETH
     },
 }
-MANUAL = [{"symbol": "BTC", "name": "Bitcoin", "qty": 12.02, "priceKey": "coingecko:bitcoin",
-           "note": "manual · off-chain (no address given)"}]
+# Manual (off-chain) entries. Never overwritten by the refresh: these are always written back, and any extra manual
+# entry already present in big_positions.json (matched by id) is carried over untouched apart from its price.
+MANUAL = [{"id": "btc-manual", "symbol": "BTC", "name": "Bitcoin", "qty": 12.02, "priceKey": "coingecko:bitcoin",
+           "note": "manual · off-chain (no address given)"},
+          {"id": "eur-bank", "symbol": "EUR", "name": "Conta bancária", "qty": 410000, "priceKey": "fx:EURUSD",
+           "kind": "cash", "currency": "EUR", "note": "manual · fiat (no address)"}]
 
 # chain -> (rpc urls, native symbol, DefiLlama price key for native, explorer address url)
 EVM_CHAINS = {
@@ -213,6 +217,20 @@ def evm_wallet(w):
         errors.append(f"Ethereum token discovery failed for {w}: {type(e).__name__}")
     return hold
 
+def eur_usd():
+    """EUR->USD: Coinbase (live) > Frankfurter (ECB daily) > open.er-api. None if all fail."""
+    for url, get in (("https://api.coinbase.com/v2/exchange-rates?currency=EUR", lambda d: d["data"]["rates"]["USD"]),
+                     ("https://api.frankfurter.dev/v1/latest?from=EUR&to=USD", lambda d: d["rates"]["USD"]),
+                     ("https://open.er-api.com/v6/latest/EUR", lambda d: d["rates"]["USD"])):
+        try:
+            v = float(get(curl_json(url, timeout=12)))
+            if 0.5 < v < 2:
+                return v
+        except Exception:
+            pass
+    errors.append("EUR/USD rate unavailable (kept stored rate)")
+    return None
+
 def short(a):
     return f"{a[:4]}…{a[-4:]}" if a.startswith("0x") is False else f"{a[:6]}…{a[-4:]}"
 
@@ -246,7 +264,10 @@ def main():
                         "explorer": "https://debank.com/profile/" + w, "holdings": hold,
                         **({"note": "só ETH (stETH + ETH nativo)"} if allow is not None else {})})
     keys = [h["priceKey"] for wl in wallets for h in wl["holdings"]] + [m["priceKey"] for m in MANUAL]
-    px = llama_prices(keys)
+    px = llama_prices([k for k in keys if not k.startswith("fx:")])
+    fx = eur_usd()
+    if fx:
+        px["fx:EURUSD"] = {"price": fx, "symbol": "EUR"}
     # stable symbols/names: previous file > Jupiter > DefiLlama
     try:
         _old = json.load(open(OUT))
@@ -281,8 +302,13 @@ def main():
         wl["holdings"] = kept
         wl["value"] = round(sum(h["value"] for h in kept), 2)
     manual = []
-    for m in MANUAL:
+    prev_manual = _prev_file().get("manual") or []
+    ids = {m["id"] for m in MANUAL}
+    extra = [m for m in prev_manual if m.get("id") and m["id"] not in ids]   # hand-added entries: keep as-is
+    for m in MANUAL + extra:
         p = (px.get(m["priceKey"]) or {}).get("price")
+        if p is None:   # keep last stored price (e.g. FX API down) instead of dropping the value
+            p = next((x.get("price") for x in prev_manual if x.get("priceKey") == m["priceKey"] and x.get("price")), None)
         manual.append(dict(m, price=p, value=round(m["qty"] * p, 2) if p else None, cost=None))
     total = round(sum(w["value"] for w in wallets) + sum(m["value"] or 0 for m in manual), 2)
     data = {"updated": datetime.datetime.now(TZ).isoformat(timespec="seconds"), "threshold_usd": THRESHOLD_USD,
@@ -299,7 +325,8 @@ def main():
     except Exception:
         pass
     strip = lambda d: json.dumps([[(h["chain"], h["symbol"], round(h["qty"], 6)) for h in w["holdings"]] for w in d["wallets"]]) if d else None
-    changed = strip(old) != strip(data)
+    mstrip = lambda d: json.dumps([(m.get("id"), m.get("qty")) for m in d.get("manual", [])]) if d else None
+    changed = strip(old) != strip(data) or mstrip(old) != mstrip(data)
     with open(OUT, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False); f.write("\n")
     if changed and "--no-push" not in args:
