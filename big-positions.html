@@ -66,7 +66,8 @@
 </div>
 <script>
 const DATA_URL = "./big_positions.json";
-let DATA = null, PX = {}, PXSRC = {};
+let DATA = null, PX = {}, PXSRC = {}, PMLIVE = {}, PMCASH = {};
+const PM_CASH = { "pUSD": "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB", "USDC.e": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174" };
 
 function money(n, d = 2) {
   if (n == null || !Number.isFinite(n)) return "—";
@@ -83,6 +84,7 @@ const STABLE = new Set(["USDC","USDT","DAI","USDS","USDE","PYUSD","USDG","SPUSDC
 const ETHS = new Set(["ETH","WETH","STETH","WSTETH","WEETH","RETH","CBETH"]);
 const BTCS = new Set(["BTC","WBTC","CBBTC","TBTC"]);
 function assetClass(h) {
+  if (h.kind === "polymarket") return "Polymarket";
   if (h.kind === "lp") return "LP (Raydium/Orca)";
   if (h.kind === "cash") return `Cash (${h.currency || h.symbol})`;
   const s = String(h.symbol || "").toUpperCase();
@@ -109,8 +111,25 @@ async function ethCall(to, data) {
   return r.result;
 }
 async function fetchPrices() {
-  const keys = [...new Set(allHoldings().flatMap(h => h.kind === "lp" ? h.underlying.map(u => u.priceKey) : [h.priceKey]))];
+  const keys = [...new Set(allHoldings().filter(h => h.kind !== "polymarket").flatMap(h => h.kind === "lp" ? h.underlying.map(u => u.priceKey) : [h.priceKey]))];
   PX = {}; PXSRC = {};
+  // Polymarket: live positions from the public Data API (cash stays at the snapshot balance)
+  for (const h of allHoldings().filter(h => h.kind === "polymarket")) {
+    try {
+      const d = await fetch(`https://data-api.polymarket.com/positions?user=${h.proxy}&sizeThreshold=0&limit=500`).then(r => r.json());
+      if (Array.isArray(d)) PMLIVE[h.proxy] = d.filter(p => p.size > 0 && p.currentValue > 0)
+        .map(p => ({ title: p.title, outcome: p.outcome, size: p.size, avgPrice: p.avgPrice, curPrice: p.curPrice, value: p.currentValue, pnl: p.cashPnl, endDate: p.endDate, slug: p.eventSlug || p.slug, redeemable: p.redeemable }))
+        .sort((a, b) => b.value - a.value);
+    } catch (e) { console.warn("polymarket", e); }
+    try {   // live cash in the proxy (pUSD + USDC.e, 6 decimals) so trades since the snapshot aren't double counted
+      const syms = Object.keys(PM_CASH), pad = h.proxy.slice(2).toLowerCase().padStart(64, "0");
+      const r = await fetch("https://polygon-bor-rpc.publicnode.com", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify(syms.map((s, i) => ({ jsonrpc: "2.0", id: i, method: "eth_call", params: [{ to: PM_CASH[s], data: "0x70a08231" + pad }, "latest"] }))) }).then(r => r.json());
+      const c = {};
+      for (const x of r) { if (!x.result) throw new Error("rpc"); const v = Number(BigInt(x.result)) / 1e6; if (v > 0) c[syms[x.id]] = v; }
+      PMCASH[h.proxy] = c;
+    } catch (e) { console.warn("polymarket cash", e); }
+  }
   try {
     const d = await fetch("https://coins.llama.fi/prices/current/" + keys.filter(k => !k.startsWith("fx:")).join(",")).then(r => r.json());
     for (const [k, v] of Object.entries(d.coins || {})) if (v.price) { PX[k] = v.price; PXSRC[k] = "DefiLlama"; }
@@ -153,6 +172,19 @@ async function fetchPrices() {
     } catch {}
   }
 }
+function pmRows(h) {   // Polymarket block: header + one row per open position + cash
+  const sub = "padding-left:22px;font-size:13px";
+  const pnl = v => `<span style="color:var(${v >= 0 ? "--up" : "--down"})">${v >= 0 ? "+" : "−"}${money(Math.abs(v))}</span>`;
+  let html = `<tr><td><span class="name">Polymarket</span> <span class="tag">Polygon</span> <span class="muted" style="font-size:12px">${h._pos.length} posições · proxy <a href="https://polymarket.com/profile/${esc(h.proxy)}" target="_blank" rel="noopener">${esc(h.proxy.slice(0, 6) + "…" + h.proxy.slice(-4))}</a></span></td>` +
+             `<td class="r muted" colspan="2" style="font-size:12px">${h._live ? "ao vivo" : "snapshot"}</td><td class="r name${h._live ? "" : " stale"}">${big(h._v)}</td></tr>`;
+  for (const p of h._pos)
+    html += `<tr><td style="${sub}">${esc(p.title)}<div class="venue">${esc(p.outcome)}${p.redeemable ? " · resolvido (por resgatar)" : p.endDate ? " · fim " + esc(p.endDate) : ""}</div></td>` +
+            `<td class="r" style="font-size:13px">${qty(p.size)}</td><td class="r muted" style="font-size:12px">${p.avgPrice.toFixed(3)} → ${p.curPrice.toFixed(3)}</td>` +
+            `<td class="r" style="font-size:13px">${money(p.value)}<div class="venue">${pnl(p.pnl)}</div></td></tr>`;
+  for (const [sym, q] of Object.entries(h._cash || {}))
+    html += `<tr><td style="${sub}">Cash <span class="muted" style="font-size:12px">${esc(sym)}</span></td><td class="r" style="font-size:13px">${qty(q)}</td><td></td><td class="r" style="font-size:13px">${money(q)}</td></tr>`;
+  return html;
+}
 function lpValue(h) {   // LP = underlying token amounts x live prices (snapshot price per token as fallback)
   let v = 0, live = true;
   for (const u of h.underlying || []) {
@@ -170,7 +202,13 @@ function render() {
   const hs = allHoldings();
   let total = 0, stale = 0;
   for (const h of hs) {
-    if (h.kind === "lp") { const r = lpValue(h); h._p = null; h._live = r.live; h._v = r.v; }
+    if (h.kind === "polymarket") {
+      h._pos = PMLIVE[h.proxy] || h.positions; h._live = !!PMLIVE[h.proxy]; h._p = null;
+      h._cash = PMCASH[h.proxy] || h.cash || {};
+      h._live = h._live && !!PMCASH[h.proxy];
+      h._v = h._pos.reduce((s, p) => s + p.value, 0) + Object.values(h._cash).reduce((s, v) => s + v, 0);
+    }
+    else if (h.kind === "lp") { const r = lpValue(h); h._p = null; h._live = r.live; h._v = r.v; }
     else { const { p, live } = priceOf(h); h._p = p; h._live = live; h._v = p ? h.qty * p : null; }
     if (!h._live && h._v) stale++;
     total += h._v || 0;
@@ -187,6 +225,7 @@ function render() {
     const c = cls[assetClass(h)] ||= { v: 0, syms: {}, npos: 0 };
     c.v += h._v || 0;
     if (h.kind === "lp") c.npos += h.qty;
+    if (h.kind === "polymarket") { c.pm = (c.pm || 0) + h._pos.length; c.syms = { [`${c.pm} posições + cash`]: 1 }; continue; }
     c.syms[h.symbol] = (c.syms[h.symbol] || 0) + (h._v || 0);
   }
   document.getElementById("classRows").innerHTML = Object.entries(cls).sort((a, b) => b[1].v - a[1].v).map(([name, c]) =>
@@ -204,7 +243,7 @@ function render() {
                     (w.error ? `<span class="tag stale" title="${esc(w.error)}">saldos antigos</span>` : "")
                   : m.kind === "cash" ? `<span class="name">${esc(m.name)}</span><span class="tag">manual · ${esc(m.currency)}</span> <span class="muted" style="font-size:13px">${cashAmt(m)}</span>`
                   : `<span class="name">${esc(m.symbol)}</span><span class="tag">manual</span>`;
-    const body = g.length ? `<table>${g.sort((a, b) => (b._v || 0) - (a._v || 0)).map(h => h.kind === "lp" ?
+    const body = g.length ? `<table>${g.sort((a, b) => (b._v || 0) - (a._v || 0)).map(h => h.kind === "polymarket" ? pmRows(h) : h.kind === "lp" ?
         `<tr><td><span class="name">${esc(h.symbol)}</span> <span class="tag">LP</span> <span class="muted" style="font-size:12px">${esc(h.name)} · ${h.qty} ${h.qty === 1 ? "posição" : "posições"}</span></td>` +
         `<td class="r muted" colspan="2" style="font-size:12px">${h.underlying.map(u => `${qty(u.qty)} ${esc(u.symbol)}`).join(" + ")}</td>` +
         `<td class="r${h._live ? "" : " stale"}">${big(h._v)}</td></tr>` :

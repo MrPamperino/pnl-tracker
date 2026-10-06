@@ -41,7 +41,14 @@ WALLET_ONLY = {
 MANUAL = [{"id": "btc-manual", "symbol": "BTC", "name": "Bitcoin", "qty": 12.02, "priceKey": "coingecko:bitcoin",
            "note": "manual · off-chain (no address given)"},
           {"id": "eur-bank", "symbol": "EUR", "name": "Conta bancária", "qty": 410000, "priceKey": "fx:EURUSD",
+           "kind": "cash", "currency": "EUR", "note": "manual · fiat (no address)"},
+          {"id": "eur-cash", "symbol": "EUR", "name": "Cash", "qty": 10000, "priceKey": "fx:EURUSD",
            "kind": "cash", "currency": "EUR", "note": "manual · fiat (no address)"}]
+# Polymarket: owner EOA -> known proxy wallet (re-resolved each run via the gamma public profile; on-chain the
+# proxy's bytecode embeds the owner). Positions from the public Data API, cash = pUSD + USDC.e held by the proxy.
+POLYMARKET = {"0x7Efa55f129Eb43477aA0309C106120F55dE8684F": "0xb22ae2678733e6cebc5dc43b68fc70714f932815"}
+PM_CASH_TOKENS = [("pUSD", "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB"), ("USDC.e", "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")]
+PM_RPCS = ["https://polygon-bor-rpc.publicnode.com", "https://polygon.drpc.org"]
 
 # chain -> (rpc urls, native symbol, DefiLlama price key for native, explorer address url)
 EVM_CHAINS = {
@@ -245,6 +252,39 @@ def evm_wallet(w):
         errors.append(f"Ethereum token discovery failed for {w}: {type(e).__name__}")
     return hold
 
+def polymarket(owner, known_proxy):
+    """One kind="polymarket" holding: open positions with current value > 0 (incl. unredeemed winners) + cash."""
+    proxy = known_proxy
+    try:
+        prof = curl_json(f"https://gamma-api.polymarket.com/public-profile?address={owner}", timeout=15)
+        if prof.get("proxyWallet"):
+            proxy = prof["proxyWallet"]
+    except Exception:
+        pass
+    pos, off = [], 0
+    while True:
+        d = curl_json(f"https://data-api.polymarket.com/positions?user={proxy}&sizeThreshold=0&limit=500&offset={off}", timeout=25)
+        if not isinstance(d, list):
+            raise RuntimeError("Data API: unexpected response")
+        pos += d
+        if len(d) < 500:
+            break
+        off += 500
+    keep = [{"title": p["title"], "outcome": p["outcome"], "size": p["size"], "avgPrice": p["avgPrice"], "curPrice": p["curPrice"],
+             "value": round(p["currentValue"], 2), "pnl": round(p["cashPnl"], 2), "endDate": p.get("endDate"),
+             "slug": p.get("eventSlug") or p.get("slug"), "redeemable": p.get("redeemable", False)}
+            for p in pos if p.get("size", 0) > 0 and p.get("currentValue", 0) > 0]
+    keep.sort(key=lambda p: -p["value"])
+    pad = proxy[2:].lower().rjust(64, "0")
+    r = evm_batch(PM_RPCS, [("eth_call", [{"to": t, "data": "0x70a08231" + pad}, "latest"]) for _, t in PM_CASH_TOKENS])
+    if r is None:
+        raise RuntimeError("Polygon RPC failed (cash balance)")
+    cash = {sym: int(v or "0x0", 16) / 1e6 for (sym, _), v in zip(PM_CASH_TOKENS, r)}
+    return {"symbol": "Polymarket", "name": "Polymarket (posições + cash)", "kind": "polymarket", "chain": "Polygon",
+            "token": None, "proxy": proxy, "qty": len(keep), "priceKey": "polymarket:" + proxy.lower(),
+            "positions": keep, "positions_value": round(sum(p["value"] for p in keep), 2),
+            "cash": {k: round(v, 6) for k, v in cash.items() if v > 0}, "cash_value": round(sum(cash.values()), 2)}
+
 def eur_usd():
     """EUR->USD: Coinbase (live) > Frankfurter (ECB daily) > open.er-api. None if all fail."""
     for url, get in (("https://api.coinbase.com/v2/exchange-rates?currency=EUR", lambda d: d["data"]["rates"]["USD"]),
@@ -297,10 +337,21 @@ def main():
         allow = WALLET_ONLY.get(w)
         if allow is not None:   # drop everything not allow-listed (not shown, not in skipped)
             hold = [h for h in hold if (h["chain"], (h["token"] or "").lower() or None) in allow]
-        wallets.append({"id": w[:8].lower(), "label": short(w), "chain": "EVM", "address": w,
-                        "explorer": "https://debank.com/profile/" + w, "holdings": hold,
-                        **({"note": "só ETH (stETH + ETH nativo)"} if allow is not None else {})})
-    keys = [k for wl in wallets for h in wl["holdings"]
+        wl = {"id": w[:8].lower(), "label": short(w), "chain": "EVM", "address": w,
+              "explorer": "https://debank.com/profile/" + w, "holdings": hold,
+              **({"note": "só ETH (stETH + ETH nativo)"} if allow is not None else {})}
+        if w in POLYMARKET:
+            try:
+                hold.append(polymarket(w, POLYMARKET[w]))
+            except Exception as e:   # keep the last known Polymarket snapshot instead of zeroing it
+                errors.append(f"Polymarket {w}: {type(e).__name__}: {e} (kept previous values)"[:220])
+                prev_w = next((x for x in _prev_file().get("wallets", []) if x.get("address") == w), None)
+                prev_pm = [h for h in (prev_w or {}).get("holdings", []) if h.get("kind") == "polymarket"]
+                hold += [{k: v for k, v in h.items() if k not in ("price", "value", "cost")} for h in prev_pm]
+                if prev_pm:
+                    wl["error"] = f"Polymarket: API falhou — valores da atualização anterior ({_prev_file().get('updated')})"
+        wallets.append(wl)
+    keys = [k for wl in wallets for h in wl["holdings"] if h.get("kind") != "polymarket"
             for k in ([u["priceKey"] for u in h["underlying"]] if h.get("kind") == "lp" else [h["priceKey"]])] + [m["priceKey"] for m in MANUAL]
     px = llama_prices([k for k in keys if not k.startswith("fx:")])
     fx = eur_usd()
@@ -321,6 +372,8 @@ def main():
         return s_[:-1] + "x" if k.startswith("solana:Xs") and s_.endswith("X") else s_   # xStocks: DefiLlama upper-cases
     for wl in wallets:
         for h in wl["holdings"]:
+            if h.get("kind") == "polymarket":
+                continue
             if h.get("kind") == "lp":
                 for un in h["underlying"]:
                     un["symbol"] = _sym(un["priceKey"], un["symbol"])
@@ -333,6 +386,15 @@ def main():
     for wl in wallets:
         kept = []
         for h in wl["holdings"]:
+            if h.get("kind") == "polymarket":   # Data API current values + cash at face value (pUSD/USDC.e ≈ $1)
+                h["price"], h["cost"] = None, None
+                h["value"] = round(h["positions_value"] + h["cash_value"], 2)
+                if h["value"] < THRESHOLD_USD:
+                    skipped.append({"wallet": wl["label"], "chain": h["chain"], "symbol": "Polymarket", "priceKey": h["priceKey"],
+                                    "qty": h["qty"], "value": h["value"], "reason": f"< ${THRESHOLD_USD:.0f}"})
+                    continue
+                kept.append(h)
+                continue
             if h.get("kind") == "lp":   # value = underlying amounts (incl. stored unclaimed fees) x prices
                 tot, ok = 0.0, True
                 for un in h["underlying"]:
@@ -390,7 +452,9 @@ def main():
     except Exception:
         pass
     strip = lambda d: json.dumps([[(h["chain"], h["symbol"], round(h["qty"], 6),
-                                    [round(u["qty"], 2) for u in h.get("underlying", [])]) for h in w["holdings"]] for w in d["wallets"]]) if d else None
+                                    [round(u["qty"], 2) for u in h.get("underlying", [])],
+                                    [(p["title"], round(p["size"], 2)) for p in h.get("positions", []) if "title" in p],
+                                    round(h.get("cash_value", 0), 2)) for h in w["holdings"]] for w in d["wallets"]]) if d else None
     mstrip = lambda d: json.dumps([(m.get("id"), m.get("qty")) for m in d.get("manual", [])]) if d else None
     changed = strip(old) != strip(data) or mstrip(old) != mstrip(data)
     with open(OUT, "w") as f:
