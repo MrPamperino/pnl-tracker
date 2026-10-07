@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-07T10:55:00+01:00",
+  "updated": "2026-10-06T23:10:00+01:00",
   "eurusd": 1.1614,
   "positions": [
     {
@@ -75,21 +75,21 @@
       "id": "aero",
       "symbol": "AERO",
       "venue": "Base · 0x9F0d…D2B0 + Bitget",
-      "holdings": 133041.98443783046,
-      "avg": 0.8079171432551783,
+      "holdings": 118639.28443783046,
+      "avg": 0.809589124927196,
       "mark": 0.81106756,
       "lastBuy": {
-        "time": "2026-10-07 10:42:17 PT",
-        "qty": 14402.7,
-        "price": 0.7941445374825553,
-        "paid": 11437.82553,
-        "paidToken": "USDC",
+        "time": "2026-10-06 (hora n/d) PT",
+        "qty": 8425.288365,
+        "price": 0.80700852,
+        "paid": 6799.27949401187,
+        "paidToken": "USDT",
         "chain": "Bitget (CEX)",
         "wallet": null,
         "tx": null,
         "explorer": "",
-        "approx": false,
-        "note": "CEX market buy AERO/USDC (Bitget, per screenshot style) · executed 14,402.7 AERO, average 0.7941, total 11,437.82553 USDC · fee n/d · no on-chain tx"
+        "approx": true,
+        "note": "Bitget spot (CEX) · no on-chain tx · from wallet-app screenshot 2026-10-06: balance 8,425.288365 @ cost price $0.80700852 (market $0.81106756); time/fills/fees not on file → approx"
       }
     },
     {
@@ -164,7 +164,6 @@
     }
   ],
   "history": [
-    "AERO added 2026-10-07 10:42:17 PT on Bitget (CEX market buy AERO/USDC, from screenshot; fee n/d, no on-chain tx): 14,402.7 AERO for 11,437.82553 USDC @ avg 0.7941. AERO now 133,041.984438 @ avg $0.807917 (cost $107,486.90).",
     "QTC opened 2026-10-06 on SafeTrade (CEX, QTC/USDT; time n/d, user-provided, not on-chain verified): 126 QTC for 21,905.64 USDT @ $173.854286. Price source CoinGecko 'quantus' (SafeTrade only, thin liquidity). Note: $173.85 matches the 3–4 Oct market; 6 Oct range was ~$67–$114.",
     "ZEC re-opened 2026-10-06 on Bitget (spot, paid from the USDT cash; time/fills n/d, no on-chain tx): 33.14348375 ZEC @ cost price $1,362.77 = $45,166.95 (approx, from wallet-app screenshot; market then $1,355.90). Realized ZEC line from 1 Oct unchanged.",
     "AERO added 2026-10-06 on Bitget (spot, USDT; time/fills n/d, no on-chain tx): 8,425.288365 AERO @ cost price $0.80700852 = $6,799.28 (approx, from screenshot; market then $0.81106756). Base wallet 0x9F0d…D2B0 unchanged at 110,213.996073 AERO (verified on-chain; no Base transfers today on 0x9F0d…/0x7E3d…).",
