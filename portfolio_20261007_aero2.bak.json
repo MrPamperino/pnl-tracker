@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-07T11:09:00+01:00",
+  "updated": "2026-10-07T10:55:00+01:00",
   "eurusd": 1.1614,
   "positions": [
     {
@@ -75,21 +75,21 @@
       "id": "aero",
       "symbol": "AERO",
       "venue": "Base · 0x9F0d…D2B0 + Bitget",
-      "holdings": 154599.28443783044,
-      "avg": 0.806236396327793,
+      "holdings": 133041.98443783046,
+      "avg": 0.8079171432551783,
       "mark": 0.81106756,
       "lastBuy": {
-        "time": "2026-10-07 11:07:39 PT",
-        "qty": 21557.3,
-        "price": 0.7958635803185,
-        "paid": 17156.66996,
+        "time": "2026-10-07 10:42:17 PT",
+        "qty": 14402.7,
+        "price": 0.7941445374825553,
+        "paid": 11437.82553,
         "paidToken": "USDC",
         "chain": "Bitget (CEX)",
         "wallet": null,
         "tx": null,
         "explorer": "",
         "approx": false,
-        "note": "CEX market buy AERO/USDC (Bitget) · executed 21,557.3 AERO, average 0.7958, total 17,156.66996 USDC · fee n/d · no on-chain tx · previous lot 2026-10-07 10:42:17 PT: 14,402.7 @ 0.7941"
+        "note": "CEX market buy AERO/USDC (Bitget, per screenshot style) · executed 14,402.7 AERO, average 0.7941, total 11,437.82553 USDC · fee n/d · no on-chain tx"
       }
     },
     {
@@ -164,7 +164,6 @@
     }
   ],
   "history": [
-    "AERO added 2026-10-07 11:07:39 PT on Bitget (CEX market buy AERO/USDC, from screenshot; fee n/d, no on-chain tx): 21,557.3 AERO for 17,156.66996 USDC @ avg 0.7958. AERO now 154,599.284438 @ avg $0.806236 (cost $124,643.57).",
     "AERO added 2026-10-07 10:42:17 PT on Bitget (CEX market buy AERO/USDC, from screenshot; fee n/d, no on-chain tx): 14,402.7 AERO for 11,437.82553 USDC @ avg 0.7941. AERO now 133,041.984438 @ avg $0.807917 (cost $107,486.90).",
     "QTC opened 2026-10-06 on SafeTrade (CEX, QTC/USDT; time n/d, user-provided, not on-chain verified): 126 QTC for 21,905.64 USDT @ $173.854286. Price source CoinGecko 'quantus' (SafeTrade only, thin liquidity). Note: $173.85 matches the 3–4 Oct market; 6 Oct range was ~$67–$114.",
     "ZEC re-opened 2026-10-06 on Bitget (spot, paid from the USDT cash; time/fills n/d, no on-chain tx): 33.14348375 ZEC @ cost price $1,362.77 = $45,166.95 (approx, from wallet-app screenshot; market then $1,355.90). Realized ZEC line from 1 Oct unchanged.",
