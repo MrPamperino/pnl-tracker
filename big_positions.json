@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-07T08:18:08+01:00",
+  "updated": "2026-10-08T08:21:30+01:00",
   "threshold_usd": 100.0,
-  "snapshot_total_usd": 5048911.88,
+  "snapshot_total_usd": 5022574.1,
   "wallets": [
     {
       "id": "ay1vrqfs",
@@ -17,8 +17,8 @@
           "token": "9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
           "qty": 376680.99455,
           "priceKey": "solana:9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D",
-          "price": 1.0630955164474751,
-          "value": 400447.88,
+          "price": 1.0629625493776689,
+          "value": 400397.79,
           "cost": null
         },
         {
@@ -28,8 +28,8 @@
           "token": "Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
           "qty": 123.58014886,
           "priceKey": "solana:Xsa62P5mvPszXL1krVUnU5ar38bBSVcWAB6fmPCo5Zu",
-          "price": 741.3394147412286,
-          "value": 91614.84,
+          "price": 724.0835248485884,
+          "value": 89482.35,
           "cost": null
         },
         {
@@ -39,8 +39,8 @@
           "token": "XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
           "qty": 222.51200297,
           "priceKey": "solana:XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
-          "price": 347.91293700393567,
-          "value": 77414.8,
+          "price": 349.56145362335843,
+          "value": 77781.62,
           "cost": null
         },
         {
@@ -50,8 +50,8 @@
           "token": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
           "qty": 147.61683891,
           "priceKey": "solana:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
-          "price": 256.72921656492423,
-          "value": 37897.56,
+          "price": 259.49661623815126,
+          "value": 38306.07,
           "cost": null
         },
         {
@@ -61,8 +61,8 @@
           "token": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
           "qty": 74.62177909,
           "priceKey": "solana:XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
-          "price": 378.1754932476374,
-          "value": 28220.13,
+          "price": 375.99038954981734,
+          "value": 28057.07,
           "cost": null
         },
         {
@@ -72,8 +72,8 @@
           "token": "Xsnuv4omNoHozR6EEW5mXkw8Nrny5rB3jVfLqi6gKMH",
           "qty": 11.55174915,
           "priceKey": "solana:Xsnuv4omNoHozR6EEW5mXkw8Nrny5rB3jVfLqi6gKMH",
-          "price": 1166.2938536731638,
-          "value": 13472.73,
+          "price": 1197.0063126909174,
+          "value": 13827.52,
           "cost": null
         },
         {
@@ -83,12 +83,12 @@
           "token": "XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
           "qty": 44.53532999,
           "priceKey": "solana:XsvNBAYkrDRNhA7wPHQfX3ZUXZyZLdnCQDfHZ56bzpg",
-          "price": 110.9056244315623,
-          "value": 4939.22,
+          "price": 108.38863910908448,
+          "value": 4827.12,
           "cost": null
         }
       ],
-      "value": 654007.16
+      "value": 652679.54
     },
     {
       "id": "dmsggpe1",
@@ -97,81 +97,6 @@
       "address": "DmSGgpE1u3fdvgtBcFEFfdA4kuv9sNHt5WfN2PCXHzHa",
       "explorer": "https://solscan.io/account/DmSGgpE1u3fdvgtBcFEFfdA4kuv9sNHt5WfN2PCXHzHa",
       "holdings": [
-        {
-          "symbol": "AMZNx/USDC",
-          "name": "Raydium CLMM",
-          "kind": "lp",
-          "chain": "Solana",
-          "token": null,
-          "qty": 5,
-          "priceKey": "lp:Raydium CLMM:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-          "underlying": [
-            {
-              "symbol": "AMZNx",
-              "priceKey": "solana:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
-              "qty": 2.7386675599999997,
-              "price": 256.72921656492423,
-              "value": 703.1
-            },
-            {
-              "symbol": "USDC",
-              "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 3547.9984889999996,
-              "price": 0.9999435768292745,
-              "value": 3547.8
-            }
-          ],
-          "positions": [
-            {
-              "nft": "2mmywkvvXhoCHc7beF4DQ9T9Pw48AEwKtdQ5U5jJo6V4",
-              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
-              "amount0": 0.13456683,
-              "amount1": 183.642548,
-              "fee0": 0.0,
-              "fee1": 0.0,
-              "in_range": true
-            },
-            {
-              "nft": "6DrwsxK5JdP9sXvbioLBKmySRhCciPxg6LazeYn1ncWb",
-              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
-              "amount0": 0.31744879,
-              "amount1": 672.014882,
-              "fee0": 0.0,
-              "fee1": 0.0,
-              "in_range": true
-            },
-            {
-              "nft": "Az5wJpRKh7QxjLuKBkHda9mnyEZuU2s8nFFAHnqenqMs",
-              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
-              "amount0": 1.27564029,
-              "amount1": 1202.636149,
-              "fee0": 0.0,
-              "fee1": 0.0,
-              "in_range": true
-            },
-            {
-              "nft": "EQWWfL3butjYEFTAnBkiAHeo8EubqnSekDmseC9xAWdg",
-              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
-              "amount0": 0.62977352,
-              "amount1": 1333.182498,
-              "fee0": 0.0,
-              "fee1": 0.0,
-              "in_range": true
-            },
-            {
-              "nft": "FXRYKApdGixpXUMgWN9hopExcX3CnL8Nk71ih69Lhqns",
-              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
-              "amount0": 0.38123813,
-              "amount1": 156.522412,
-              "fee0": 0.0,
-              "fee1": 0.0,
-              "in_range": true
-            }
-          ],
-          "price": null,
-          "value": 4250.9,
-          "cost": null
-        },
         {
           "symbol": "GOOGLx/USDC",
           "name": "Raydium CLMM",
@@ -184,24 +109,24 @@
             {
               "symbol": "GOOGLx",
               "priceKey": "solana:XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
-              "qty": 5.13442537,
-              "price": 347.91293700393567,
-              "value": 1786.33
+              "qty": 4.60582613,
+              "price": 349.56145362335843,
+              "value": 1610.02
             },
             {
               "symbol": "USDC",
               "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 2417.022769,
-              "price": 0.9999435768292745,
-              "value": 2416.89
+              "qty": 2601.6618980000003,
+              "price": 0.9996601860656881,
+              "value": 2600.78
             }
           ],
           "positions": [
             {
               "nft": "13aiHvpJRQJhjxvBA6eG5dry3LBiuTyrYoQC6w4MbSLL",
               "pool": "B8YAwjGYk6qidWzGBXMAxP7nYfG8g74EZ3Y4gFSsobRw",
-              "amount0": 1.03142156,
-              "amount1": 635.434305,
+              "amount0": 0.83429827,
+              "amount1": 704.289254,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -209,8 +134,8 @@
             {
               "nft": "2JtAuEqR8CudBrsi4GXEwNhNMHd5Ay8RNN3KT5ZMkkh4",
               "pool": "B8YAwjGYk6qidWzGBXMAxP7nYfG8g74EZ3Y4gFSsobRw",
-              "amount0": 1.97144564,
-              "amount1": 809.190436,
+              "amount0": 1.8170371,
+              "amount1": 863.125168,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -218,8 +143,8 @@
             {
               "nft": "2ZNArSQmCdTgmekKgy5yWJLKBLhTprns9KRXR546PCT2",
               "pool": "B8YAwjGYk6qidWzGBXMAxP7nYfG8g74EZ3Y4gFSsobRw",
-              "amount0": 1.86471377,
-              "amount1": 862.870313,
+              "amount0": 1.70854628,
+              "amount1": 917.419443,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -227,15 +152,15 @@
             {
               "nft": "8k2NTCrVF2Z1CAWepqMskM6js6MrmkEjHg2LdhNcGrdz",
               "pool": "B8YAwjGYk6qidWzGBXMAxP7nYfG8g74EZ3Y4gFSsobRw",
-              "amount0": 0.2668444,
-              "amount1": 109.527715,
+              "amount0": 0.24594448,
+              "amount1": 116.828033,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
             }
           ],
           "price": null,
-          "value": 4203.22,
+          "value": 4210.8,
           "cost": null
         },
         {
@@ -244,30 +169,39 @@
           "kind": "lp",
           "chain": "Solana",
           "token": null,
-          "qty": 5,
+          "qty": 6,
           "priceKey": "lp:Raydium CLMM:XspzcW1PRtgf6Wj92HCiZdjzKCyFekVD8P5Ueh3dRMX/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
           "underlying": [
             {
               "symbol": "MSFTx",
               "priceKey": "solana:XspzcW1PRtgf6Wj92HCiZdjzKCyFekVD8P5Ueh3dRMX",
-              "qty": 2.71470424,
-              "price": 531.9501295256355,
-              "value": 1444.09
+              "qty": 2.9627141200000002,
+              "price": 531.3025256014422,
+              "value": 1574.1
             },
             {
               "symbol": "USDC",
               "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 2490.358581,
-              "price": 0.9999435768292745,
-              "value": 2490.22
+              "qty": 2629.344888,
+              "price": 0.9996601860656881,
+              "value": 2628.45
             }
           ],
           "positions": [
             {
+              "nft": "3sJxE2h9XhCoGuUt5JkNEiuN4vHUQMUrtqz6FXsK9HBY",
+              "pool": "CLu4kFM4nb67xrdN7vJnMxXXir8Z5hA4HJUzPFccXjsL",
+              "amount0": 0.23227319,
+              "amount1": 147.369339,
+              "fee0": 0.0,
+              "fee1": 0.0,
+              "in_range": true
+            },
+            {
               "nft": "4T634xfkXc1YgG3yTWb9EhZmRaRWkr894NuLJqzVEM6U",
               "pool": "CLu4kFM4nb67xrdN7vJnMxXXir8Z5hA4HJUzPFccXjsL",
-              "amount0": 0.05500272,
-              "amount1": 19.823742,
+              "amount0": 0.05528488,
+              "amount1": 19.673433,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -275,8 +209,8 @@
             {
               "nft": "7ZGuGGWxmn1L9BsRQ9P4YsddWfGx5Ut4Ubw4nvhNdybA",
               "pool": "CLu4kFM4nb67xrdN7vJnMxXXir8Z5hA4HJUzPFccXjsL",
-              "amount0": 0.0961938,
-              "amount1": 125.805602,
+              "amount0": 0.0968762,
+              "amount1": 125.442082,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -284,8 +218,8 @@
             {
               "nft": "9pZQHBBUJqS7uf1URFUWJLpAexn4f2HknsssQTohrR2J",
               "pool": "CLu4kFM4nb67xrdN7vJnMxXXir8Z5hA4HJUzPFccXjsL",
-              "amount0": 0.52282,
-              "amount1": 380.55488,
+              "amount0": 0.52550204,
+              "amount1": 379.126141,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -293,8 +227,8 @@
             {
               "nft": "BZHbcwPr9AL7xsreWdxaHA57TvMcNVqAWESHuxsz4UJh",
               "pool": "CLu4kFM4nb67xrdN7vJnMxXXir8Z5hA4HJUzPFccXjsL",
-              "amount0": 0.82556046,
-              "amount1": 1079.696706,
+              "amount0": 0.83141701,
+              "amount1": 1076.576887,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -302,15 +236,90 @@
             {
               "nft": "F4A9ufopDR2sXStKtBT4XiqZp7n8xaKQSpcs86ZngqGq",
               "pool": "CLu4kFM4nb67xrdN7vJnMxXXir8Z5hA4HJUzPFccXjsL",
-              "amount0": 1.21512726,
-              "amount1": 884.477651,
+              "amount0": 1.2213608,
+              "amount1": 881.157006,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
             }
           ],
           "price": null,
-          "value": 3934.31,
+          "value": 4202.55,
+          "cost": null
+        },
+        {
+          "symbol": "AMZNx/USDC",
+          "name": "Raydium CLMM",
+          "kind": "lp",
+          "chain": "Solana",
+          "token": null,
+          "qty": 5,
+          "priceKey": "lp:Raydium CLMM:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "underlying": [
+            {
+              "symbol": "AMZNx",
+              "priceKey": "solana:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
+              "qty": 5.34688154,
+              "price": 259.49661623815126,
+              "value": 1387.5
+            },
+            {
+              "symbol": "USDC",
+              "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "qty": 2783.81095,
+              "price": 0.9996601860656881,
+              "value": 2782.86
+            }
+          ],
+          "positions": [
+            {
+              "nft": "2mmywkvvXhoCHc7beF4DQ9T9Pw48AEwKtdQ5U5jJo6V4",
+              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
+              "amount0": 0.04347068,
+              "amount1": 207.169242,
+              "fee0": 0.0,
+              "fee1": 0.0,
+              "in_range": true
+            },
+            {
+              "nft": "37ATCEsBrWAwcsEP5fgnJ4QAgLzTsS9pzacBbXyB43e5",
+              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
+              "amount0": 1.4636275,
+              "amount1": 345.656079,
+              "fee0": 0.0,
+              "fee1": 0.0,
+              "in_range": true
+            },
+            {
+              "nft": "5bJG2m7hKWyENE9iFSyGtfRis3pjNN9vvDJNKZW9nyDc",
+              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
+              "amount0": 2.90354555,
+              "amount1": 685.712839,
+              "fee0": 0.0,
+              "fee1": 0.0,
+              "in_range": true
+            },
+            {
+              "nft": "Az5wJpRKh7QxjLuKBkHda9mnyEZuU2s8nFFAHnqenqMs",
+              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
+              "amount0": 0.63798956,
+              "amount1": 1367.317229,
+              "fee0": 0.0,
+              "fee1": 0.0,
+              "in_range": true
+            },
+            {
+              "nft": "FXRYKApdGixpXUMgWN9hopExcX3CnL8Nk71ih69Lhqns",
+              "pool": "6m5aXAve4uh6Kt4ytKyCLWNMjd8PYP5vujwNCtycrUiD",
+              "amount0": 0.29824825,
+              "amount1": 177.955561,
+              "fee0": 0.0,
+              "fee1": 0.0,
+              "in_range": true
+            }
+          ],
+          "price": null,
+          "value": 4170.36,
           "cost": null
         },
         {
@@ -325,24 +334,24 @@
             {
               "symbol": "COINx",
               "priceKey": "solana:Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
-              "qty": 9.90866518,
-              "price": 183.47514024673674,
-              "value": 1817.99
+              "qty": 11.39513078,
+              "price": 177.38750104975355,
+              "value": 2021.35
             },
             {
               "symbol": "USDC",
               "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 1351.0060600000002,
-              "price": 0.9999435768292745,
-              "value": 1350.93
+              "qty": 1082.345165,
+              "price": 0.9996601860656881,
+              "value": 1081.98
             }
           ],
           "positions": [
             {
               "nft": "6VjmewcHfXSaDLBkJqyrdzaFRtn5HsNJnfN6duPuC75m",
               "pool": "w7SGmPeXoMCsjvXqgsAmUn56uypyDsjAtsxeVkaiqxa",
-              "amount0": 3.08376215,
-              "amount1": 446.635896,
+              "amount0": 3.55846154,
+              "amount1": 360.839654,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -350,8 +359,8 @@
             {
               "nft": "9bb4BaAvEwYzHdqM4EzqyngLKtnmRsurJRh2xRtTqRc9",
               "pool": "w7SGmPeXoMCsjvXqgsAmUn56uypyDsjAtsxeVkaiqxa",
-              "amount0": 2.85477121,
-              "amount1": 364.383636,
+              "amount0": 3.27157872,
+              "amount1": 289.05066,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -359,15 +368,15 @@
             {
               "nft": "CQ6FiPFb57B6M8tAbdvY4EgxrzTixjF51eKixkD9VBsR",
               "pool": "w7SGmPeXoMCsjvXqgsAmUn56uypyDsjAtsxeVkaiqxa",
-              "amount0": 3.97013182,
-              "amount1": 539.986528,
+              "amount0": 4.56509052,
+              "amount1": 432.454851,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
             }
           ],
           "price": null,
-          "value": 3168.92,
+          "value": 3103.33,
           "cost": null
         },
         {
@@ -382,24 +391,24 @@
             {
               "symbol": "BRK.Bx",
               "priceKey": "solana:Xs6B6zawENwAbWVi7w92rjazLuAr5Az59qgWKcNb45x",
-              "qty": 1.95862837,
-              "price": 506.85861700262075,
-              "value": 992.75
+              "qty": 2.20593627,
+              "price": 503.2653985719471,
+              "value": 1110.17
             },
             {
               "symbol": "USDC",
               "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 1025.438121,
-              "price": 0.9999435768292745,
-              "value": 1025.38
+              "qty": 900.231837,
+              "price": 0.9996601860656881,
+              "value": 899.93
             }
           ],
           "positions": [
             {
               "nft": "63GRVbhcSa3ZBC99TW217hh7U7RgfhY5Hmqgtcit2swu",
               "pool": "B4UdLnvzCrnfRndLdgGTYZjcKTDsaFKB54cmKb2GoSne",
-              "amount0": 0.65157614,
-              "amount1": 454.395872,
+              "amount0": 0.74772825,
+              "amount1": 405.716277,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
@@ -407,15 +416,15 @@
             {
               "nft": "B7VN5f2vuAXfM2n9H1ianoatMCsUKKiz1dXmFhMJhEAZ",
               "pool": "B4UdLnvzCrnfRndLdgGTYZjcKTDsaFKB54cmKb2GoSne",
-              "amount0": 1.30705223,
-              "amount1": 571.042249,
+              "amount0": 1.45820802,
+              "amount1": 494.51556,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
             }
           ],
           "price": null,
-          "value": 2018.13,
+          "value": 2010.1,
           "cost": null
         },
         {
@@ -423,10 +432,10 @@
           "name": "USD Coin",
           "chain": "Solana",
           "token": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-          "qty": 1712.233238,
+          "qty": 1568.335517,
           "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-          "price": 0.9999435768292745,
-          "value": 1712.14,
+          "price": 0.9996601860656881,
+          "value": 1567.8,
           "cost": null
         },
         {
@@ -441,31 +450,31 @@
             {
               "symbol": "GMEx",
               "priceKey": "solana:Xsf9mBktVB9BSU5kf4nHxPq5hCBJ2j2ui3ecFGxPRGc",
-              "qty": 19.70760535,
-              "price": 24.89584323363779,
-              "value": 490.64
+              "qty": 20.76778014,
+              "price": 24.550217875778937,
+              "value": 509.85
             },
             {
               "symbol": "USDC",
               "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 615.202391,
-              "price": 0.9999435768292745,
-              "value": 615.17
+              "qty": 588.981714,
+              "price": 0.9996601860656881,
+              "value": 588.78
             }
           ],
           "positions": [
             {
               "nft": "CoNHRuWdNQjARH9Q6ZFXCzkfYbChXGExnGmEWX5F3vrv",
               "pool": "hSQxf9L7Tpwf1PKjWWSbnew2vyTPpGrfWwNa4gq2n2x",
-              "amount0": 19.70760535,
-              "amount1": 615.202391,
+              "amount0": 20.76778014,
+              "amount1": 588.981714,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
             }
           ],
           "price": null,
-          "value": 1105.81,
+          "value": 1098.63,
           "cost": null
         },
         {
@@ -480,35 +489,35 @@
             {
               "symbol": "PLTRx",
               "priceKey": "solana:XsoBhf2ufR8fTyNSjqfU71DYGaE6Z3SUGAidpzriAA4",
-              "qty": 2.16447843,
-              "price": 191.12162303985573,
-              "value": 413.68
+              "qty": 2.1335571,
+              "price": 193.1011101607366,
+              "value": 411.99
             },
             {
               "symbol": "USDC",
               "priceKey": "solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "qty": 555.315849,
-              "price": 0.9999435768292745,
-              "value": 555.28
+              "qty": 561.286193,
+              "price": 0.9996601860656881,
+              "value": 561.1
             }
           ],
           "positions": [
             {
               "nft": "9DPniSFXG7nWkjhoy7tezKFWnSTs1LfWpdpmgfk2ovW6",
               "pool": "2EbY6YYKdQY9mmn9voiadgMcEnmZ5oe7qkcFVmywNrrE",
-              "amount0": 2.16447843,
-              "amount1": 555.315849,
+              "amount0": 2.1335571,
+              "amount1": 561.286193,
               "fee0": 0.0,
               "fee1": 0.0,
               "in_range": true
             }
           ],
           "price": null,
-          "value": 968.96,
+          "value": 973.09,
           "cost": null
         }
       ],
-      "value": 21362.39
+      "value": 21336.66
     },
     {
       "id": "0xfad2a6",
@@ -524,12 +533,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 342236.308619,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0368923735134634,
-          "value": 354862.22,
+          "price": 1.0367609721224242,
+          "value": 354817.25,
           "cost": null
         }
       ],
-      "value": 354862.22
+      "value": 354817.25
     },
     {
       "id": "0xa74c0c",
@@ -545,12 +554,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 1272017.362436,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0368923735134634,
-          "value": 1318945.1,
+          "price": 1.0367609721224242,
+          "value": 1318777.96,
           "cost": null
         }
       ],
-      "value": 1318945.1
+      "value": 1318777.96
     },
     {
       "id": "0xaef093",
@@ -566,12 +575,12 @@
           "token": "0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
           "qty": 408678.315438,
           "priceKey": "ethereum:0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d",
-          "price": 1.0368923735134634,
-          "value": 423755.43,
+          "price": 1.0367609721224242,
+          "value": 423701.73,
           "cost": null
         }
       ],
-      "value": 423755.43
+      "value": 423701.73
     },
     {
       "id": "0xc14346",
@@ -585,14 +594,14 @@
           "name": "Lido Staked ETH",
           "chain": "Ethereum",
           "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "qty": 107.93368229932749,
+          "qty": 107.9405336913653,
           "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "price": 2616.026665600363,
-          "value": 282357.39,
+          "price": 2567.5958483374843,
+          "value": 277147.67,
           "cost": null
         }
       ],
-      "value": 282357.39
+      "value": 277147.67
     },
     {
       "id": "0x7efa55",
@@ -608,43 +617,43 @@
           "chain": "Polygon",
           "token": null,
           "proxy": "0xb22ae2678733e6cebc5dc43b68fc70714f932815",
-          "qty": 22,
+          "qty": 25,
           "priceKey": "polymarket:0xb22ae2678733e6cebc5dc43b68fc70714f932815",
           "positions": [
             {
-              "title": "Will the highest temperature in Madrid be 20°C on October 7?",
+              "title": "Will the lowest temperature in Hong Kong be 23°C on October 8?",
               "outcome": "No",
-              "size": 504,
+              "size": 503,
               "avgPrice": 0.94,
               "curPrice": 0.9955,
-              "value": 501.73,
-              "pnl": 27.97,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-madrid-on-october-7-2026",
+              "value": 500.74,
+              "pnl": 27.92,
+              "endDate": "2026-10-08",
+              "slug": "lowest-temperature-in-hong-kong-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the lowest temperature in Hong Kong be 25°C on October 7?",
+              "title": "Will the highest temperature in Madrid be 20°C on October 8?",
               "outcome": "No",
-              "size": 498.5,
+              "size": 498,
               "avgPrice": 0.95,
-              "curPrice": 0.9995,
-              "value": 498.25,
-              "pnl": 24.68,
-              "endDate": "2026-10-07",
-              "slug": "lowest-temperature-in-hong-kong-on-october-7-2026",
+              "curPrice": 0.921,
+              "value": 458.66,
+              "pnl": -14.44,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-madrid-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in Hong Kong be 29°C on October 7?",
+              "title": "Will the highest temperature in Wellington be 16°C on October 9?",
               "outcome": "No",
-              "size": 492.57,
-              "avgPrice": 0.96,
-              "curPrice": 0.9335,
-              "value": 459.81,
-              "pnl": -13.05,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-hong-kong-on-october-7-2026",
+              "size": 431.71,
+              "avgPrice": 0.94,
+              "curPrice": 0.935,
+              "value": 403.65,
+              "pnl": -2.16,
+              "endDate": "2026-10-09",
+              "slug": "highest-temperature-in-wellington-on-october-9-2026",
               "redeemable": false
             },
             {
@@ -652,47 +661,95 @@
               "outcome": "No",
               "size": 310.3833,
               "avgPrice": 0.94,
-              "curPrice": 0.815,
-              "value": 252.96,
-              "pnl": -38.8,
+              "curPrice": 0.9995,
+              "value": 310.23,
+              "pnl": 18.47,
               "endDate": "2026-10-07",
               "slug": "highest-temperature-in-san-francisco-on-october-7-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in Miami be between 92-93°F on October 7?",
+              "title": "Will the highest temperature in San Francisco be between 76-77°F on October 8?",
               "outcome": "No",
-              "size": 133,
-              "avgPrice": 0.93,
-              "curPrice": 0.94,
-              "value": 125.02,
-              "pnl": 1.33,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-miami-on-october-7-2026",
+              "size": 326.6666,
+              "avgPrice": 0.94,
+              "curPrice": 0.945,
+              "value": 308.7,
+              "pnl": 1.63,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-san-francisco-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in Hong Kong be 31°C on October 7?",
+              "title": "Will the highest temperature in Wuhan be 26°C on October 8?",
               "outcome": "No",
-              "size": 97.27,
+              "size": 214.76,
+              "avgPrice": 0.93,
+              "curPrice": 0.9995,
+              "value": 214.65,
+              "pnl": 14.93,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-wuhan-on-october-8-2026",
+              "redeemable": false
+            },
+            {
+              "title": "Will the highest temperature in Sao Paulo be 33°C on October 8?",
+              "outcome": "No",
+              "size": 187.59,
+              "avgPrice": 0.96,
+              "curPrice": 0.9945,
+              "value": 186.56,
+              "pnl": 6.47,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-sao-paulo-on-october-8-2026",
+              "redeemable": false
+            },
+            {
+              "title": "Will the highest temperature in Kuala Lumpur be 35°C on October 8?",
+              "outcome": "No",
+              "size": 174.64,
+              "avgPrice": 0.95,
+              "curPrice": 0.995,
+              "value": 173.77,
+              "pnl": 7.86,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-kuala-lumpur-on-october-8-2026",
+              "redeemable": false
+            },
+            {
+              "title": "Will the highest temperature in Tokyo be 22°C on October 8?",
+              "outcome": "No",
+              "size": 132.63,
               "avgPrice": 0.95,
               "curPrice": 0.9995,
-              "value": 97.22,
-              "pnl": 4.81,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-hong-kong-on-october-7-2026",
+              "value": 132.56,
+              "pnl": 6.57,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-tokyo-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in Paris be 22°C on October 7?",
+              "title": "Will the highest temperature in Singapore be 34°C on October 8?",
               "outcome": "No",
-              "size": 98,
-              "avgPrice": 0.95,
-              "curPrice": 0.987,
-              "value": 96.73,
-              "pnl": 3.63,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-paris-on-october-7-2026",
+              "size": 114.49,
+              "avgPrice": 0.93,
+              "curPrice": 0.9865,
+              "value": 112.94,
+              "pnl": 6.47,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-singapore-on-october-8-2026",
+              "redeemable": false
+            },
+            {
+              "title": "Will the highest temperature in Houston be between 88-89°F on October 8?",
+              "outcome": "No",
+              "size": 103.49,
+              "avgPrice": 0.93,
+              "curPrice": 0.925,
+              "value": 95.73,
+              "pnl": -0.52,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-houston-on-october-8-2026",
               "redeemable": false
             },
             {
@@ -700,71 +757,59 @@
               "outcome": "No",
               "size": 67.42,
               "avgPrice": 0.93,
-              "curPrice": 0.915,
-              "value": 61.69,
-              "pnl": -1.01,
+              "curPrice": 0.9995,
+              "value": 67.39,
+              "pnl": 4.69,
               "endDate": "2026-10-08",
               "slug": "highest-temperature-in-seoul-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in New York City be between 64-65°F on October 7?",
+              "title": "Will the highest temperature in Jeddah be 38°C on October 8?",
               "outcome": "No",
-              "size": 15.2496,
+              "size": 37.1298,
               "avgPrice": 0.94,
-              "curPrice": 0.856,
-              "value": 13.05,
-              "pnl": -1.28,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-nyc-on-october-7-2026",
+              "curPrice": 0.947,
+              "value": 35.16,
+              "pnl": 0.26,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-jeddah-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in New York City be between 70-71°F on October 7?",
+              "title": "Will the highest temperature in Hong Kong be 27°C on October 8?",
               "outcome": "No",
-              "size": 10.73,
-              "avgPrice": 0.95,
-              "curPrice": 0.9815,
-              "value": 10.53,
-              "pnl": 0.34,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-nyc-on-october-7-2026",
-              "redeemable": false
-            },
-            {
-              "title": "Will the highest temperature in Hong Kong be 28°C on October 7?",
-              "outcome": "No",
-              "size": 152.92,
+              "size": 29.9583,
               "avgPrice": 0.94,
-              "curPrice": 0.0685,
-              "value": 10.47,
-              "pnl": -133.27,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-hong-kong-on-october-7-2026",
+              "curPrice": 0.9995,
+              "value": 29.94,
+              "pnl": 1.78,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-hong-kong-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in Buenos Aires be 20°C on October 7?",
+              "title": "Will the highest temperature in Chicago be between 68-69°F on October 8?",
               "outcome": "No",
-              "size": 10,
-              "avgPrice": 0.95,
-              "curPrice": 0.928,
-              "value": 9.28,
-              "pnl": -0.22,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-buenos-aires-on-october-7-2026",
+              "size": 23.66,
+              "avgPrice": 0.93,
+              "curPrice": 0.935,
+              "value": 22.12,
+              "pnl": 0.12,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-chicago-on-october-8-2026",
               "redeemable": false
             },
             {
-              "title": "Will the highest temperature in Dallas be between 90-91°F on October 7?",
+              "title": "Will the highest temperature in Hong Kong be 31°C on October 8?",
               "outcome": "No",
-              "size": 7.6966,
-              "avgPrice": 0.94,
-              "curPrice": 0.985,
-              "value": 7.58,
-              "pnl": 0.35,
-              "endDate": "2026-10-07",
-              "slug": "highest-temperature-in-dallas-on-october-7-2026",
+              "size": 7.5,
+              "avgPrice": 0.93,
+              "curPrice": 0.9995,
+              "value": 7.5,
+              "pnl": 0.52,
+              "endDate": "2026-10-08",
+              "slug": "highest-temperature-in-hong-kong-on-october-8-2026",
               "redeemable": false
             },
             {
@@ -804,6 +849,18 @@
               "redeemable": true
             },
             {
+              "title": "Will the Democrats win the Michigan governor race in 2026?",
+              "outcome": "No",
+              "size": 5.88,
+              "avgPrice": 0.1699,
+              "curPrice": 0.0665,
+              "value": 0.39,
+              "pnl": -0.61,
+              "endDate": "2026-11-04",
+              "slug": "michigan-governor-winner-2026",
+              "redeemable": false
+            },
+            {
               "title": "Will the highest temperature in Wellington be 11°C on August 11?",
               "outcome": "No",
               "size": 0.38,
@@ -816,25 +873,13 @@
               "redeemable": true
             },
             {
-              "title": "Will the Democrats win the Michigan governor race in 2026?",
-              "outcome": "No",
-              "size": 5.88,
-              "avgPrice": 0.1699,
-              "curPrice": 0.058,
-              "value": 0.34,
-              "pnl": -0.66,
-              "endDate": "2026-11-04",
-              "slug": "michigan-governor-winner-2026",
-              "redeemable": false
-            },
-            {
               "title": "Will South Sudan have an Ebola case in 2026?",
               "outcome": "Yes",
               "size": 0.8897,
               "avgPrice": 0.8399,
-              "curPrice": 0.36,
-              "value": 0.32,
-              "pnl": -0.43,
+              "curPrice": 0.37,
+              "value": 0.33,
+              "pnl": -0.42,
               "endDate": "2027-01-01",
               "slug": "which-countries-will-have-an-ebola-case-in-2026",
               "redeemable": false
@@ -844,9 +889,9 @@
               "outcome": "No",
               "size": 5.88,
               "avgPrice": 0.1799,
-              "curPrice": 0.0495,
-              "value": 0.29,
-              "pnl": -0.77,
+              "curPrice": 0.0345,
+              "value": 0.2,
+              "pnl": -0.86,
               "endDate": "2026-11-04",
               "slug": "nc-08-house-election-winner",
               "redeemable": false
@@ -856,7 +901,7 @@
               "outcome": "Yes",
               "size": 10.42,
               "avgPrice": 0.4769,
-              "curPrice": 0.0105,
+              "curPrice": 0.011,
               "value": 0.11,
               "pnl": -4.86,
               "endDate": "2027-01-01",
@@ -876,17 +921,17 @@
               "redeemable": false
             }
           ],
-          "positions_value": 2149.1,
+          "positions_value": 3065.05,
           "cash": {
-            "pUSD": 3648.971513
+            "pUSD": 2892.745201
           },
-          "cash_value": 3648.97,
+          "cash_value": 2892.75,
           "price": null,
           "cost": null,
-          "value": 5798.07
+          "value": 5957.8
         }
       ],
-      "value": 5798.07
+      "value": 5957.8
     },
     {
       "id": "0x9f0d7b",
@@ -900,15 +945,15 @@
           "name": "Lido Staked ETH",
           "chain": "Ethereum",
           "token": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "qty": 101.044311055816,
+          "qty": 101.05072512576605,
           "priceKey": "ethereum:0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-          "price": 2616.026665600363,
-          "value": 264334.61,
+          "price": 2567.5958483374843,
+          "value": 259457.42,
           "cost": null
         }
       ],
       "note": "só ETH (stETH + ETH nativo)",
-      "value": 264334.61
+      "value": 259457.42
     },
     {
       "id": "0x4c34c3",
@@ -924,8 +969,8 @@
           "token": "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
           "qty": 214923.98715132507,
           "priceKey": "ethereum:0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD",
-          "price": 1.1106872751560215,
-          "value": 238713.34,
+          "price": 1.1108685618266545,
+          "value": 238752.3,
           "cost": null
         },
         {
@@ -935,12 +980,12 @@
           "token": "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
           "qty": 831.1290527619616,
           "priceKey": "ethereum:0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
-          "price": 1.2511661972617978,
-          "value": 1039.88,
+          "price": 1.2512320216263229,
+          "value": 1039.94,
           "cost": null
         }
       ],
-      "value": 239753.22
+      "value": 239792.24
     }
   ],
   "manual": [
@@ -951,8 +996,8 @@
       "qty": 12.02,
       "priceKey": "coingecko:bitcoin",
       "note": "manual · off-chain (no address given)",
-      "price": 84231.8973081732,
-      "value": 1012467.41,
+      "price": 83100.00514054496,
+      "value": 998862.06,
       "cost": null
     },
     {
@@ -964,8 +1009,8 @@
       "kind": "cash",
       "currency": "EUR",
       "note": "manual · fiat (no address)",
-      "price": 1.122068764058253,
-      "value": 460048.19,
+      "price": 1.1191518340730242,
+      "value": 458852.25,
       "cost": null
     },
     {
@@ -977,8 +1022,8 @@
       "kind": "cash",
       "currency": "EUR",
       "note": "manual · fiat (no address)",
-      "price": 1.122068764058253,
-      "value": 11220.69,
+      "price": 1.1191518340730242,
+      "value": 11191.52,
       "cost": null
     }
   ],
@@ -989,7 +1034,7 @@
       "symbol": "SOL",
       "priceKey": "coingecko:solana",
       "qty": 0.077288091,
-      "value": 9.19,
+      "value": 8.93,
       "reason": "< $100"
     },
     {
@@ -1016,7 +1061,7 @@
       "symbol": "LLY",
       "priceKey": "solana:LLYuwZ33keFihgwoxXsBawy31AiRFLFSva32TYq5TvD",
       "qty": 3.8e-05,
-      "value": 0.04,
+      "value": 0.05,
       "reason": "< $100"
     },
     {
@@ -1024,17 +1069,8 @@
       "chain": "Solana",
       "symbol": "SOL",
       "priceKey": "coingecko:solana",
-      "qty": 0.236475156,
-      "value": 28.11,
-      "reason": "< $100"
-    },
-    {
-      "wallet": "DmSG…HzHa",
-      "chain": "Solana",
-      "symbol": "AMZNx",
-      "priceKey": "solana:Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
-      "qty": 0.14191254,
-      "value": 36.43,
+      "qty": 0.188342193,
+      "value": 21.75,
       "reason": "< $100"
     },
     {
@@ -1043,7 +1079,7 @@
       "symbol": "BRK.Bx",
       "priceKey": "solana:Xs6B6zawENwAbWVi7w92rjazLuAr5Az59qgWKcNb45x",
       "qty": 0.01385542,
-      "value": 7.02,
+      "value": 6.97,
       "reason": "< $100"
     },
     {
@@ -1052,7 +1088,7 @@
       "symbol": "COINx",
       "priceKey": "solana:Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
       "qty": 0.03279885,
-      "value": 6.02,
+      "value": 5.82,
       "reason": "< $100"
     },
     {
@@ -1061,7 +1097,7 @@
       "symbol": "GOOGLx",
       "priceKey": "solana:XsCPL9dNWBMvFtTmwcCA5v3xWPSMEBCszbQdiLLq6aN",
       "qty": 0.05255132,
-      "value": 18.28,
+      "value": 18.37,
       "reason": "< $100"
     },
     {
@@ -1070,7 +1106,7 @@
       "symbol": "GMEx",
       "priceKey": "solana:Xsf9mBktVB9BSU5kf4nHxPq5hCBJ2j2ui3ecFGxPRGc",
       "qty": 0.31466916,
-      "value": 7.83,
+      "value": 7.73,
       "reason": "< $100"
     },
     {
@@ -1079,7 +1115,7 @@
       "symbol": "PLTRx",
       "priceKey": "solana:XsoBhf2ufR8fTyNSjqfU71DYGaE6Z3SUGAidpzriAA4",
       "qty": 0.01701683,
-      "value": 3.25,
+      "value": 3.29,
       "reason": "< $100"
     },
     {
@@ -1097,7 +1133,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.000358876192703691,
-      "value": 0.94,
+      "value": 0.92,
       "reason": "< $100"
     },
     {
@@ -1133,7 +1169,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.008586807091513986,
-      "value": 22.47,
+      "value": 22.07,
       "reason": "< $100"
     },
     {
@@ -1142,7 +1178,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.037977960585088774,
-      "value": 99.38,
+      "value": 97.6,
       "reason": "< $100"
     },
     {
@@ -1178,7 +1214,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.018972971250356054,
-      "value": 49.65,
+      "value": 48.76,
       "reason": "< $100"
     },
     {
@@ -1196,7 +1232,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.002867606272438479,
-      "value": 7.5,
+      "value": 7.37,
       "reason": "< $100"
     },
     {
@@ -1223,7 +1259,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.000232922242478012,
-      "value": 0.61,
+      "value": 0.6,
       "reason": "< $100"
     },
     {
@@ -1232,7 +1268,7 @@
       "symbol": "ETH",
       "priceKey": "coingecko:ethereum",
       "qty": 0.021842132952801643,
-      "value": 57.16,
+      "value": 56.13,
       "reason": "< $100"
     },
     {
